@@ -5,9 +5,9 @@
     "author": "Tariq Soliman",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.jpl.nasa.gov/tsoliman/LithoSphere/issues"
+        "url": "https://github.com/NASA-AMMOS/LithoSphere/issues"
     },
-    "homepage": "https://github.jpl.nasa.gov/tsoliman/LithoSphere#readme",
+    "homepage": "https://github.com/NASA-AMMOS/LithoSphere#readme",
     "main": "./dist/lithosphere.js",
     "types": "./dist/lithosphere.d.ts",
     "files": [
@@ -29,7 +29,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.jpl.nasa.gov/tsoliman/LithoSphere.git"
+        "url": "git+https://github.com/NASA-AMMOS/LithoSphere.git"
     },
     "keywords": [
         "tile",
