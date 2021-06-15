@@ -12,9 +12,9 @@
 
 <pre align="center">A free tile-based 3D globe renderer built with Three.js</pre>
 
-[![npm version](https://img.shields.io/npm/v/LithoSphere.svg?style=flat-square)](https://www.npmjs.com/package/lithosphere)
-[![travis build](https://img.shields.io/travis/com/NASA-AMMOS/LithoSphere/master.svg?style=flat-square)](https://travis-ci.com/NASA-AMMOS/LithoSphere)
-[![lgtm code quality](https://img.shields.io/lgtm/grade/javascript/g/NASA-AMMOS/LithoSphere.svg?style=flat-square&label=code-quality)](https://lgtm.com/projects/g/NASA-AMMOS/LithoSphere/)
+[![npm version](https://img.shields.io/npm/v/lithosphere.svg?style=flat-square)](https://www.npmjs.com/package/lithosphere)
+[![travis build](https://img.shields.io/travis/com/NASA-AMMOS/lithosphere/master.svg?style=flat-square)](https://travis-ci.com/NASA-AMMOS/LithoSphere)
+[![lgtm code quality](https://img.shields.io/lgtm/grade/javascript/g/NASA-AMMOS/lithosphere.svg?style=flat-square&label=code-quality)](https://lgtm.com/projects/g/NASA-AMMOS/LithoSphere/)
 
 LithoSphere is a completely free and open-sourced tile-based 3D globe renderer. First built within the Geographical Information System (GIS) application [MMGIS](https://github.com/NASA-AMMOS/MMGIS), LithoSphere has been pulled out and refactored into a standalone, mapping focused, JavaScript library. At its core sits the brilliant [Three.js](https://threejs.org/) library with all its extensible familiarity.
 
