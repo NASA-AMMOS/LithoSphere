@@ -22,7 +22,7 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-empty-function': 'off',
-        '@typescript-eslint/ts-expect-error': 'allow-with-description'
+        '@typescript-eslint/ts-expect-error': 1,
         'no-var': 2,
         'no-useless-constructor': 2,
         'no-duplicate-imports': 2,
