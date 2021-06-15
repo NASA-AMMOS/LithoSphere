@@ -224,17 +224,24 @@ export default class VectorLayerer {
             if (layerObj.on == false) {
                 sprite.visible = false
             }
+            // @ts-ignore
             sprite.layerName = layerObj.name
+            // @ts-ignore
             sprite.useKeyAsHoverName = layerObj.useKeyAsHoverName
             sprite.name = layerObj.name
+            // @ts-ignore
             sprite.style = style
 
+            // @ts-ignore
             sprite.restyle = () => {
                 const newSprite = this.geomTo.sprite(
                     layerObj,
+                    // @ts-ignore
                     sprite.feature,
+                    // @ts-ignore
                     sprite.feature._highlighted || sprite.feature._active
                 )
+                // @ts-ignore
                 sprite.style = newSprite.style
                 sprite.material.dispose()
                 sprite.material = newSprite.material
@@ -342,9 +349,11 @@ export default class VectorLayerer {
             // @ts-ignore
             mesh.strokeColor = style.color
 
+            // @ts-ignore
             mesh.restyle = () => {
                 const style = this.p.getFeatureStyle(
                     layerObj,
+                    // @ts-ignore
                     mesh.feature,
                     true
                 )

@@ -1,11 +1,14 @@
 import { Corners } from '../generalTypes.d.ts';
 interface Private {
 }
+interface Params {
+    existingDivId?: string;
+}
 export default class Coordinates {
     _: Private;
     p: any;
     name: string;
-    params: object;
+    params: Params;
     corner: Corners;
     constructor(parent: any, name: string, params?: object);
     getControl: () => string;

@@ -52,10 +52,14 @@ export default class Exaggerate {
                 let value = parseFloat(options[i].getAttribute('value'))
                 for (let j = 0; j < options.length; j++) {
                     options[j].classList.remove('_lithosphere_active')
+                    // @ts-ignore
                     options[j].style.background = 'unset'
+                    // @ts-ignore
                     options[j].style.color = 'unset'
                 }
+                // @ts-ignore
                 options[i].style.background = '#FBC02D'
+                // @ts-ignore
                 options[i].style.color = 'black'
                 options[i].classList.add('_lithosphere_active')
                 this.setExaggeration(value)
@@ -64,7 +68,9 @@ export default class Exaggerate {
             // Set active current element
             const value = parseFloat(options[i].getAttribute('value'))
             if (value == this.p.options.exaggeration) {
+                // @ts-ignore
                 options[i].style.background = '#FBC02D'
+                // @ts-ignore
                 options[i].style.color = 'black'
                 options[i].classList.add('_lithosphere_active')
             }

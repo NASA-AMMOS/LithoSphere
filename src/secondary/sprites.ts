@@ -3,7 +3,7 @@ import { Sprite, SpriteMaterial, Texture } from 'three'
 const Sprites = {
     //id -> spriteMaterial
     spriteMaterials: {},
-    makeMarkerSprite: function (parameters, id, forceNewMaterial) {
+    makeMarkerSprite: function (parameters, id, forceNewMaterial?: boolean) {
         const sprite = new Sprite(
             Sprites.makeMarkerMaterial(parameters, id, forceNewMaterial)
         )
@@ -15,7 +15,7 @@ const Sprites = {
             : 32
         return sprite
     },
-    makeMarkerMaterial: function (parameters, id, forceNewMaterial) {
+    makeMarkerMaterial: function (parameters, id, forceNewMaterial?: boolean) {
         if (
             id &&
             this.spriteMaterials.hasOwnProperty(id) &&

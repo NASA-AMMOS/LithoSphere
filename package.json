@@ -7,7 +7,7 @@
     "bugs": {
         "url": "https://github.com/NASA-AMMOS/LithoSphere/issues"
     },
-    "homepage": "https://github.com/NASA-AMMOS/LithoSphere#readme",
+    "homepage": "https://nasa-ammos.github.io/LithoSphere/",
     "main": "./dist/lithosphere.js",
     "types": "./dist/lithosphere.d.ts",
     "files": [

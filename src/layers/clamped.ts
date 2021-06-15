@@ -264,12 +264,13 @@ export default class ClampedLayerer {
                                         f.geometry.coordinates[p][i][1],
                                         xyz.z
                                     )
-                                    const canvasX = parseInt(
-                                        (x - xyz.x) * canvas.width
-                                    )
-                                    const canvasY = parseInt(
-                                        (y - xyz.y) * canvas.height
-                                    )
+                                    // prettier-ignore
+                                    // @ts-ignore
+                                    const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                    // prettier-ignore
+                                    // @ts-ignore
+                                    const canvasY = parseInt((y - xyz.y) * canvas.height)
+
                                     if (i == 0) {
                                         ctx.beginPath()
                                         ctx.moveTo(canvasX, canvasY)
@@ -306,12 +307,13 @@ export default class ClampedLayerer {
                                             f.geometry.coordinates[p][i][j][1],
                                             xyz.z
                                         )
-                                        const canvasX = parseInt(
-                                            (x - xyz.x) * canvas.width
-                                        )
-                                        const canvasY = parseInt(
-                                            (y - xyz.y) * canvas.height
-                                        )
+                                        // prettier-ignore
+                                        // @ts-ignore
+                                        const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                        // prettier-ignore
+                                        // @ts-ignore
+                                        const canvasY = parseInt((y - xyz.y) * canvas.height)
+
                                         if (j == 0) {
                                             ctx.beginPath()
                                             ctx.moveTo(canvasX, canvasY)
@@ -350,12 +352,13 @@ export default class ClampedLayerer {
                                     f.geometry.coordinates[p][1],
                                     xyz.z
                                 )
-                                const canvasX = parseInt(
-                                    (x - xyz.x) * canvas.width
-                                )
-                                const canvasY = parseInt(
-                                    (y - xyz.y) * canvas.height
-                                )
+                                // prettier-ignore
+                                // @ts-ignore
+                                const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                // prettier-ignore
+                                // @ts-ignore
+                                const canvasY = parseInt((y - xyz.y) * canvas.height)
+
                                 if (p == 0) {
                                     ctx.beginPath()
                                     ctx.moveTo(canvasX, canvasY)
@@ -392,12 +395,12 @@ export default class ClampedLayerer {
                                         f.geometry.coordinates[p][i][1],
                                         xyz.z
                                     )
-                                    const canvasX = parseInt(
-                                        (x - xyz.x) * canvas.width
-                                    )
-                                    const canvasY = parseInt(
-                                        (y - xyz.y) * canvas.height
-                                    )
+                                    // prettier-ignore
+                                    // @ts-ignore
+                                    const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                    // prettier-ignore
+                                    // @ts-ignore
+                                    const canvasY = parseInt((y - xyz.y) * canvas.height)
 
                                     if (i == 0) {
                                         ctx.beginPath()
@@ -463,7 +466,9 @@ export default class ClampedLayerer {
                             lnglatRadiusAway.lat
                         )
 
+                        // @ts-ignore
                         const canvasX = parseInt((x - xyz.x) * canvas.width)
+                        // @ts-ignore
                         const canvasY = parseInt((y - xyz.y) * canvas.height)
 
                         ctx.beginPath()

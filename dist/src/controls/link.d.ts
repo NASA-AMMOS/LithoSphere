@@ -3,15 +3,15 @@ import { Object3D } from 'three';
 interface Private {
     linkPanned: boolean;
     linkPannedTimeout: any;
-    targetPoint: Object3D;
+    targetPoint?: Object3D;
 }
 export default class Link {
     _: Private;
     p: any;
     name: string;
-    params: object;
+    params: any;
     corner: Corners;
-    isLinked: boolean;
+    return: any;
     constructor(parent: any, name: string, params?: object);
     getControl: () => string;
     attachEvents: () => void;
@@ -21,7 +21,7 @@ export default class Link {
     onMouseOut: () => void;
     onFirstPersonUpdate: () => void;
     onOrbitalUpdate: () => void;
-    setLink: (latlng: any, style: any, spriteId: any) => void;
+    setLink: (latlng?: any, style?: any, spriteId?: string) => void;
     linkMove: (lng: number, lat: number) => void;
     linkMouseMove: (lng: number, lat: number) => void;
     linkMouseOut: () => void;

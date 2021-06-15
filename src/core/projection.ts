@@ -118,6 +118,7 @@ export default class Projection {
             const northing =
                 256 * y * this.res[z] + this.tileMapResource.origin[1]
 
+            // @ts-ignore
             const p = proj4(this.tileMapResource.proj).inverse([
                 easting,
                 northing,
@@ -154,6 +155,7 @@ export default class Projection {
 
             return { x: x, y: y, z: z }
         } else {
+            // @ts-ignore
             const p = proj4(this.tileMapResource.proj).forward([lng, lat])
 
             const easting = p[0]

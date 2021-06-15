@@ -289,7 +289,7 @@ export default class Events {
         // TODO this._updateZoomDependents()
     }
 
-    _onZoom = (): void => {
+    _onZoom = (e?): void => {
         //2000 to 1000 units away from surface is zoom level 1
         //1000 to 500 is 2
         //500 to 250 is 3 and so on
@@ -376,7 +376,6 @@ export default class Events {
                         lat: this.hoveredFeature.lnglat.lat,
                     },
                 })
-                console.log(this.hoveredFeature, this.hoverInfo)
 
                 if (typeof layer.onClick === 'function') {
                     layer.onClick(
@@ -389,7 +388,7 @@ export default class Events {
         }
     }
 
-    private _onMouseMove = (e?): void => {
+    _onMouseMove = (e?): void => {
         this.p._.mouseIsInScene = true
 
         // from x [-1, 1] to y [1, -1]

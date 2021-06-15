@@ -191,7 +191,7 @@ export default class Controls {
         })
     }
 
-    _onMouseOut = (e): void => {
+    _onMouseOut = (e?): void => {
         Object.values(this.activeControls).forEach((control: ControlType) => {
             if (typeof control.onMouseOut === 'function') control.onMouseOut(e)
         })
@@ -202,7 +202,7 @@ export default class Controls {
                 control.onFirstPersonUpdate()
         })
     }
-    _onOrbitalUpdate = (e): void => {
+    _onOrbitalUpdate = (e?): void => {
         Object.values(this.activeControls).forEach((control: ControlType) => {
             if (typeof control.onOrbitalUpdate === 'function')
                 control.onOrbitalUpdate(e)

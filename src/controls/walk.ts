@@ -50,6 +50,7 @@ export default class Walk {
 
                 this.helpDiv = document.createElement('div')
                 this.helpDiv.id = '_lithosphere_control_walk_help'
+                // @ts-ignore
                 this.helpDiv.style =
                     'position: absolute; bottom: 47px; right: 15px; background: black; font-size: 13px;'
                 this.helpDiv.innerHTML = helpMarkup
@@ -58,21 +59,7 @@ export default class Walk {
             })
     }
 
-    private setCamera = (lockControls, skipLock) => {
-        /*
-            var w = getWalkValues()
-            Globe_Walk.G_.setCenter([w.latitude, w.longitude])
-            Globe_Walk.G_.getCameras().setFirstPersonHeight(w.height)
-            Globe_Walk.G_.getCameras().setCameraAzimuthElevation(
-                w.azimuth,
-                w.elevation,
-                true
-            )
-            Globe_Walk.G_.getCameras().setFirstPersonFocalLength(w.focallength)
-            Globe_Walk.G_.getCameras().setFirstPersonFOV(
-                Math.max(w.vfieldofview, 60)
-            )
-*/
+    private setCamera = (lockControls, skipLock?: boolean) => {
         this.p._.cameras.swap(lockControls, skipLock)
         if ('onpointerlockchange' in document)
             document.addEventListener(
@@ -81,6 +68,7 @@ export default class Walk {
                 false
             )
         else if ('onmozpointerlockchange' in document)
+            // @ts-ignore
             document.addEventListener(
                 'mozpointerlockchange',
                 this.leaveWalking,
@@ -92,6 +80,7 @@ export default class Walk {
         // @ts-ignore
         if (
             document.pointerLockElement === document.body ||
+            // @ts-ignore
             document.mozPointerLockElement === document.body
         ) {
             /* pointer locked */

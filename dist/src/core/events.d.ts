@@ -31,12 +31,12 @@ export default class Events {
     private _rotateGlobe_MouseUp;
     _checkDesiredZoom(): void;
     private _setZoom;
-    _onZoom: () => void;
+    _onZoom: (e?: any) => void;
     _onTouchZoom: (e: any) => void;
     _matchPlanetsLODToPlanet(): void;
     _refreshFrontGroupRotation(): void;
     private _onClick;
-    private _onMouseMove;
+    _onMouseMove: (e?: any) => void;
     private _updateMouseCoords;
     private updateHoverInfoPosition;
     private _highlightFeature;

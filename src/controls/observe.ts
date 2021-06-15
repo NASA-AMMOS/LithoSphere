@@ -158,6 +158,7 @@ export default class Observe {
 
                 this.helpDiv = document.createElement('div')
                 this.helpDiv.id = '_lithosphere_control_walk_help'
+                // @ts-ignore
                 this.helpDiv.style =
                     'position: absolute; bottom: 47px; right: 15px; background: black; font-size: 13px;'
                 this.helpDiv.innerHTML = helpMarkup
@@ -166,7 +167,7 @@ export default class Observe {
             })
     }
 
-    private setCamera = (lockControls, skipLock) => {
+    private setCamera = (lockControls, skipLock?: boolean) => {
         var w = this.getObserverValues()
         this.p.setCenter(
             { lat: w.latitude, lng: w.longitude, zoom: this.p.zoom },
@@ -184,6 +185,7 @@ export default class Observe {
                 false
             )
         else if ('onmozpointerlockchange' in document)
+            // @ts-ignore
             document.addEventListener(
                 'mozpointerlockchange',
                 this.leaveObserver,
@@ -194,6 +196,7 @@ export default class Observe {
     private leaveObserver = () => {
         if (
             document.pointerLockElement === document.body ||
+            // @ts-ignore
             document.mozPointerLockElement === document.body
         ) {
             /* pointer locked */
@@ -213,58 +216,59 @@ export default class Observe {
         return {
             fieldofview:
                 parseFloat(
-                    document.getElementById('_lithosphere_WalkSettingsFovValue')
-                        .value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsFovValue').value
                 ) || 60,
             fieldofviewRaw:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsFovValueRaw'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsFovValueRaw').value
                 ) || 60,
             vfieldofview:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsVerticalFovValue'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsVerticalFovValue').value
                 ) || 60,
             focallength:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsFocalLengthValue'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsFocalLengthValue').value
                 ) || 35,
             azimuth:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsAzimuthValue'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsAzimuthValue').value
                 ) || 0,
             elevation:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsElevationValue'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsElevationValue').value
                 ) || 0,
             height:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsHeightValue'
-                    ).value
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsHeightValue').value
                 ) || 3,
             latitude:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsLatitudeValue'
-                    ).value // - Globe_Walk.C.coordOffset[1]
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsLatitudeValue').value // - Globe_Walk.C.coordOffset[1]
                 ) ||
                 this.p.getCenter().lat ||
                 0,
             longitude:
                 parseFloat(
-                    document.getElementById(
-                        '_lithosphere_WalkSettingsLongitudeValue'
-                    ).value // - Globe_Walk.C.coordOffset[0]
+                    // prettier-ignore
+                    // @ts-ignore
+                    document.getElementById('_lithosphere_WalkSettingsLongitudeValue').value // - Globe_Walk.C.coordOffset[0]
                 ) ||
                 this.p.getCenter().lon ||
                 0,
@@ -275,54 +279,54 @@ export default class Observe {
         const w = this.getObserverValues()
         if (e.which === 84)
             //t
-            document.getElementById(
-                '_lithosphere_WalkSettingsFovValue'
-            ).value = +(w.fieldofview + (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsFovValue').value = +(w.fieldofview + (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 71)
             //g
-            document.getElementById(
-                '_lithosphere_WalkSettingsFovValue'
-            ).value = +(w.fieldofview - (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsFovValue').value = +(w.fieldofview - (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 89)
             //y
-            document.getElementById(
-                '_lithosphere_WalkSettingsVerticalFovValue'
-            ).value = +(w.vfieldofview + (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsVerticalFovValue').value = +(w.vfieldofview + (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 72)
             //h
-            document.getElementById(
-                '_lithosphere_WalkSettingsVerticalFovValue'
-            ).value = +(w.vfieldofview - (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsVerticalFovValue').value = +(w.vfieldofview - (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 68)
             //d
-            document.getElementById(
-                '_lithosphere_WalkSettingsAzimuthValue'
-            ).value = +(w.azimuth + (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsAzimuthValue').value = +(w.azimuth + (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 65)
             //a
-            document.getElementById(
-                '_lithosphere_WalkSettingsAzimuthValue'
-            ).value = +(w.azimuth - (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsAzimuthValue').value = +(w.azimuth - (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 87)
             //w
-            document.getElementById(
-                '_lithosphere_WalkSettingsElevationValue'
-            ).value = +(w.elevation + (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsElevationValue').value = +(w.elevation + (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 83)
             //s
-            document.getElementById(
-                '_lithosphere_WalkSettingsElevationValue'
-            ).value = +(w.elevation - (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsElevationValue').value = +(w.elevation - (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 82)
             //r
-            document.getElementById(
-                '_lithosphere_WalkSettingsHeightValue'
-            ).value = +(w.height + (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsHeightValue').value = +(w.height + (e.shiftKey ? 1 : 0.2)).toFixed(4)
         else if (e.which === 70)
             //f
-            document.getElementById(
-                '_lithosphere_WalkSettingsHeightValue'
-            ).value = +(w.height - (e.shiftKey ? 1 : 0.2)).toFixed(4)
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsHeightValue').value = +(w.height - (e.shiftKey ? 1 : 0.2)).toFixed(4)
 
         const wNew = this.getObserverValues()
         this.p._.cameras.setFirstPersonHeight(wNew.height)
@@ -334,14 +338,16 @@ export default class Observe {
 
         if (wNew.vfieldofview !== w.vfieldofview) {
             this.p._.cameras.setFirstPersonFOV(Math.max(wNew.vfieldofview, 60))
-            document.getElementById(
-                '_lithosphere_WalkSettingsFocalLengthValue'
-            ).value = +this.p._.cameras.getFirstPersonFocalLength().toFixed(4)
+
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsFocalLengthValue').value = +this.p._.cameras.getFirstPersonFocalLength().toFixed(4)
         } else if (wNew.focallength !== w.focallength) {
             this.p._.cameras.setFirstPersonFocalLength(wNew.focallength)
-            document.getElementById(
-                '_lithosphere_WalkSettingsFovValue'
-            ).value = +this.p._.cameras.getFirstPersonFOV().toFixed(4)
+
+            // prettier-ignore
+            // @ts-ignore
+            document.getElementById('_lithosphere_WalkSettingsFovValue').value = +this.p._.cameras.getFirstPersonFOV().toFixed(4)
         }
 
         this.updateFOVOverlayBounds(
@@ -394,9 +400,9 @@ export default class Observe {
         azFOV,
         azFOVCenter
     ) => {
-        elFOV = document.getElementById(
-            '_lithosphere_WalkSettingsVerticalFovValue'
-        ).value
+        // prettier-ignore
+        // @ts-ignore
+        elFOV = document.getElementById('_lithosphere_WalkSettingsVerticalFovValue').value
 
         const screenFOV = this.p._.cameras.getFirstPersonFOV()
         const screenAspect = this.p._.cameras.getFirstPersonAspect()

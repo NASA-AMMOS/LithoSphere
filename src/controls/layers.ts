@@ -39,7 +39,7 @@ export default class Layers {
             this.attachEventsInternal()
             document.getElementById(this.id + '_active').style.pointerEvents =
                 'all'
-            document.getElementById(this.id + '_active').style.opacity = 1
+            document.getElementById(this.id + '_active').style.opacity = '1'
         })
 
         document
@@ -48,7 +48,7 @@ export default class Layers {
                 document.getElementById(
                     this.id + '_active'
                 ).style.pointerEvents = 'none'
-                document.getElementById(this.id + '_active').style.opacity = 0
+                document.getElementById(this.id + '_active').style.opacity = '0'
             })
     }
 
@@ -102,6 +102,7 @@ export default class Layers {
 
     private attachEventsInternal = (): void => {
         const toggles = document.getElementsByClassName(this.id + '_toggle')
+        // @ts-ignore
         for (let t of toggles) {
             t.addEventListener('click', (e) => {
                 this.p.toggleLayer(t.getAttribute('layer-name'))
@@ -109,6 +110,7 @@ export default class Layers {
         }
 
         const opacities = document.getElementsByClassName(this.id + '_opacity')
+        // @ts-ignore
         for (let t of opacities) {
             const type = t.getAttribute('layer-type')
             if (type === 'clamped')

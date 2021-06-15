@@ -64,6 +64,10 @@ export interface ControlType {
     attachEvents: Function
     onUpdate?: Function
     onMouseMove?: Function
+    onMove?: Function
+    onMouseOut?: Function
+    onFirstPersonUpdate?: Function
+    onOrbitalUpdate?: Function
 }
 
 export interface Options {

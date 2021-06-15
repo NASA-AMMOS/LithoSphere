@@ -23,7 +23,7 @@ export default class Controls {
     _onUpdateEvent: () => void;
     _onMove: (lng: any, lat: any, height: any) => void;
     _onMouseMove: (lng: any, lat: any, height: any) => void;
-    _onMouseOut: (e: any) => void;
+    _onMouseOut: (e?: any) => void;
     _onFirstPersonUpdate: () => void;
-    _onOrbitalUpdate: (e: any) => void;
+    _onOrbitalUpdate: (e?: any) => void;
 }

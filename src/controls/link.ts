@@ -5,7 +5,7 @@ import Sprites from '../secondary/sprites'
 interface Private {
     linkPanned: boolean
     linkPannedTimeout: any
-    targetPoint: Object3D
+    targetPoint?: Object3D
 }
 
 export default class Link {
@@ -13,9 +13,9 @@ export default class Link {
     // parent
     p: any
     name: string
-    params: object
+    params: any
     corner: Corners
-    isLinked: boolean
+    return: any
 
     constructor(parent: any, name: string, params?: object) {
         this.p = parent
@@ -28,7 +28,7 @@ export default class Link {
         this.corner = Corners.TopLeft
 
         this.return = {
-            isLinked: params.initiallyLinked || false,
+            isLinked: this.params.initiallyLinked || false,
             linkMove: this.linkMove, //(lng, lat, zoom)
             linkMouseMove: this.linkMouseMove, //(lng, lat)
             linkMouseOut: this.linkMouseOut,
@@ -111,7 +111,7 @@ export default class Link {
         }
     }
 
-    setLink = (latlng, style, spriteId): void => {
+    setLink = (latlng?, style?, spriteId?: string): void => {
         if (!this.p._.wasInitialized) return
 
         if (this._.targetPoint != null)
@@ -139,6 +139,7 @@ export default class Link {
         if (spriteId == null) spriteId = 'linkTargetPoint'
 
         const sprite = Sprites.makeMarkerSprite(style, spriteId)
+        // @ts-ignore
         sprite.style = style
 
         // @ts-ignore
