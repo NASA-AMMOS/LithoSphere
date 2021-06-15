@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es5",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "allowJs": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "declaration": true,
+    "removeComments": true,
+    "noEmit": false,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*", "test/**/*", "src/**/*.worker.*"]
+}

@@ -1,0 +1,64 @@
+._lithosphere_loadingscreen_loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    perspective: 160px;
+    top: 0;
+    left: 0;
+}
+
+._lithosphere_loadingscreen_loading > div {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0);
+    position: absolute;
+    left: 50%;
+    margin-left: -30px;
+    top: 50%;
+    margin-top: -5px;
+    border-radius: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+@keyframes translateIn {
+    30% {
+        transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg) translateZ(20px)
+            scale(1);
+        opacity: 0.7;
+        background: rgba(255, 255, 255, 0.3);
+    }
+    100% {
+        transform: rotateX(65deg) rotateY(0deg) rotateZ(45deg) translateZ(0px)
+            scale(0.85);
+        opacity: 0;
+        background: rgba(255, 255, 255, 0);
+    }
+}
+
+._lithosphere_loadingscreen_loading > div {
+    opacity: 0;
+    &:nth-of-type(1) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(30px);
+        animation: translateIn 1.9s ease-in infinite 500ms;
+    }
+    &:nth-of-type(2) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(60px);
+        animation: translateIn 1.9s ease-in infinite 700ms;
+    }
+    &:nth-of-type(3) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(85px);
+        animation: translateIn 1.9s ease-in infinite 800ms;
+    }
+    &:nth-of-type(4) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(105px);
+        animation: translateIn 1.9s ease-in infinite 1000ms;
+    }
+    &:nth-of-type(5) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(120px);
+        animation: translateIn 1.9s ease-in infinite 1200ms;
+    }
+    &:nth-of-type(6) {
+        transform: rotateX(70deg) rotateY(0deg) rotateZ(45deg) translateZ(130px);
+        animation: translateIn 1.9s ease-in infinite 1400ms;
+    }
+}

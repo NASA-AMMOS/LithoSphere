@@ -1,0 +1,63 @@
+import { Projection, TiledWorld, Events } from './core';
+import { Scene, Object3D, Vector3, Mesh, TextureLoader, Raycaster } from 'three';
+import Layers from './layers';
+import Controls from './controls';
+import { Options, XYZ, LatLng, LatLngElev, LatLngZ } from './generalTypes.d.ts';
+interface Private {
+    containerId: string;
+    container: HTMLElement;
+    wasInitialized: boolean;
+    renderer: any;
+    cameras: any;
+    tiledWorld: TiledWorld;
+    events: Events;
+    maxZoom: number;
+    minNativeZoom: number;
+    loader: TextureLoader;
+    raycaster: Raycaster;
+    updateEveryNthRender: number;
+    counters: {
+        update: number;
+        frame: number;
+    };
+    firstUpdate: boolean;
+    zCutOff: number;
+}
+export default class LithoSphere {
+    _: Private;
+    options: Options;
+    projection: Projection;
+    layers: Layers;
+    controls: Controls;
+    addLayer: Function;
+    removeLayer: Function;
+    toggleLayer: Function;
+    setLayerOpacity: Function;
+    addControl: Function;
+    removeControl: Function;
+    scene: Scene;
+    scenesLOD: Scene[];
+    sceneBack: Scene;
+    sceneFront: Scene;
+    planetCenter: Vector3;
+    planet: Object3D;
+    planetsLOD: Object3D[];
+    starsphere: Mesh;
+    atmosphere: Mesh;
+    zoom: number;
+    mouse: LatLngElev;
+    exaggeration: number;
+    constructor(containerId: string, options: Options);
+    _init(): boolean;
+    _animate: () => void;
+    _render(): void;
+    _update(): void;
+    setCenter: (latLngZoom: LatLngZ, ignoreZoom?: boolean) => void;
+    getCenterXYZ: (raycasted?: boolean) => Vector3;
+    getCenter: () => LatLng;
+    getCenterElevation: () => number;
+    getCenterElevationRaw: () => number;
+    getElevationAtLngLat: (lng: number, lat: number) => number;
+    getCenterTile: () => XYZ;
+}
+export {};
