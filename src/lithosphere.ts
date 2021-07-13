@@ -10,20 +10,18 @@ import {
     Scene,
     Object3D,
     AmbientLight,
-    Vector2,
     Vector3,
     SphereBufferGeometry,
     Mesh,
     MeshBasicMaterial,
     TextureLoader,
     Raycaster,
-    Matrix4,
     BufferGeometry,
     LineBasicMaterial,
     Line,
 } from 'three'
 
-import Utils from './utils'
+//import Utils from './utils'
 
 import Layers from './layers'
 import Controls from './controls'
@@ -91,7 +89,7 @@ export default class LithoSphere {
 
     constructor(containerId: string, options: Options) {
         // Add a sub container specifically for the scene
-        let sceneContainer = document
+        const sceneContainer = document
             .getElementById(containerId)
             .appendChild(document.createElement('div'))
         sceneContainer.id = '_lithosphere_scene'
@@ -149,8 +147,7 @@ export default class LithoSphere {
                 { radiusOfTiles: 2, zoomsUp: 11 },
             ],
             tileResolution: 32,
-            trueTileResolution: 32,
-            yInvert: true,
+            trueTileResolution: 256,
             showAxes: false,
             wireframeMode: false,
             exaggeration: 1,
@@ -178,7 +175,8 @@ export default class LithoSphere {
         this.projection = new Projection(
             this.options.majorRadius,
             this.options.minorRadius,
-            this.options.tileMapResource
+            this.options.tileMapResource,
+            this.options.trueTileResolution
         )
 
         // Camera(s)
@@ -459,7 +457,7 @@ export default class LithoSphere {
         this._.events._matchPlanetsLODToPlanet()
 
         //Change zoom
-        if (latLngZoom.zoom && ignoreZoom != true) {
+        if (latLngZoom.zoom != null && ignoreZoom != true) {
             this.zoom = latLngZoom.zoom
             // Globe_.updateZoomDependents() //TODO
 

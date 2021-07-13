@@ -241,8 +241,6 @@ export default class Camera {
             )
 
             // Ask the browser to lock the pointer
-            element.requestPointerLock = element.requestPointerLock
-
             if (/Firefox/i.test(navigator.userAgent)) {
                 const fullscreenchange = function () {
                     if (document.fullscreenElement === element) {

@@ -116,7 +116,6 @@ export default class Tile3dLayerer {
 
     private localizeTile3ds = (layerObj: any, tilesRenderer: any) => {
         // position
-        const position = layerObj.position || {}
         const v = this.p.p.projection.lonLatToVector3(
             layerObj.position.longitude || layerObj.position.lng || 0,
             layerObj.position.latitude || layerObj.position.lat || 0,

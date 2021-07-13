@@ -88,10 +88,12 @@
                     'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_Aeolis_Palus/Gale_Aeolis_Palus/{z}/{x}/{y}.png',
                 demPath:
                     'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/MSL_CTX_DEM_mosaic_20m/{z}/{x}/{y}.png',
-                parser: 'All500',
+                //parser: 'All500',
                 // TODO: Implement format
                 format: 'tms', // 'wmts' || 'wms'
+                formatOptions: {},
                 demFormat: 'tms', //
+                demFormatOptions: {},
                 opacity: 1,
                 minZoom: 10,
                 maxZoom: 17,
@@ -102,6 +104,7 @@
                     -4.12495782349,
                 ],
             })
+
             //Litho.removeLayer('Aeolis')
 
             Litho.addLayer('tile', {
@@ -111,7 +114,7 @@
                 path:
                     'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/Gale_HiRISE/{z}/{x}/{y}.png',
                 demPath:
-                    'https://miplmmgis.jpl.nasa.gov/public/HiRISE_D32/{z}/{x}/{y}.png',
+                    'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
                 format: 'tms', // 'wmts' || 'wms'
                 demFormat: 'tms', //
                 opacity: 1,

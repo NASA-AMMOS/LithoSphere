@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Quaternion } from 'three'
+import { Quaternion } from 'three'
 import { XY, XYZ } from '../generalTypes'
 
 const Utils = {
@@ -255,12 +255,34 @@ const Utils = {
         object.rotation.setFromRotationMatrix(object.matrix)
         */
         object.updateWorldMatrix(true)
-        let invWorldRot = object.getWorldQuaternion(new Quaternion()).invert()
+        const invWorldRot = object.getWorldQuaternion(new Quaternion()).invert()
         axis.applyQuaternion(invWorldRot)
 
-        let deltaLocalRot = new Quaternion()
+        const deltaLocalRot = new Quaternion()
         deltaLocalRot.setFromAxisAngle(axis, radians)
         object.quaternion.multiply(deltaLocalRot)
+    },
+    //
+    getParamString(
+        params: any,
+        baseUrl: string,
+        isUppercase?: boolean
+    ): string {
+        const str = []
+
+        for (const o in params)
+            str.push(
+                encodeURIComponent(isUppercase ? o.toUpperCase() : o) +
+                    '=' +
+                    encodeURIComponent(params[o])
+            )
+
+        return (
+            (baseUrl && baseUrl.indexOf('?') !== -1 ? '&' : '?') + str.join('&')
+        )
+    },
+    isArray(object: any): boolean {
+        return Object.prototype.toString.call(object) === '[object Array]'
     },
 }
 

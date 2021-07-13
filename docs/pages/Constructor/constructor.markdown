@@ -31,6 +31,8 @@ new LithoSphere(containerId, options)
 |       Parameter        |    Type    |                                      Default                                       |                                   Description                                    |
 | :--------------------: | :--------: | :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
 |    **initialView**     |  _object_  |     See [initialView]({{ site.baseurl }}/constructor#optionsinitialview) below     |                  Sets the initial coordinate view of the scene                   |
+|    **majorRadius**     | _integer_  |                                      6371000                                       |                         Major planetary radius in meters                         |
+|    **minorRadius**     | _integer_  |                                    majorRadius                                     |                         Minor planetary radius in meters                         |
 |   **loadingScreen**    | _boolean_  |                                        true                                        |    If true, shows a loading screen until all lithosphere content first loads     |
 |   **customParsers**    |  _object_  |                     See [Parsers]({{ site.baseurl }}/parsers)                      |                 Allows the use of custom elevation tile parsers                  |
 |  **tileMapResource**   |  _object_  | See [tileMapResource]({{ site.baseurl }}/constructor#optionstilemapresource) below |                              Configures projections                              |
@@ -40,6 +42,7 @@ new LithoSphere(containerId, options)
 |      **showAxes**      | _boolean_  |                                       false                                        |                          If true, XYZ axes are rendered                          |
 |       **useLOD**       | _boolean_  |                                        true                                        |       If true, Level of Detail (LOD) tiles are rendered in the background        |
 |        **LOD**         | _object[]_ |             See [LOD]({{ site.baseurl }}/constructor#optionslod) below             |                      Fine tune Level of Detail (LOD) layers                      |
+|   **tileResolution**   |  _number_  |                                         32                                         |                           Square tile pixel dimension                            |
 | **renderOnlyWhenOpen** | _boolean_  |                                        true                                        | Only update and render the scene if the containerId element has an non-zero area |
 |     **starsphere**     |  _object_  |      See [starsphere]({{ site.baseurl }}/constructor#optionsstarsphere) below      |                         Setup a skydome/skybox/skysphere                         |
 |     **atmosphere**     |  _object_  |      See [atmosphere]({{ site.baseurl }}/constructor#optionsatmosphere) below      |                       Setup an atmosphere for your planet                        |

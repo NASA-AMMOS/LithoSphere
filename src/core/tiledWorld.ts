@@ -12,6 +12,7 @@ import {
 
 import load from '../parsers'
 import Utils from '../utils'
+import Paths from '../utils/paths'
 
 import { XYZ, XYZLOD } from '../generalTypes'
 
@@ -202,8 +203,14 @@ export default class TiledWorld {
                 d = Math.pow(x - xCenter, 2) + Math.pow(y - yCenter, 2)
                 if (d <= r * r) {
                     this.tilesWanted.push({
-                        x: Utils.mod(x, Math.pow(2, this.p.zoom)),
-                        y: Utils.mod(y, Math.pow(2, this.p.zoom)),
+                        x: this.p.projection.tileMapResource.proj
+                            ? // @ts-ignore
+                              parseInt(x)
+                            : Utils.mod(x, Math.pow(2, this.p.zoom)),
+                        y: this.p.projection.tileMapResource.proj
+                            ? // @ts-ignore
+                              parseInt(y)
+                            : Utils.mod(y, Math.pow(2, this.p.zoom)),
                         z: this.p.zoom,
                         d: d,
                         make: true,
@@ -240,8 +247,14 @@ export default class TiledWorld {
                         d = Math.pow(x - xCenter, 2) + Math.pow(y - yCenter, 2)
                         if (d <= lr * lr) {
                             this.tilesWanted.push({
-                                x: Utils.mod(x, Math.pow(2, z)),
-                                y: Utils.mod(y, Math.pow(2, z)),
+                                x: this.p.projection.tileMapResource.proj
+                                    ? // @ts-ignore
+                                      parseInt(x)
+                                    : Utils.mod(x, Math.pow(2, z)),
+                                y: this.p.projection.tileMapResource.proj
+                                    ? // @ts-ignore
+                                      parseInt(y)
+                                    : Utils.mod(y, Math.pow(2, z)),
                                 z: z,
                                 d: d,
                                 make: true,
@@ -289,15 +302,6 @@ export default class TiledWorld {
             })
         )
 
-        // Invert y if needed. TMS tiles differ from WMTS tiles with inverted ys
-        let yI = xyz.y
-        if (
-            this.p.options
-                .yInvert /*TODO &&
-            window.window.mmgisglobal.customCRS == null */
-        )
-            yI = this.p.projection.invertY(xyz.y, xyz.z)
-
         // State that we're in the process of drawing this tile
         this.tilesBeingDrawn.push({
             x: xyz.x,
@@ -313,7 +317,6 @@ export default class TiledWorld {
             x: xyz.x,
             y: xyz.y,
             z: xyz.z,
-            yI: yI,
             isLODTile: xyz.isLODTile,
             LODLevel: xyz.LODLevel,
             t: t,
@@ -336,8 +339,7 @@ export default class TiledWorld {
 
             //Make sure both parts loaded
             if (tileLoaded.data) {
-                let lowerZoomTileIRemove
-                let differentZoomTilesToRemove = []
+                const differentZoomTilesToRemove = []
                 // If a lower zoom tile exists that this one covers, remove it
                 // It's just a faster remove -- instead of checking to remove once
                 // all new tiles are loaded
@@ -565,7 +567,7 @@ export default class TiledWorld {
         let loadDemTile = false
 
         let filledDemPath
-        let layerObj
+        let layerI = null
         for (let i = this.p.layers.tile.length - 1; i >= 0; i--) {
             //Check if on and in right zoom range
             if (
@@ -579,9 +581,8 @@ export default class TiledWorld {
                     )) ||
                     this.p.layers.tile[i].path == '_vectorsastile_') //TODO: Check this vec as tile
             ) {
-                filledDemPath = this.p.layers.tile[i].demPath
-                layerObj = this.p.layers.tile[i]
-                if (filledDemPath != undefined) {
+                layerI = i
+                if (this.p.layers.tile[i].demPath != undefined) {
                     loadDemTile = true
                     // Find only the first valid dem
                     break
@@ -589,22 +590,29 @@ export default class TiledWorld {
             }
         }
 
-        if (loadDemTile) {
-            if (filledDemPath != undefined) {
-                filledDemPath = filledDemPath.replace('{z}', xyz.z)
-                filledDemPath = filledDemPath.replace('{x}', xyz.x)
-                filledDemPath = filledDemPath.replace('{y}', yI)
-            }
-            // Load is from are parsers and wraps potentially a bunch of tile formats
-            const heightArr = await load(
-                this.p.options.customParsers,
-                filledDemPath,
-                layerObj,
-                { x: xyz.x, y: yI, z: xyz.z },
-                this.p.options.tileResolution,
-                Math.pow(this.p.options.tileResolution, 2)
+        if (loadDemTile && layerI != null) {
+            const builtDemPath = Paths.buildPath(
+                this.p.layers.tile[layerI].format,
+                this.p.layers.tile[layerI].demPath,
+                xyz,
+                this.p.projection,
+                this.p.options.trueTileResolution,
+                this.p.layers.tile[layerI].demFormatOptions,
+                true
             )
-            tileGeometry(heightArr)
+            let heightArr = null
+            if (builtDemPath)
+                // Load is from are parsers and wraps potentially a bunch of tile formats
+                heightArr = await load(
+                    this.p.options.customParsers,
+                    builtDemPath.path,
+                    this.p.layers.tile[layerI],
+                    builtDemPath.xyz,
+                    this.p.options.tileResolution,
+                    Math.pow(this.p.options.tileResolution, 2)
+                ).catch(() => {})
+
+            tileGeometry(heightArr || null)
         } else {
             //Make a flat (still curved to the globe) tile
             tileGeometry()
@@ -657,9 +665,10 @@ export default class TiledWorld {
         // Tile layers are joined at the pixel level -- not the geometry level
         const onceTexturesLoaded = () => {
             // Ensure that all textures are in fact loaded
+            // LOD tiles don't get clamped rasters since it looks ugly
             if (
                 tileLayersComplete.every(Boolean) &&
-                clampedLayersComplete.every(Boolean)
+                (xyz.isLODTile || clampedLayersComplete.every(Boolean))
             ) {
                 // And if there weren't any textures, just pass it through
                 if (textures.length == 0) {
@@ -725,43 +734,51 @@ export default class TiledWorld {
                     this.p.projection
                 )
             ) {
-                //console.log(this.p.layers.tile[i].name)
                 //Load the tile
-                //Closure to save the index
-                let filledPath = this.p.layers.tile[i].path
-                filledPath = filledPath.replace('{z}', tD.z)
-                filledPath = filledPath.replace('{x}', tD.x)
-                filledPath = filledPath.replace('{y}', tD.yI)
-                ;((i) => {
-                    this._.loader.load(
-                        filledPath,
-                        (texture) => {
-                            //on success
-                            texture.magFilter = NearestFilter
-                            texture.minFilter = NearestFilter
+                const builtPath = Paths.buildPath(
+                    this.p.layers.tile[i].format,
+                    this.p.layers.tile[i].path,
+                    tD,
+                    this.p.projection,
+                    this.p.options.trueTileResolution,
+                    this.p.layers.tile[i].formatOptions
+                )
+                if (builtPath) {
+                    //Closure to save the index
+                    ;((i) => {
+                        this._.loader.load(
+                            builtPath,
+                            (texture) => {
+                                //on success
+                                texture.magFilter = NearestFilter
+                                texture.minFilter = NearestFilter
 
-                            //Attach the index to it so we know then intended order later
-                            if (this.p.layers.tile[i])
-                                textures.push({
-                                    name: this.p.layers.tile[i].name,
-                                    type: 'tile',
-                                    texture: texture,
-                                    opacity: this.p.layers.tile[i].opacity,
-                                    i: i,
-                                })
-                            tileLayersComplete[i] = true
-                            onceTexturesLoaded()
-                        },
-                        () => {
-                            console.log('')
-                        }, //in progress
-                        () => {
-                            //on error
-                            tileLayersComplete[i] = true
-                            onceTexturesLoaded()
-                        }
-                    )
-                })(i)
+                                //Attach the index to it so we know then intended order later
+                                if (this.p.layers.tile[i])
+                                    textures.push({
+                                        name: this.p.layers.tile[i].name,
+                                        type: 'tile',
+                                        texture: texture,
+                                        opacity: this.p.layers.tile[i].opacity,
+                                        i: i,
+                                    })
+                                tileLayersComplete[i] = true
+                                onceTexturesLoaded()
+                            },
+                            () => {
+                                console.log('')
+                            }, //in progress
+                            () => {
+                                //on error
+                                tileLayersComplete[i] = true
+                                onceTexturesLoaded()
+                            }
+                        )
+                    })(i)
+                } else {
+                    tileLayersComplete[i] = true
+                    onceTexturesLoaded()
+                }
             } else {
                 tileLayersComplete[i] = true
                 onceTexturesLoaded()
@@ -769,8 +786,11 @@ export default class TiledWorld {
         }
 
         // =============== Generate the Raster clamped textures =============
-        for (let i = 0; i < this.p.layers.clamped.length; i++) {
-            /*
+
+        // LOD tiles don't get clamped rasters since it looks ugly
+        if (!xyz.isLODTile) {
+            for (let i = 0; i < this.p.layers.clamped.length; i++) {
+                /*
             console.log( 'on:', this.p.layers.clamped[i].on)
             console.log( 'minZoom:', this.p.layers.clamped[i].minZoom)
             console.log( 'z >= minz:', tD.z >= this.p.layers.clamped[i].minZoom)
@@ -783,56 +803,57 @@ export default class TiledWorld {
                         this.p.projection
                     )))
                     */
-            //Check if on and in right zoom range
-            if (
-                this.p.layers.clamped[i].on &&
-                (this.p.layers.clamped[i].minZoom == null ||
-                    tD.z >= this.p.layers.clamped[i].minZoom) &&
-                (this.p.layers.clamped[i].maxZoom == null ||
-                    tD.z <= this.p.layers.clamped[i].maxZoom) &&
-                (this.p.layers.clamped[i].boundingBox == null ||
-                    Utils.isInExtent(
-                        { x: tD.x, y: tD.y, z: tD.z },
-                        this.p.layers.clamped[i].boundingBox,
-                        this.p.projection
-                    ))
-            ) {
-                //Load the tile
-                const clampedTexture = this.p.layers._.layerers.clamped.getClampedTexture(
-                    i,
-                    { x: tD.x, y: tD.y, z: tD.z }
-                )
-                tD.contains = tD.contains || {}
-                tD.contains[this.p.layers.clamped[i].name] =
-                    clampedTexture.features
+                //Check if on and in right zoom range
+                if (
+                    this.p.layers.clamped[i].on &&
+                    (this.p.layers.clamped[i].minZoom == null ||
+                        tD.z >= this.p.layers.clamped[i].minZoom) &&
+                    (this.p.layers.clamped[i].maxZoom == null ||
+                        tD.z <= this.p.layers.clamped[i].maxZoom) &&
+                    (this.p.layers.clamped[i].boundingBox == null ||
+                        Utils.isInExtent(
+                            { x: tD.x, y: tD.y, z: tD.z },
+                            this.p.layers.clamped[i].boundingBox,
+                            this.p.projection
+                        ))
+                ) {
+                    //Load the tile
+                    const clampedTexture = this.p.layers._.layerers.clamped.getClampedTexture(
+                        i,
+                        { x: tD.x, y: tD.y, z: tD.z }
+                    )
+                    tD.contains = tD.contains || {}
+                    tD.contains[this.p.layers.clamped[i].name] =
+                        clampedTexture.features
 
-                const texture = new CanvasTexture(clampedTexture.canvas)
+                    const texture = new CanvasTexture(clampedTexture.canvas)
 
-                texture.magFilter = NearestFilter
-                texture.minFilter = NearestFilter
+                    texture.magFilter = NearestFilter
+                    texture.minFilter = NearestFilter
 
-                //Attach the index to it so we know then intended order later
-                if (this.p.layers.clamped[i])
-                    textures.push({
-                        name: this.p.layers.clamped[i].name,
-                        type: 'clamped',
-                        texture: texture,
-                        opacity: this.p.layers.clamped[i].opacity,
-                        i: i,
-                    })
-                clampedLayersComplete[i] = true
-                onceTexturesLoaded()
-            } else {
-                clampedLayersComplete[i] = true
-                onceTexturesLoaded()
+                    //Attach the index to it so we know then intended order later
+                    if (this.p.layers.clamped[i])
+                        textures.push({
+                            name: this.p.layers.clamped[i].name,
+                            type: 'clamped',
+                            texture: texture,
+                            opacity: this.p.layers.clamped[i].opacity,
+                            i: i,
+                        })
+                    clampedLayersComplete[i] = true
+                    onceTexturesLoaded()
+                } else {
+                    clampedLayersComplete[i] = true
+                    onceTexturesLoaded()
+                }
             }
         }
     }
 
     // tD = tileDrawn as always
     updateClampedRasterForTile(tD, layerName) {
-        // Don't update if this mode is on
-        if (this.p.options.wireframeMode) return
+        // Don't update if this mode is on or is LOD
+        if (this.p.options.wireframeMode || tD.isLODTile) return
 
         let clampedLayerI = null
         for (let i = 0; i < this.p.layers.clamped.length; i++) {
@@ -925,8 +946,7 @@ export default class TiledWorld {
     removeAllTiles(): void {
         this.killDrawingTiles()
         //Remove all tiles so that they'll be recreated
-        const startingLength = this.tilesDrawn.length
-        for (let j = 0; j < startingLength; j++) {
+        for (let j = 0; j < this.tilesDrawn.length; j++) {
             this.removeTile(0)
         }
     }
@@ -1027,6 +1047,7 @@ export default class TiledWorld {
             if (this.tilesDrawn[i].fadeOutAndRemove) {
                 for (
                     let n = 0;
+                    this.tilesDrawn[i] &&
                     n < this.tilesDrawn[i].from.rasters.length;
                     n++
                 ) {

@@ -1,6 +1,8 @@
 export interface TileMapResource {
     bounds: number[]
     origin: number[]
+    crsCode: string
+    epsg?: string
     proj: string
     resunitsperpixel: number
     reszoomlevel: number

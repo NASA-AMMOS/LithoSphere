@@ -1,6 +1,6 @@
 // prettier-ignore
 import { ShaderMaterial, Color, AdditiveBlending } from 'three'
-import { NO_DATA_VALUE_INTERNAL } from '../constants'
+//import { NO_DATA_VALUE_INTERNAL } from '../constants'
 
 const Shaders = {
     simplePoint: function (): ShaderMaterial {

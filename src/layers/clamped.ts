@@ -420,7 +420,6 @@ export default class ClampedLayerer {
                             }
                         }
                     } else if (f.geometry.type.toLowerCase() === 'point') {
-                        let radiusInMeters = 0
                         let lnglat = {
                             lng: 0,
                             lat: 0,

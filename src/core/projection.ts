@@ -1,4 +1,5 @@
-import { TileMapResource, LatLng, LatLngH, XYZ } from '../generalTypes'
+import { TileMapResource, LatLng, LatLngH, XY, XYZ } from '../generalTypes'
+import CRS from './CRS'
 import proj4 from 'proj4'
 
 interface Private {
@@ -20,6 +21,8 @@ export default class Projection {
     radiusScale: number
     radii: Radii
     tileMapResource: TileMapResource
+    crs: any
+    trueTileResolution: number
     res: any
     e: number
     ep: number // eprime
@@ -28,7 +31,8 @@ export default class Projection {
     constructor(
         majorRadius?: number,
         minorRadius?: number,
-        tileMapResource?: TileMapResource
+        tileMapResource?: TileMapResource,
+        trueTileResolution?: number
     ) {
         this._reset()
 
@@ -37,10 +41,16 @@ export default class Projection {
         this.tileMapResource = tileMapResource || {
             bounds: null,
             origin: null,
+            crsCode: null,
+            epsg: null,
             proj: null,
             resunitsperpixel: null,
             reszoomlevel: null,
         }
+        this.tileMapResource.crsCode =
+            this.tileMapResource.crsCode || 'EPSG:4326'
+
+        this.trueTileResolution = trueTileResolution || 256
 
         // Populate Resolutions
         if (
@@ -56,6 +66,27 @@ export default class Projection {
             }
             this.res = res
         }
+
+        const tmr = this.tileMapResource
+        this.crs = new CRS(
+            Number.isFinite(parseInt(tmr.crsCode[0]))
+                ? `EPSG:${tmr.epsg}`
+                : tmr.crsCode,
+            tmr.proj,
+            {
+                // @ts-ignore
+                origin: [parseFloat(tmr.origin[0]), parseFloat(tmr.origin[1])],
+                resolutions: this.res,
+                bounds: [
+                    // @ts-ignore
+                    [parseFloat(tmr.bounds[0]), parseFloat(tmr.bounds[1])],
+                    // @ts-ignore
+                    [parseFloat(tmr.bounds[2]), parseFloat(tmr.bounds[3])],
+                ],
+            },
+            // @ts-ignore
+            parseFloat(this.radii.major)
+        )
     }
 
     _reset(): void {
@@ -69,6 +100,7 @@ export default class Projection {
         this.tileMapResource = {
             bounds: null,
             origin: null,
+            crsCode: 'EPSG:4326',
             proj: null,
             resunitsperpixel: null,
             reszoomlevel: null,
@@ -82,18 +114,50 @@ export default class Projection {
         if (which.toLowerCase() == 'major')
             this.radii.major = radius || this.baseRadius
         else if (which.toLowerCase() == 'minor')
-            this.radii.minor = radius || this.baseRadius
+            this.radii.minor = radius || this.radii.major || this.baseRadius
     }
 
-    invertY = (y: number, z: number): number => {
-        return Math.pow(2, z) - 1 - y
+    invertY = (y: number, z: number): number => Math.pow(2, z) - 1 - y
+
+    toBounds = (a: XY, b: XY) => {
+        const bounds = {
+            min: { x: null, y: null },
+            max: { x: null, y: null },
+        }
+
+        bounds.min.x = Math.min(a.x, b.x)
+        bounds.max.x = Math.max(a.x, b.x)
+        bounds.min.y = Math.min(a.y, b.y)
+        bounds.max.y = Math.max(a.y, b.y)
+
+        return bounds
+    }
+
+    tileXYZ2NwSe = (xyz: XYZ, tileResolution: number, asBounds?: boolean) => {
+        if (this.tileMapResource.proj == null) return null
+
+        const nwPoint = { x: xyz.x * tileResolution, y: xyz.y * tileResolution }
+        const sePoint = {
+            x: nwPoint.x + tileResolution,
+            y: nwPoint.y + tileResolution,
+        }
+        const nw = this.crs.pointToLatLng(nwPoint, xyz.z)
+        const se = this.crs.pointToLatLng(sePoint, xyz.z)
+
+        if (asBounds)
+            return this.toBounds(this.crs.project(nw), this.crs.project(se))
+
+        return {
+            nw,
+            se,
+        }
     }
 
     tileXYZ2LatLng = (
         x: number,
         y: number,
         z: number,
-        flatXYZ: XYZ
+        flatXYZ?: XYZ
     ): LatLng => {
         if (this.tileMapResource.proj == null) {
             const lng = (x / Math.pow(2, z)) * 360 - 180
@@ -102,32 +166,27 @@ export default class Projection {
                 (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)))
             return { lat: lat, lng: lng }
         } else {
-            // TODO
             //In these projections the origin is bottom left instead of top left
             //So flip the decimal value
-
+            /*
             const dec = y % 1
             if (dec != 0) y = Math.floor(y) + (1 - dec)
             else if (flatXYZ) {
                 if (y == flatXYZ.y) y = flatXYZ.y + 1
                 else y = flatXYZ.y
             }
+            */
+
+            y = -y // For WMS
 
             const easting =
-                256 * x * this.res[z] + this.tileMapResource.origin[0]
+                this.trueTileResolution * x * this.res[z] +
+                this.tileMapResource.origin[0]
             const northing =
-                256 * y * this.res[z] + this.tileMapResource.origin[1]
+                this.trueTileResolution * y * this.res[z] +
+                this.tileMapResource.origin[1]
 
-            // @ts-ignore
-            const p = proj4(this.tileMapResource.proj).inverse([
-                easting,
-                northing,
-            ])
-
-            return {
-                lat: p[1],
-                lng: p[0],
-            }
+            return this.crs.unproject({ x: easting, y: northing })
         }
     }
 
@@ -155,21 +214,22 @@ export default class Projection {
 
             return { x: x, y: y, z: z }
         } else {
-            // @ts-ignore
-            const p = proj4(this.tileMapResource.proj).forward([lng, lat])
+            const p = this.crs.project({ lng: lng, lat: lat })
 
-            const easting = p[0]
-            const northing = p[1]
+            const easting = p.x
+            const northing = p.y
 
             const x =
-                (easting - this.tileMapResource.origin[0]) / (256 * this.res[z])
+                (easting - this.tileMapResource.origin[0]) /
+                (this.trueTileResolution * this.res[z])
             let y =
                 (northing - this.tileMapResource.origin[1]) /
-                (256 * this.res[z])
+                (this.trueTileResolution * this.res[z])
 
             //In these projections the origin is bottom left instead of top left
             //So flip the decimal value back
-            y = Math.floor(y) + (1 - (y % 1))
+            //y = Math.floor(y) + (1 - (y % 1))
+            y = -y // For WMS
             return { x: x, y: y, z: z }
         }
     }
@@ -288,16 +348,16 @@ export default class Projection {
         lon2: number,
         lat2: number
     ): number => {
-        var R = this.radii.major / this.radiusScale
-        var φ1 = lat1 * (Math.PI / 180)
-        var φ2 = lat2 * (Math.PI / 180)
-        var Δφ = (lat2 - lat1) * (Math.PI / 180)
-        var Δλ = (lon2 - lon1) * (Math.PI / 180)
+        const R = this.radii.major / this.radiusScale
+        const φ1 = lat1 * (Math.PI / 180)
+        const φ2 = lat2 * (Math.PI / 180)
+        const Δφ = (lat2 - lat1) * (Math.PI / 180)
+        const Δλ = (lon2 - lon1) * (Math.PI / 180)
 
-        var a =
+        const a =
             Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
             Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
         return R * c
     }

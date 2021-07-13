@@ -1,10 +1,8 @@
-import { Vector3, Matrix4 } from 'three'
+import { Vector3, Matrix4, Sprite } from 'three'
 import circle from '@turf/circle'
 import booleanIntersects from '@turf/boolean-intersects'
 
 import Utils from '../utils'
-
-import { Sprite } from 'three'
 
 interface Private {
     mouseXY: { x: number; y: number }
@@ -20,7 +18,6 @@ interface Private {
     zoomWait: number
     highlightTimeout: any
 }
-let flag = false
 
 export default class Events {
     _: Private
@@ -307,7 +304,9 @@ export default class Events {
             Math.ceil(
                 (nf * Math.log(2) - Math.log(zoomDist / Math.pow(5, nf - 1))) /
                     Math.log(2)
-            ) + 1
+            ) +
+            2 -
+            Math.round(3396190 / this.p.projection.radii.major)
 
         this._.desiredZoom = dZoom
 
@@ -555,7 +554,7 @@ export default class Events {
 
     // Gets features from tile.features
     private _highlightFeature(lng, lat, type, obj) {
-        const radiansPerPixel = Utils.getRadiansPerPixel(this.p.zoom)
+        //const radiansPerPixel = Utils.getRadiansPerPixel(this.p.zoom)
 
         const cursor = { type: 'Point', coordinates: [lng, lat] }
 

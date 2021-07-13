@@ -34,7 +34,7 @@ export default class Renderer {
             this.renderer.sortObjects = false
             this.renderer.autoClear = false
 
-            const gl = this.renderer.getContext()
+            //const gl = this.renderer.getContext()
 
             this.container.appendChild(this.renderer.domElement)
 

@@ -155,8 +155,9 @@ const Sprites = {
         context.font = 'Bold ' + fontsize + 'px ' + fontface
 
         // get size data (height depends only on font size)
-        const metrics = context.measureText(message)
-        const textWidth = metrics.width
+        // TODO
+        //const metrics = context.measureText(message)
+        //const textWidth = metrics.width
         // background color
 
         // border color

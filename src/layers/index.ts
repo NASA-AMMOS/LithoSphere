@@ -1,5 +1,3 @@
-import { TileMapResource, LatLng, LatLngH, XYZ } from '../generalTypes'
-
 import Utils from '../utils'
 
 import Tile3dLayerer from './tile3d'
@@ -71,7 +69,7 @@ export default class Layers {
         callback?: Function,
         sI?: number
     ): void => {
-        if (sI == undefined) sI = 0
+        //if (sI == undefined) sI = 0
 
         // Support 1/0 on params
         if (layerObj.on == 1) layerObj.on = true
@@ -168,7 +166,7 @@ export default class Layers {
     }
 
     getLayerByName = (layerName: string): any => {
-        for (let type in this.all) {
+        for (const type in this.all) {
             for (let i = 0; i < this.all[type].length; i++) {
                 if (this.all[type][i].name === layerName)
                     return this.all[type][i]

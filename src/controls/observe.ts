@@ -168,7 +168,7 @@ export default class Observe {
     }
 
     private setCamera = (lockControls, skipLock?: boolean) => {
-        var w = this.getObserverValues()
+        const w = this.getObserverValues()
         this.p.setCenter(
             { lat: w.latitude, lng: w.longitude, zoom: this.p.zoom },
             true
@@ -405,7 +405,6 @@ export default class Observe {
         elFOV = document.getElementById('_lithosphere_WalkSettingsVerticalFovValue').value
 
         const screenFOV = this.p._.cameras.getFirstPersonFOV()
-        const screenAspect = this.p._.cameras.getFirstPersonAspect()
         const rect = this.p.getContainer().getBoundingClientRect()
 
         // Percents from top or left where inner fov bounds will be

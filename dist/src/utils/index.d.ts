@@ -16,5 +16,7 @@ declare const Utils: {
     hexToRGB(hex: string): any;
     rotatePoint(pt: any, center: any, angle: any): XY;
     rotateAroundArbAxis(object: any, axis: any, radians: any, noPremultiply?: boolean): void;
+    getParamString(params: any, baseUrl: string, isUppercase?: boolean): string;
+    isArray(object: any): boolean;
 };
 export default Utils;

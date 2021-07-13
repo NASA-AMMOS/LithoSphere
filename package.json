@@ -1,7 +1,7 @@
 {
     "name": "lithosphere",
-    "version": "1.0.0",
-    "description": "A GIS library for building 3D tile-based globes.",
+    "version": "1.0.1",
+    "description": "LithoSphere is a GIS JavaScript library for building 3D tile-based globes in the web browser.",
     "author": "Tariq Soliman",
     "license": "Apache-2.0",
     "bugs": {

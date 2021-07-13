@@ -59,9 +59,7 @@ export default class VectorLayerer {
             layerObj.hasOwnProperty('on') &&
             (layerObj.hasOwnProperty('geojsonPath') ||
                 layerObj.hasOwnProperty('geojson')) &&
-            layerObj.hasOwnProperty('opacity') &&
-            layerObj.hasOwnProperty('minZoom') &&
-            layerObj.hasOwnProperty('maxZoom')
+            layerObj.hasOwnProperty('opacity')
         ) {
             if (
                 layerObj.hasOwnProperty('geojsonPath') &&
@@ -152,7 +150,7 @@ export default class VectorLayerer {
 
         const pointType = layerObj.style ? layerObj.style.pointType : ''
         const lineType = layerObj.style ? layerObj.style.lineType : ''
-        const polygonType = layerObj.style ? layerObj.style.polygonType : ''
+        //const polygonType = layerObj.style ? layerObj.style.polygonType : ''
 
         for (const f of features) {
             const type = f.geometry.type

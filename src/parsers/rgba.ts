@@ -1,8 +1,8 @@
 import '../secondary/PNG/zlib'
 import '../secondary/PNG/png'
 
-import { NO_DATA_VALUE_INTERNAL } from '../constants'
-import Utils from '../utils'
+//import { NO_DATA_VALUE_INTERNAL } from '../constants'
+//import Utils from '../utils'
 
 export default function RGBAParser(
     tilePath: string,

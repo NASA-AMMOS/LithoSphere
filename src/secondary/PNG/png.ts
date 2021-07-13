@@ -21,11 +21,11 @@
 // @ts-nocheck
 
 window.PNG = (function () {
-    let APNG_DISPOSE_OP_NONE = 0
+    //let APNG_DISPOSE_OP_NONE = 0
     let APNG_DISPOSE_OP_BACKGROUND = 1
     let APNG_DISPOSE_OP_PREVIOUS = 2
     let APNG_BLEND_OP_SOURCE = 0
-    let APNG_BLEND_OP_OVER = 1
+    //let APNG_BLEND_OP_OVER = 1
     let scratchCanvas = document.createElement('canvas')
     let scratchCtx = scratchCanvas.getContext('2d')
     let makeImage = function (imageData) {
