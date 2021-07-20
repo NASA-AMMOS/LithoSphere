@@ -596,7 +596,7 @@ export default class TiledWorld {
                 this.p.layers.tile[layerI].demPath,
                 xyz,
                 this.p.projection,
-                this.p.options.trueTileResolution,
+                this.p.options.tileResolution,
                 this.p.layers.tile[layerI].demFormatOptions,
                 true
             )

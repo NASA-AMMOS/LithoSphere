@@ -39,7 +39,7 @@ If you're not using npm just yet, that's okay, we support you too.
     ```html
     <script src="your/path/to/lithosphere.js"></script>
     ```
-3. Using the `example.html` file as a guide, use something like the following to initialize LithoSphere:
+3. Using the `examples/example.html` file as a guide, use something like the following to initialize LithoSphere:
     ```html
     <div id="container"></div>
     <script>

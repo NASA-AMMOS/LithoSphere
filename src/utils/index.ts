@@ -270,12 +270,16 @@ const Utils = {
     ): string {
         const str = []
 
-        for (const o in params)
-            str.push(
-                encodeURIComponent(isUppercase ? o.toUpperCase() : o) +
-                    '=' +
-                    encodeURIComponent(params[o])
-            )
+        const urlParams = new URLSearchParams(baseUrl.toUpperCase())
+
+        for (const o in params) {
+            if (!urlParams.has(o.toUpperCase()))
+                str.push(
+                    encodeURIComponent(isUppercase ? o.toUpperCase() : o) +
+                        '=' +
+                        encodeURIComponent(params[o])
+                )
+        }
 
         return (
             (baseUrl && baseUrl.indexOf('?') !== -1 ? '&' : '?') + str.join('&')

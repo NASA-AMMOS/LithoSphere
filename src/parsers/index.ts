@@ -1,5 +1,6 @@
 import Utils from '../utils'
 
+import TifParser from './tif'
 import RGBAParser from './rgba'
 
 export default async function load(
@@ -11,6 +12,7 @@ export default async function load(
     numberOfVertices?: number
 ): Promise<number[]> {
     return new Promise((resolve, reject) => {
+        const defaultParserNames = ['tif', 'rgba']
         let parser = null
 
         if (
@@ -18,11 +20,28 @@ export default async function load(
             customParsers.hasOwnProperty(layerObj.parser)
         )
             parser = customParsers[layerObj.parser]
-        else {
+        else if (
+            layerObj.parser != null &&
+            defaultParserNames.includes(layerObj.parser)
+        ) {
+            switch (layerObj.parser.toLowerCase()) {
+                case 'tif':
+                    parser = TifParser
+                    break
+                case 'rgba':
+                default:
+                    parser = RGBAParser
+                    break
+            }
+        } else {
+            // by file extension
             const type = Utils.getExtension(tilePath).toLowerCase()
-            switch (type) {
+            switch (type.toLowerCase()) {
                 //case 'demt':
                 //    break;
+                case 'tif':
+                    parser = TifParser
+                    break
                 case 'png':
                 default:
                     parser = RGBAParser
