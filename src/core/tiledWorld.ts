@@ -566,7 +566,6 @@ export default class TiledWorld {
         // ==================== Load the Data tile ====================
         let loadDemTile = false
 
-        let filledDemPath
         let layerI = null
         for (let i = this.p.layers.tile.length - 1; i >= 0; i--) {
             //Check if on and in right zoom range
@@ -597,6 +596,7 @@ export default class TiledWorld {
                 xyz,
                 this.p.projection,
                 this.p.options.tileResolution,
+                this.p.options.trueTileResolution,
                 this.p.layers.tile[layerI].demFormatOptions,
                 true
             )
@@ -740,6 +740,7 @@ export default class TiledWorld {
                     this.p.layers.tile[i].path,
                     tD,
                     this.p.projection,
+                    this.p.options.trueTileResolution,
                     this.p.options.trueTileResolution,
                     this.p.layers.tile[i].formatOptions
                 )

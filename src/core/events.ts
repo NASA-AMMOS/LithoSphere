@@ -221,6 +221,11 @@ export default class Events {
                 this._rotateGlobe_MouseUp,
                 false
             )
+            this.p._.sceneContainer.addEventListener(
+                'mouseleave',
+                this._rotateGlobe_MouseUp,
+                false
+            )
         } else if (e.touches && e.touches.length > 2) {
             //Multi touch
             this._.prevMouseXY.x = Utils.arrayAverage(e.touches, 'pageX')
@@ -246,6 +251,10 @@ export default class Events {
         )
         this.p._.sceneContainer.removeEventListener(
             'mouseup',
+            this._rotateGlobe_MouseUp
+        )
+        this.p._.sceneContainer.removeEventListener(
+            'mouseleave',
             this._rotateGlobe_MouseUp
         )
         this.p._.sceneContainer.removeEventListener(
@@ -304,9 +313,7 @@ export default class Events {
             Math.ceil(
                 (nf * Math.log(2) - Math.log(zoomDist / Math.pow(5, nf - 1))) /
                     Math.log(2)
-            ) +
-            2 -
-            Math.round(3396190 / this.p.projection.radii.major)
+            ) + 1
 
         this._.desiredZoom = dZoom
 
@@ -424,7 +431,7 @@ export default class Events {
             this.p._.cameras.camera
         )
 
-        let intersectArr = []
+        const intersectArr = []
         // Look at all tiles
         for (let i = 0; i < this.p._.tiledWorld.tilesDrawn.length; i++) {
             if (!this.p._.tiledWorld.tilesDrawn[i].isLODTile)
@@ -445,7 +452,7 @@ export default class Events {
                         this.p.layers.vector[i].meshes.children[j]
                     )
         }
-        let intersects = this.p._.raycaster.intersectObjects(intersectArr)
+        const intersects = this.p._.raycaster.intersectObjects(intersectArr)
 
         if (intersects.length > 0) {
             const type = intersects[0].object.type
@@ -467,7 +474,7 @@ export default class Events {
                     return
                     break
             }
-            let savedIntersectionPoint = intersects[0].point
+            const savedIntersectionPoint = intersects[0].point
 
             //Since we lowered the planet, we need to raise the intersection pt again for calculations
             intersects[0].point.y += this.p.planetCenter.y

@@ -1,6 +1,5 @@
 import { TileMapResource, LatLng, LatLngH, XY, XYZ } from '../generalTypes'
 import CRS from './CRS'
-import proj4 from 'proj4'
 
 interface Private {
     tmp: null

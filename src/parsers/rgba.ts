@@ -77,13 +77,13 @@ function decodeFloat(binary) {
         binary = ('00000000000000000000000000000000' + binary).substr(
             binary.length
         )
-    var sign = binary.charAt(0) == '1' ? -1 : 1
-    var exponent = parseInt(binary.substr(1, 8), 2) - 127
-    var significandBase = binary.substr(9)
-    var significandBin = '1' + significandBase
-    var i = 0
-    var val = 1
-    var significand = 0
+    const sign = binary.charAt(0) == '1' ? -1 : 1
+    let exponent = parseInt(binary.substr(1, 8), 2) - 127
+    const significandBase = binary.substr(9)
+    let significandBin = '1' + significandBase
+    let i = 0
+    let val = 1
+    let significand = 0
 
     if (exponent == -127) {
         if (significandBase.indexOf('1') == -1) return 0

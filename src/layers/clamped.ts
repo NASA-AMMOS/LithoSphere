@@ -420,10 +420,7 @@ export default class ClampedLayerer {
                             }
                         }
                     } else if (f.geometry.type.toLowerCase() === 'point') {
-                        let lnglat = {
-                            lng: 0,
-                            lat: 0,
-                        }
+                        let lnglat
                         if (typeof f.geometry.coordinates[0] === 'number') {
                             x = this.p.p.projection.lon2tileUnfloored(
                                 f.geometry.coordinates[0],

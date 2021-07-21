@@ -9,6 +9,7 @@ const Paths = {
         tD: any,
         projection: any,
         tileResolution: number,
+        trueTileResolution: number,
         options?: any,
         asObject?: boolean
     ): any {
@@ -30,6 +31,7 @@ const Paths = {
                     xyz,
                     projection,
                     tileResolution,
+                    trueTileResolution,
                     options
                 )
                 break
@@ -76,7 +78,6 @@ const Paths = {
             // @option version: String = '1.1.1'
             // Version of the WMS service to use
             VERSION: '1.1.1',
-            wmsVersion: null,
             //SRS: 'helloworld',
 
             WIDTH: null,
@@ -96,6 +97,7 @@ const Paths = {
             xyz: any,
             projection: any,
             tileResolution: number,
+            trueTileResolution: number,
             options: any
         ): string {
             const wmsParams = { ...Paths.wmsExtension.defaultWmsParams }
@@ -115,10 +117,14 @@ const Paths = {
                 projection.tileMapResource.crsCode ||
                 Paths.wmsExtension.extensionOptions.crsCode
             wmsParams[
-                parseFloat(wmsParams.wmsVersion) >= 1.3 ? 'CRS' : 'SRS'
+                parseFloat(wmsParams.VERSION) >= 1.3 ? 'CRS' : 'SRS'
             ] = crsCode
 
-            const bounds = projection.tileXYZ2NwSe(xyz, tileResolution, true)
+            const bounds = projection.tileXYZ2NwSe(
+                xyz,
+                trueTileResolution,
+                true
+            )
 
             const bbox = (parseFloat(wmsParams.VERSION) >= 1.3 &&
             crsCode === 'EPSG:4326'
