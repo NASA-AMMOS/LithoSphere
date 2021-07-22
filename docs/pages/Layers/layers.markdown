@@ -8,7 +8,7 @@ nav_order: 4
 
 # Layers
 
-_Apologizes the Layers type pages aren't as filled out as they could be. The examples in example.html should get you pretty far nonetheless._
+_Apologizes the Layers type pages aren't as filled out as they could be. The examples in `/examples` should get you pretty far nonetheless._
 
 Layers are how you add data into Lithosphere. There are many different types of layers each with different options to set.
 

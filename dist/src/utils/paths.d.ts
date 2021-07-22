@@ -1,5 +1,5 @@
 declare const Paths: {
-    buildPath: (format: string, basePath: string, tD: any, projection: any, tileResolution: number, options?: any, asObject?: boolean) => any;
+    buildPath: (format: string, basePath: string, tD: any, projection: any, tileResolution: number, trueTileResolution: number, options?: any, asObject?: boolean) => any;
     wmsExtension: {
         defaultWmsParams: {
             SERVICE: string;
@@ -7,7 +7,6 @@ declare const Paths: {
             FORMAT: string;
             TRANSPARENT: boolean;
             VERSION: string;
-            wmsVersion: any;
             WIDTH: any;
             HEIGHT: any;
         };
@@ -15,7 +14,7 @@ declare const Paths: {
             crsCode: string;
             uppercase: boolean;
         };
-        buildPath: (basePath: string, xyz: any, projection: any, tileResolution: number, options: any) => string;
+        buildPath: (basePath: string, xyz: any, projection: any, tileResolution: number, trueTileResolution: number, options: any) => string;
     };
 };
 export default Paths;

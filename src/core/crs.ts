@@ -41,12 +41,19 @@ export default class CRS {
         }
     }
 
-    project(latlng) {
+    project(latlng, zoom, ll2p) {
         return this.projection.project(latlng)
     }
 
-    unproject(point, zoom) {
+    unproject(point, zoom, p2ll) {
         return this.projection.unproject(point)
+    }
+
+    latLngToPoint(latlng, zoom) {
+        const projectedPoint = this.projection.project(latlng)
+        const scale = this.scale(zoom)
+
+        return this.transformation._transform(projectedPoint, scale)
     }
 
     pointToLatLng(point, zoom) {

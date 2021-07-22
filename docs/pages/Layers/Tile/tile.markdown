@@ -23,6 +23,12 @@ Litho.addLayer('tile', {
     // TODO: Implement format
     format: 'tms', // 'wmts' || 'wms'
     demFormat: 'tms', //
+    demFormatOptions: {
+        // For wms dem formats it'll query tiles with a 1px buffer and interpolate values so that tile boundaries line up perfectly
+        correctSeams: true,
+        // GET Parameters to add to the wms query (they can also just be added straight to the demPath string)
+        wmsParams: {},
+    },
     opacity: 1,
     minZoom: 10,
     maxZoom: 17,
