@@ -36,19 +36,7 @@ export default class Projection {
             y: any;
         };
     };
-    tileXYZ2NwSe: (xyz: XYZ, tileResolution: number, asBounds?: boolean) => {
-        min: {
-            x: any;
-            y: any;
-        };
-        max: {
-            x: any;
-            y: any;
-        };
-    } | {
-        nw: any;
-        se: any;
-    };
+    tileXYZ2NwSe: (xyz: XYZ, tileResolution: number, asBounds?: boolean, stretchFactor?: number) => any;
     tileXYZ2LatLng: (x: number, y: number, z: number, flatXYZ?: XYZ) => LatLng;
     latLngZ2TileXYZ: (lat: number, lng: number, z: number, dontFloor?: boolean) => XYZ;
     vector3ToLatLng: (xyz: XYZ) => LatLngH;

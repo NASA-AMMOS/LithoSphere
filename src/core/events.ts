@@ -125,7 +125,10 @@ export default class Events {
         }
 
         //rotation speed (radians per event call)
-        const rotSpeed = Utils.getRadiansPerPixel(this.p.trueZoom) * 0.5
+        const rotSpeed =
+            Utils.getRadiansPerPixel(this.p.trueZoom) *
+            0.5 *
+            (this.p._.marsRadius / this.p.projection.radii.major)
         let pixelDif = 0
 
         //Find vectors perpendicular to Cameras.camera forward vector

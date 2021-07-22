@@ -132,13 +132,26 @@ export default class Projection {
         return bounds
     }
 
-    tileXYZ2NwSe = (xyz: XYZ, tileResolution: number, asBounds?: boolean) => {
+    // stretchSe is useful if we need to query a slightly bigger tile for seam corrections
+    tileXYZ2NwSe = (
+        xyz: XYZ,
+        tileResolution: number,
+        asBounds?: boolean,
+        stretchFactor?: number
+    ): any => {
         if (this.tileMapResource.proj == null) return null
 
-        const nwPoint = { x: xyz.x * tileResolution, y: xyz.y * tileResolution }
+        stretchFactor = Math.max(stretchFactor || 1, 1)
+
+        const stretchAmount = (stretchFactor - 1) * tileResolution
+
+        const nwPoint = {
+            x: xyz.x * tileResolution - stretchAmount,
+            y: xyz.y * tileResolution - stretchAmount,
+        }
         const sePoint = {
-            x: nwPoint.x + tileResolution,
-            y: nwPoint.y + tileResolution,
+            x: nwPoint.x + tileResolution + stretchAmount * 2,
+            y: nwPoint.y + tileResolution + stretchAmount * 2,
         }
         const nw = this.crs.pointToLatLng(nwPoint, xyz.z)
         const se = this.crs.pointToLatLng(sePoint, xyz.z)

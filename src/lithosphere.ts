@@ -58,6 +58,9 @@ interface Private {
     zCutOff: number
     firstViewOverride: any
     mouseIsInScene: boolean
+    // Was developed for Mars initially and sometimes we scale against it for other bodies
+    // (for stuff like pan speed)
+    marsRadius: number
 }
 
 export default class LithoSphere {
@@ -123,6 +126,7 @@ export default class LithoSphere {
             zCutOff: 3,
             firstViewOverride: null,
             mouseIsInScene: false,
+            marsRadius: 3396190,
         }
 
         this._.container.style.position = 'relative'

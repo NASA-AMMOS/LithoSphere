@@ -102,16 +102,22 @@ const Paths = {
         ): string {
             const wmsParams = { ...Paths.wmsExtension.defaultWmsParams }
 
-            if (options)
-                for (const i in options) {
+            if (options && options.wmsParams)
+                for (const i in options.wmsParams) {
                     if (!(i in Paths.wmsExtension.extensionOptions)) {
-                        wmsParams[i] = options[i]
+                        wmsParams[i] = options.wmsParams[i]
                     }
                 }
 
             wmsParams.VERSION = options.wmsVersion || wmsParams.VERSION
 
-            wmsParams.WIDTH = wmsParams.HEIGHT = tileResolution
+            if (options.correctSeams === true) {
+                // Since we buffer 1px out on each each we're going to assume the tileRes is smaller
+                // if tileResolution is 32x31, it goes down to 31x31, buffered out all
+                // directions and queried as 33x33, then interpolated on with a simple 2x2 kernel to 32x32
+                tileResolution--
+                wmsParams.WIDTH = wmsParams.HEIGHT = tileResolution + 2
+            } else wmsParams.WIDTH = wmsParams.HEIGHT = tileResolution
 
             const crsCode =
                 projection.tileMapResource.crsCode ||
@@ -123,7 +129,10 @@ const Paths = {
             const bounds = projection.tileXYZ2NwSe(
                 xyz,
                 trueTileResolution,
-                true
+                true,
+                options.correctSeams === true
+                    ? (tileResolution + 1) / tileResolution
+                    : null
             )
 
             const bbox = (parseFloat(wmsParams.VERSION) >= 1.3 &&

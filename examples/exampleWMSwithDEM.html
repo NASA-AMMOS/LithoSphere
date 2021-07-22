@@ -53,6 +53,7 @@
                         })
                     },
                 },
+                //tileResolution: 3, // Good for debugging
                 //opt
                 tileMapResource: {
                     //bounds: [-868700, -868700, 868700, 868700],
@@ -81,7 +82,7 @@
             console.log(Litho)
 
             Litho.addLayer('tile', {
-                name: 'Global WAC',
+                name: 'NAC Nobile',
                 order: 1, //Orders are ordered only within the layer type
                 on: true,
                 path:
@@ -91,7 +92,12 @@
                 format: 'wms', // 'wmts' || 'wms' // wms requires a tileMapResource to be set to help compute tile bboxes
                 formatOptions: {},
                 demFormat: 'wms', //
-                demFormatOptions: {},
+                demFormatOptions: {
+                    // for wms, will query tile 1px taller and wider and interpolate values so that tile boundaries line up
+                    correctSeams: true,
+                    // GET Parameters to add to the wms query (they can also just be added straight to the demPath string)
+                    wmsParams: {},
+                },
                 parser: 'tif',
                 opacity: 1,
                 minZoom: 0,
