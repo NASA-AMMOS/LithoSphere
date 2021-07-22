@@ -41,30 +41,15 @@
                     zoom: 14,
                 },
                 majorRadius: 1737400,
-                customParsers: {
-                    All500: (tilePath, layerObj) => {
-                        return new Promise((resolve, reject) => {
-                            const tileDimension = 32
-                            resolve(
-                                new Array(tileDimension * tileDimension).fill(
-                                    500
-                                )
-                            )
-                        })
-                    },
-                },
                 //tileResolution: 3, // Good for debugging
-                //opt
                 tileMapResource: {
-                    //bounds: [-868700, -868700, 868700, 868700],
-                    //origin: [-868700, -868700],
                     bounds: [-1737400, -1737400, 1737400, 1737400],
                     origin: [-1737400, 1737400],
                     crsCode: 'IAU2000:30166,31.1492746341015,-85.391176037601',
                     proj:
                         '+proj=stere +lat_0=-85.391176037601 +lon_0=31.1492746341015 +k=1 +x_0=0 +y_0=0 +a=1737400 +b=1737400 +units=m +no_defs', // proj4 string describing the global tileset projection: string (opt) | default wgs84
                     resunitsperpixel: 8192,
-                    reszoomlevel: 3,
+                    reszoomlevel: 0,
                 },
                 //radiusOfTiles: 3,
                 //useLOD: false,

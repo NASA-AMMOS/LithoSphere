@@ -923,8 +923,6 @@ export default class TiledWorld {
 
     removeTile(i: number, shouldFadeOut?: boolean): void {
         if (this.tilesDrawn[i]) {
-            // [false] shouldFadeOut works but for some reason the center tiles blacken
-            //         briefly after everything loads. So off for now
             if (shouldFadeOut) {
                 this.tilesDrawn[i].fadeOutAndRemove = true
                 // Note that we aren't removing it for tilesDrawn just yet
@@ -1023,7 +1021,7 @@ export default class TiledWorld {
                                 ].value = Math.min(
                                     this.tilesDrawn[m].t.material.uniforms[
                                         'tA' + n
-                                    ].value + 0.07,
+                                    ].value + 0.1,
                                     desiredOpacity
                                 )
                             } else {
@@ -1032,7 +1030,7 @@ export default class TiledWorld {
                                 ].value = Math.max(
                                     this.tilesDrawn[m].t.material.uniforms[
                                         'tA' + n
-                                    ].value - 0.07,
+                                    ].value - 0.1,
                                     desiredOpacity
                                 )
                             }
@@ -1062,7 +1060,7 @@ export default class TiledWorld {
                     ) {
                         const nextOpacity = Math.max(
                             this.tilesDrawn[i].t.material.uniforms['tA' + n]
-                                .value - 0.07,
+                                .value - 0.1,
                             0
                         )
                         if (nextOpacity <= 0) this.removeTile(i)

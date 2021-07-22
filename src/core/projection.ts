@@ -56,9 +56,14 @@ export default class Projection {
             this.tileMapResource.resunitsperpixel != null &&
             this.tileMapResource.reszoomlevel != null
         ) {
+            let reszoomlevel = this.tileMapResource.reszoomlevel
+            reszoomlevel += Math.round(
+                (4 * Math.PI * Math.pow(3396190, 2)) /
+                    (4 * Math.PI * Math.pow(this.radii.major, 2))
+            )
             const baseRes =
                 this.tileMapResource.resunitsperpixel *
-                Math.pow(2, this.tileMapResource.reszoomlevel)
+                Math.pow(2, reszoomlevel)
             const res = []
             for (let i = 0; i < 32; i++) {
                 res.push(baseRes / Math.pow(2, i))
@@ -178,18 +183,7 @@ export default class Projection {
                 (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)))
             return { lat: lat, lng: lng }
         } else {
-            //In these projections the origin is bottom left instead of top left
-            //So flip the decimal value
-            /*
-            const dec = y % 1
-            if (dec != 0) y = Math.floor(y) + (1 - dec)
-            else if (flatXYZ) {
-                if (y == flatXYZ.y) y = flatXYZ.y + 1
-                else y = flatXYZ.y
-            }
-            */
-
-            y = -y // For WMS
+            y = -y
 
             const easting =
                 this.trueTileResolution * x * this.res[z] +
@@ -238,10 +232,8 @@ export default class Projection {
                 (northing - this.tileMapResource.origin[1]) /
                 (this.trueTileResolution * this.res[z])
 
-            //In these projections the origin is bottom left instead of top left
-            //So flip the decimal value back
-            //y = Math.floor(y) + (1 - (y % 1))
-            y = -y // For WMS
+            y = -y
+
             return { x: x, y: y, z: z }
         }
     }

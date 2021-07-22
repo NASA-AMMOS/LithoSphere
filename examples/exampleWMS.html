@@ -41,19 +41,6 @@
                     zoom: 0,
                 },
                 majorRadius: 1737400,
-                customParsers: {
-                    All500: (tilePath, layerObj) => {
-                        return new Promise((resolve, reject) => {
-                            const tileDimension = 32
-                            resolve(
-                                new Array(tileDimension * tileDimension).fill(
-                                    500
-                                )
-                            )
-                        })
-                    },
-                },
-                //opt
                 tileMapResource: {
                     //bounds: [-868700, -868700, 868700, 868700],
                     //origin: [-868700, -868700],
