@@ -32,7 +32,7 @@
 
 // @ts-nocheck
 
-window.DecodeStream = (function () {
+const DecodeStream = (function () {
     function constructor() {
         this.pos = 0
         this.bufferLength = 0
@@ -116,7 +116,7 @@ window.DecodeStream = (function () {
     return constructor
 })()
 
-window.FlateStream = (function () {
+export const FlateStream = (function () {
     var codeLenCodeMap = new Uint32Array([
         16,
         17,
