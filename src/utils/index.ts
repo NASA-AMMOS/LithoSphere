@@ -7,7 +7,7 @@ const Utils = {
      * @param {*} obj
      * @param {*} keyArray
      */
-    getIn: function (obj: any, keyArray: string[], notSetValue?: any): any {
+    getIn: function (obj: any, keyArray: any, notSetValue?: any): any {
         if (obj == null) return notSetValue != null ? notSetValue : null
         if (typeof keyArray === 'string') keyArray = keyArray.split('.')
         if (keyArray == null) return notSetValue != null ? notSetValue : null

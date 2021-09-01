@@ -357,6 +357,11 @@ export default class LithoSphere {
 
     _update(): void {
         if (!this._.wasInitialized) return
+        if (this._.renderOnlyWhenOpen) {
+            const containerRect = this._.container.getBoundingClientRect()
+            if (containerRect.width <= 0 || containerRect.height <= 0) return
+        }
+
         this._.counters.frame = (this._.counters.frame + 1) % 4
 
         this.scene.rotation.x = 0

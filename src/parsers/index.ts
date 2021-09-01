@@ -9,22 +9,22 @@ export default async function load(
     layerObj?: any,
     xyz?: any,
     tileResolution?: number,
-    numberOfVertices?: number
+    numberOfVertices?: number,
+    forceParserType?: string
 ): Promise<number[]> {
     return new Promise((resolve, reject) => {
         const defaultParserNames = ['tif', 'rgba']
         let parser = null
 
-        if (
-            layerObj.parser != null &&
-            customParsers.hasOwnProperty(layerObj.parser)
-        )
-            parser = customParsers[layerObj.parser]
+        const parserType = forceParserType || layerObj.parser
+
+        if (parserType != null && customParsers.hasOwnProperty(parserType))
+            parser = customParsers[parserType]
         else if (
-            layerObj.parser != null &&
-            defaultParserNames.includes(layerObj.parser)
+            parserType != null &&
+            defaultParserNames.includes(parserType)
         ) {
-            switch (layerObj.parser.toLowerCase()) {
+            switch (parserType.toLowerCase()) {
                 case 'tif':
                     parser = TifParser
                     break
@@ -52,8 +52,8 @@ export default async function load(
             .then((data) => {
                 resolve(data)
             })
-            .catch((err) => {
-                reject()
+            .catch(() => {
+                reject('failed')
             })
     })
 }

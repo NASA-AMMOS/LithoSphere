@@ -567,6 +567,7 @@ export default class TiledWorld {
         let loadDemTile = false
 
         let layerI = null
+
         for (let i = this.p.layers.tile.length - 1; i >= 0; i--) {
             //Check if on and in right zoom range
             if (
@@ -610,7 +611,19 @@ export default class TiledWorld {
                     builtDemPath.xyz,
                     this.p.options.tileResolution,
                     Math.pow(this.p.options.tileResolution, 2)
-                ).catch(() => {})
+                ).catch(async () => {
+                    if (this.p.options.demFallback != null) {
+                        heightArr = await load(
+                            this.p.options.customParsers,
+                            this.p.options.demFallback.demPath,
+                            this.p.layers.tile[layerI],
+                            builtDemPath.xyz,
+                            this.p.options.tileResolution,
+                            Math.pow(this.p.options.tileResolution, 2),
+                            this.p.options.demFallback.parserType
+                        ).catch(() => {})
+                    }
+                })
 
             tileGeometry(heightArr || null)
         } else {

@@ -54,6 +54,12 @@
                         })
                     },
                 },
+                // opt
+                demFallback: {
+                    demPath:
+                        'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
+                    parserType: 'rgba',
+                },
                 //opt
                 tileMapResource: {
                     bounds: [0, 0, 0, 0],
@@ -115,7 +121,7 @@
                 path:
                     'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/Gale_HiRISE/{z}/{x}/{y}.png',
                 demPath:
-                    'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
+                    'https://miplmmgis.jpl.nasa.gov/Missions/MSL/LayersBAD/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
                 format: 'tms', // 'wmts' || 'wms'
                 demFormat: 'tms', //
                 opacity: 1,
@@ -219,7 +225,7 @@
                             },
                             properties: {
                                 style: {
-                                    color: 'rgb(104, 28, 190)',
+                                    color: 'rgb(194, 28, 190)',
                                     dashArray: '',
                                     fillColor: 'rgb(104, 28, 190)',
                                     fillOpacity: 0.2,

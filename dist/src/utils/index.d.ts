@@ -1,6 +1,6 @@
 import { XY, XYZ } from '../generalTypes';
 declare const Utils: {
-    getIn: (obj: any, keyArray: string[], notSetValue?: any) => any;
+    getIn: (obj: any, keyArray: any, notSetValue?: any) => any;
     mod: (n: number, m: number) => number;
     findHighestMaxZoom: (tileLayers: any) => number;
     findLowestMinZoom: (tileLayers: any) => number;
