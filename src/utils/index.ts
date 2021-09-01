@@ -9,6 +9,7 @@ const Utils = {
      */
     getIn: function (obj: any, keyArray: string[], notSetValue?: any): any {
         if (obj == null) return notSetValue != null ? notSetValue : null
+        if (typeof keyArray === 'string') keyArray = keyArray.split('.')
         if (keyArray == null) return notSetValue != null ? notSetValue : null
         let object = Object.assign({}, obj)
         for (let i = 0; i < keyArray.length; i++) {
