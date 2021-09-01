@@ -239,9 +239,9 @@ export default class Layers {
 
                 // Use the properties.style object if one's set on the feature
                 if (layer.style.letPropertiesStyleOverride === true) {
-                    const styleOverride = this.getFeatureStyleProp(
-                        layer.style[key],
-                        feature
+                    const styleOverride = Utils.getIn(
+                        feature.properties?.style,
+                        key
                     )
                     style[key] =
                         styleOverride != null ? styleOverride : style[key]

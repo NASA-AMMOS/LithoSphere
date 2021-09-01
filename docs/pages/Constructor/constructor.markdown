@@ -35,6 +35,7 @@ new LithoSphere(containerId, options)
 |    **minorRadius**     | _integer_  |                                    majorRadius                                     |                         Minor planetary radius in meters                         |
 |   **loadingScreen**    | _boolean_  |                                        true                                        |    If true, shows a loading screen until all lithosphere content first loads     |
 |   **customParsers**    |  _object_  |                     See [Parsers]({{ site.baseurl }}/parsers)                      |                 Allows the use of custom elevation tile parsers                  |
+|    **demFallback**     |  _object_  |     See [demFallback]({{ site.baseurl }}/constructor#optionsdemfallback) below     |                  A DEM to fallback to if any layer's DEM fails                   |
 |  **tileMapResource**   |  _object_  | See [tileMapResource]({{ site.baseurl }}/constructor#optionstilemapresource) below |                              Configures projections                              |
 |   **radiusOfTiles**    | _integer_  |                                         4                                          |         How many tiles outward from the center to use for the base tiles         |
 |   **wireframeMode**    | _boolean_  |                                       false                                        |            If true, all tiles are rendered with a wireframe material             |
@@ -68,6 +69,28 @@ The latitude, longitude, and zoom LithoSphere first starts at.
         lat: -4.626571631163808,
         zoom: 16,
     }
+}
+```
+
+### options.demFallback
+
+If a tile layer has a `demPath` set and one of its tile dem request fails for whatever reason (such as a 404) or does not have a `demPath` set, it will try to get the corresponding DEM tile specified in `demFallback`.
+
+|   Parameter    |   Type   | Default |            Description            |
+| :------------: | :------: | :-----: | :-------------------------------: |
+|  **demPath**   | _string_ |         |  Path for the fallback DEM tiles  |
+|   **format**   | _string_ |  'tms'  | Tile format: 'tms', 'wmts', 'wms' |
+| **parserType** | _string_ | 'rgba'  |  Which parser to use for demPath  |
+
+#### Example
+
+```javascript
+{
+    demFallback: {
+        demPath:
+            'https://domain.com/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
+        parserType: 'rgba',
+    },
 }
 ```
 

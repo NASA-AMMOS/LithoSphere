@@ -50,7 +50,7 @@ export default function RGBAParser(
                 resolve(heightArr)
             },
             (err) => {
-                reject()
+                reject(err)
             }
         )
     })

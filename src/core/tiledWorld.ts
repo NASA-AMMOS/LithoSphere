@@ -567,6 +567,7 @@ export default class TiledWorld {
         let loadDemTile = false
 
         let layerI = null
+
         for (let i = this.p.layers.tile.length - 1; i >= 0; i--) {
             //Check if on and in right zoom range
             if (
@@ -588,6 +589,7 @@ export default class TiledWorld {
                 }
             }
         }
+        let heightArr = null
 
         if (loadDemTile && layerI != null) {
             const builtDemPath = Paths.buildPath(
@@ -600,8 +602,8 @@ export default class TiledWorld {
                 this.p.layers.tile[layerI].demFormatOptions,
                 true
             )
-            let heightArr = null
-            if (builtDemPath)
+            if (builtDemPath) {
+                let errored = false
                 // Load is from are parsers and wraps potentially a bunch of tile formats
                 heightArr = await load(
                     this.p.options.customParsers,
@@ -610,10 +612,57 @@ export default class TiledWorld {
                     builtDemPath.xyz,
                     this.p.options.tileResolution,
                     Math.pow(this.p.options.tileResolution, 2)
-                ).catch(() => {})
+                ).catch(() => {
+                    errored = true
+                })
+                if (errored && this.p.options.demFallback != null) {
+                    const builtDemPathFallback = Paths.buildPath(
+                        this.p.options.demFallback.format,
+                        this.p.options.demFallback.demPath,
+                        xyz,
+                        this.p.projection,
+                        this.p.options.tileResolution,
+                        this.p.options.trueTileResolution,
+                        this.p.layers.tile[layerI].demFormatOptions,
+                        true
+                    )
+                    if (builtDemPathFallback)
+                        heightArr = await load(
+                            this.p.options.customParsers,
+                            builtDemPathFallback.path,
+                            this.p.layers.tile[layerI],
+                            builtDemPathFallback.xyz,
+                            this.p.options.tileResolution,
+                            Math.pow(this.p.options.tileResolution, 2),
+                            this.p.options.demFallback.parserType
+                        ).catch(() => {})
+                }
+            }
 
             tileGeometry(heightArr || null)
         } else {
+            if (this.p.options.demFallback != null) {
+                const builtDemPathFallback = Paths.buildPath(
+                    this.p.options.demFallback.format,
+                    this.p.options.demFallback.demPath,
+                    xyz,
+                    this.p.projection,
+                    this.p.options.tileResolution,
+                    this.p.options.trueTileResolution,
+                    this.p.layers.tile[layerI].demFormatOptions,
+                    true
+                )
+                if (builtDemPathFallback)
+                    heightArr = await load(
+                        this.p.options.customParsers,
+                        builtDemPathFallback.path,
+                        this.p.layers.tile[layerI],
+                        builtDemPathFallback.xyz,
+                        this.p.options.tileResolution,
+                        Math.pow(this.p.options.tileResolution, 2),
+                        this.p.options.demFallback.parserType
+                    ).catch(() => {})
+            }
             //Make a flat (still curved to the globe) tile
             tileGeometry()
         }
@@ -709,7 +758,7 @@ export default class TiledWorld {
                     }
                 }
 
-                tD.t.material = Shaders.multiTexture(tD.from.rasters, true)
+                tD.t.material = Shaders.multiTexture(tD.from.rasters /*, true*/)
 
                 if (this.p.options.wireframeMode) {
                     tD.t.material = new MeshBasicMaterial({
@@ -922,6 +971,7 @@ export default class TiledWorld {
     }
 
     removeTile(i: number, shouldFadeOut?: boolean): void {
+        shouldFadeOut = false
         if (this.tilesDrawn[i]) {
             if (shouldFadeOut) {
                 this.tilesDrawn[i].fadeOutAndRemove = true

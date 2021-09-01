@@ -36,8 +36,8 @@
         <script>
             const Litho = new LithoSphere.default('container', {
                 initialView: {
-                    lng: 137.4071927368641, // default 0
-                    lat: -4.626971631163808,
+                    lng: 137.358048, // default 0
+                    lat: -4.673226,
                     zoom: 16,
                 },
                 majorRadius: 3396190,
@@ -53,6 +53,13 @@
                             )
                         })
                     },
+                },
+                // opt
+                demFallback: {
+                    demPath:
+                        'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
+                    format: 'tms',
+                    parserType: 'rgba',
                 },
                 //opt
                 tileMapResource: {
@@ -115,7 +122,7 @@
                 path:
                     'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/Gale_HiRISE/{z}/{x}/{y}.png',
                 demPath:
-                    'https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
+                    'https://miplmmgis.jpl.nasa.gov/Missions/MSL/LayersBAD/Gale_HiRISE/MSL_Gale_DEM_Mosaic_1m_v3/MSL_Gale_DEM_Mosaic_1m_v3/{z}/{x}/{y}.png',
                 format: 'tms', // 'wmts' || 'wms'
                 demFormat: 'tms', //
                 opacity: 1,
@@ -196,6 +203,49 @@
                     //Litho.removeLayer('clampedWaypoints')
                 }
             )
+
+            Litho.addLayer('clamped', {
+                name: 'styledFeatures',
+                on: true,
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Polygon',
+                                coordinates: [
+                                    [
+                                        [137.358048, -4.673226],
+                                        [137.362189, -4.673632],
+                                        [137.36176, -4.675279],
+                                        [137.357833, -4.674638],
+                                        [137.358048, -4.673226],
+                                    ],
+                                ],
+                            },
+                            properties: {
+                                style: {
+                                    color: 'rgb(194, 28, 190)',
+                                    dashArray: '',
+                                    fillColor: 'rgb(104, 28, 190)',
+                                    fillOpacity: 0.2,
+                                    opacity: 1,
+                                    radius: 2,
+                                    symbol: '',
+                                },
+                            },
+                        },
+                    ],
+                },
+                opacity: 1,
+                minZoom: 0,
+                maxZoom: 30,
+                style: {
+                    // Prefer feature[f].properties.style values
+                    letPropertiesStyleOverride: true,
+                },
+            })
 
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
