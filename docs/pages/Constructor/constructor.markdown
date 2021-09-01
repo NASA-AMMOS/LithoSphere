@@ -74,13 +74,13 @@ The latitude, longitude, and zoom LithoSphere first starts at.
 
 ### options.demFallback
 
-Representative of the tilemapresource.xml file outputted following tile generation.
-_Note: `proj` is the only key currently in use._
+If a tile layer has a `demPath` set and one of its tile dem request fails for whatever reason (such as a 404) or does not have a `demPath` set, it will try to get the corresponding DEM tile specified in `demFallback`.
 
-|   Parameter    |   Type   | Default |               Description               |
-| :------------: | :------: | :-----: | :-------------------------------------: |
-|  **demPath**   | _string_ |         |     Path for the fallback DEM tiles     |
-| **parserType** | _string_ | 'rgba'  | Which parser to use for these DEM tiles |
+|   Parameter    |   Type   | Default |            Description            |
+| :------------: | :------: | :-----: | :-------------------------------: |
+|  **demPath**   | _string_ |         |  Path for the fallback DEM tiles  |
+|   **format**   | _string_ |  'tms'  | Tile format: 'tms', 'wmts', 'wms' |
+| **parserType** | _string_ | 'rgba'  |  Which parser to use for demPath  |
 
 #### Example
 
