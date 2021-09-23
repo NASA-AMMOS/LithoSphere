@@ -82,7 +82,9 @@
                 atmosphere: {
                     color: '#111111',
                 },
+                canBecomeHighlighted: true, // default true
                 highlightColor: 'yellow', //css color for vector hover highlights | default 'yellow'
+                canBecomeActive: true, // default true
                 activeColor: 'red', //css color for active vector features | default 'red'
             })
 
@@ -204,48 +206,58 @@
                 }
             )
 
-            Litho.addLayer('clamped', {
-                name: 'styledFeatures',
-                on: true,
-                geojson: {
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'Polygon',
-                                coordinates: [
-                                    [
-                                        [137.358048, -4.673226],
-                                        [137.362189, -4.673632],
-                                        [137.36176, -4.675279],
-                                        [137.357833, -4.674638],
-                                        [137.358048, -4.673226],
+            Litho.addLayer(
+                'clamped',
+                {
+                    name: 'styledFeatures',
+                    on: true,
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Polygon',
+                                    coordinates: [
+                                        [
+                                            [137.358048, -4.673226],
+                                            [137.362189, -4.673632],
+                                            [137.36176, -4.675279],
+                                            [137.357833, -4.674638],
+                                            [137.358048, -4.673226],
+                                        ],
                                     ],
-                                ],
-                            },
-                            properties: {
-                                style: {
-                                    color: 'rgb(194, 28, 190)',
-                                    dashArray: '',
-                                    fillColor: 'rgb(104, 28, 190)',
-                                    fillOpacity: 0.2,
-                                    opacity: 1,
-                                    radius: 2,
-                                    symbol: '',
+                                },
+                                properties: {
+                                    style: {
+                                        color: 'rgb(194, 28, 190)',
+                                        dashArray: '',
+                                        fillColor: 'rgb(104, 28, 190)',
+                                        fillOpacity: 0.2,
+                                        opacity: 1,
+                                        radius: 2,
+                                        symbol: '',
+                                    },
                                 },
                             },
-                        },
-                    ],
+                        ],
+                    },
+                    opacity: 1,
+                    minZoom: 0,
+                    maxZoom: 30,
+                    style: {
+                        // Prefer feature[f].properties.style values
+                        letPropertiesStyleOverride: true,
+                    },
                 },
-                opacity: 1,
-                minZoom: 0,
-                maxZoom: 30,
-                style: {
-                    // Prefer feature[f].properties.style values
-                    letPropertiesStyleOverride: true,
-                },
-            })
+                () => {
+                    console.log('loaded')
+                    setTimeout(() => {
+                        console.log('removing')
+                        //Litho.removeLayer('styledFeatures')
+                    }, 10000)
+                }
+            )
 
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
@@ -332,7 +344,10 @@
                     },
                     point: {},
                     line: {},
-                    polygon: {},
+                    polygon: {
+                        canBecomeHighlighted: false, //default true
+                        canBecomeActive: false, //default true
+                    },
                     byProp: {
                         'prop=images.0.test:blue': {},
                     },
@@ -489,32 +504,32 @@
                 onToggle: (isLinked) => {},
                 onFirstPersonUpdate: () => {
                     /*
-                    const playerll = Litho.getCenter()
-                    L_.Map_.setPlayerArrow(
-                        playerll.lon,
-                        playerll.lat,
-                        (Litho.cameras.firstPerson.controls.getObject().rotation.y % (Math.PI * 2)) +
-                            Math.PI
-                    )
-                    L_.Map_.setPlayerLookat(Globe_.mouseLngLat.Lng, Globe_.mouseLngLat.Lat)
-                    */
+                        const playerll = Litho.getCenter()
+                        L_.Map_.setPlayerArrow(
+                            playerll.lon,
+                            playerll.lat,
+                            (Litho.cameras.firstPerson.controls.getObject().rotation.y % (Math.PI * 2)) +
+                                Math.PI
+                        )
+                        L_.Map_.setPlayerLookat(Globe_.mouseLngLat.Lng, Globe_.mouseLngLat.Lat)
+                        */
                 },
                 onOrbitalUpdate: () => {
                     //L_.Map_.hidePlayer()
                 },
             })
             /*
-            Map_.map.on('move', (e) => {
-                const c = Map_.map.getCenter()
-                myLink.linkMove(c.lng, c.lat)
-            })
-            Map_.map.on('mousemove', (e) => {
-                myLink.linkMouseMove(e.latlng.lng, e.latlng.lat)
-            })
-            Map_.map.on('mouseout', (e) => {
-                myLink.linkMouseOut()
-            })
-            */
+                Map_.map.on('move', (e) => {
+                    const c = Map_.map.getCenter()
+                    myLink.linkMove(c.lng, c.lat)
+                })
+                Map_.map.on('mousemove', (e) => {
+                    myLink.linkMouseMove(e.latlng.lng, e.latlng.lat)
+                })
+                Map_.map.on('mouseout', (e) => {
+                    myLink.linkMouseOut()
+                })
+                */
         </script>
     </body>
 </html>

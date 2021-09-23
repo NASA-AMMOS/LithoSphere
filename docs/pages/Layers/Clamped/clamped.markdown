@@ -33,7 +33,10 @@ Litho.addLayer(
             },
             point: {},
             line: {},
-            polygon: {},
+            polygon: {
+                canBecomeHighlighted: false, //default true
+                canBecomeActive: false, //default true
+            },
             byProp: {
                 'prop=images.0.test:blue': {},
             },
@@ -47,6 +50,8 @@ Litho.addLayer(
             137.42500036372522,
             -4.62500251269999,
         ],
+        canBecomeHighlighted: true, //default true
+        canBecomeActive: true, //default true
         //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
         //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
     },

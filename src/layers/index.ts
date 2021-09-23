@@ -75,6 +75,8 @@ export default class Layers {
         if (layerObj.on == 1) layerObj.on = true
         else if (layerObj.on == 0) layerObj.on = false
 
+        layerObj._type = type
+
         if (this._.layerers[type]) this._.layerers[type].add(layerObj, callback)
         else console.warn(`Cannot add unknown layer type ${type}.`)
     }
@@ -252,11 +254,29 @@ export default class Layers {
         // Final format
         if (style.fillColor === 'none') style.fillColor = 'rgba(0,0,0,0)'
 
+        const type = feature.geometry?.type
+            ? feature.geometry.type.toLowerCase()
+            : ''
+
         // Active && Highlights
         if (feature._active) {
-            style.fillColor = this.p.options.activeColor || 'red'
+            if (
+                this.p.options.canBecomeActive !== false &&
+                layer.canBecomeActive !== false &&
+                (layer.style[type] == null ||
+                    (layer.style[type] &&
+                        layer.style[type].canBecomeActive !== false))
+            )
+                style.fillColor = this.p.options.activeColor || 'red'
         } else if (feature._highlighted) {
-            style.fillColor = this.p.options.highlightColor || 'yellow'
+            if (
+                this.p.options.canBecomeHighlighted !== false &&
+                layer.canBecomeHighlighted !== false &&
+                (layer.style[type] == null ||
+                    (layer.style[type] &&
+                        layer.style[type].canBecomeHighlighted !== false))
+            )
+                style.fillColor = this.p.options.highlightColor || 'yellow'
         }
 
         // For lines and what not

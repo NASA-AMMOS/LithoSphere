@@ -134,11 +134,11 @@ export default class ClampedLayerer {
                 if (this.p.clamped[i].name == name) {
                     const minZoom = this.p.clamped[i].minZoom
                     const maxZoom = this.p.clamped[i].maxZoom
+                    this.p.clamped.splice(i, 1)
                     if (this.p.p.zoom >= minZoom && this.p.p.zoom <= maxZoom) {
                         this.p.p._.tiledWorld.killDrawingTiles()
                         this.p.p._.tiledWorld.updateAllRasters()
                     }
-                    this.p.clamped.splice(i, 1)
                     return true
                 }
             }
