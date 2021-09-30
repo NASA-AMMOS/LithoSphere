@@ -121,7 +121,13 @@ export default class Projection {
             this.radii.minor = radius || this.radii.major || this.baseRadius
     }
 
-    invertY = (y: number, z: number): number => Math.pow(2, z) - 1 - y
+    invertY = (y: number, z: number): number => {
+        const bMin = this.crs.projection.bounds.min
+        const s = this.crs.scale(z)
+        const max = this.crs.transformation.transform(bMin, s)
+        const yMax = Math.ceil(max.y / 256) - 1
+        return yMax - y
+    }
 
     toBounds = (a: XY, b: XY) => {
         const bounds = {
