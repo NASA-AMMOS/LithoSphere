@@ -122,9 +122,13 @@ export default class Projection {
     }
 
     invertY = (y: number, z: number): number => {
-        const bMin = this.crs.projection.bounds.min
+        const b = this.crs.projection.bounds
+        if (b === null || b.min.y === b.max.y || !isFinite(b.min.y)) {
+            // Map uses default projection and/or has unspecified/infinite bounds
+            return Math.pow(2, z) - y
+        }
         const s = this.crs.scale(z)
-        const max = this.crs.transformation.transform(bMin, s)
+        const max = this.crs.transformation.transform(b.min, s)
         const yMax = Math.ceil(max.y / 256) - 1
         return yMax - y
     }
