@@ -123,9 +123,9 @@ export default class Projection {
 
     invertY = (y: number, z: number): number => {
         const b = this.crs.projection.bounds
-        if (b === null || b.min.y === b.max.y || !isFinite(b.min.y)) {
-            // Map uses default projection and/or has unspecified/infinite bounds
-            return Math.pow(2, z) - y
+        if (this.tileMapResource.crsCode === 'EPSG:4326') {
+            // Map uses default projection
+            return Math.pow(2, z) - 1 - y
         }
         const s = this.crs.scale(z)
         const max = this.crs.transformation.transform(b.min, s)
