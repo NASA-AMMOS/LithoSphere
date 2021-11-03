@@ -497,9 +497,8 @@ export default class TiledWorld {
                     colors[p] = 0
                     colors[p + 1] = 0
                     colors[p + 2] = 0
-                    if (height < -100000) {
-                        height = -100000
-                    }
+                    height = Math.min(height, 100000)
+                    height = Math.max(height, -100000)
 
                     const tx =
                         xyz.x +

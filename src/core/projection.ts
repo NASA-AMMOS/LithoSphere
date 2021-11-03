@@ -121,7 +121,17 @@ export default class Projection {
             this.radii.minor = radius || this.radii.major || this.baseRadius
     }
 
-    invertY = (y: number, z: number): number => Math.pow(2, z) - 1 - y
+    invertY = (y: number, z: number): number => {
+        const b = this.crs.projection.bounds
+        if (this.tileMapResource.crsCode === 'EPSG:4326') {
+            // Map uses default projection
+            return Math.pow(2, z) - 1 - y
+        }
+        const s = this.crs.scale(z)
+        const max = this.crs.transformation.transform(b.min, s)
+        const yMax = Math.ceil(max.y / 256) - 1
+        return yMax - y
+    }
 
     toBounds = (a: XY, b: XY) => {
         const bounds = {
