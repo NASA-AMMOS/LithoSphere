@@ -36,8 +36,8 @@
         <script>
             const Litho = new LithoSphere.default('container', {
                 initialView: {
-                    lng: 137.358048, // default 0
-                    lat: -4.673226,
+                    lng: 0, //137.358048, // default 0
+                    lat: 0, //-4.673226,
                     zoom: 16,
                 },
                 majorRadius: 3396190,
@@ -89,7 +89,7 @@
             })
 
             console.log(Litho)
-
+            /*
             Litho.addLayer('tile', {
                 name: 'Aeolis',
                 order: 1, //Orders are ordered only within the layer type
@@ -162,7 +162,7 @@
                 },
             })
             //Litho.removeLayer('3dTileExample')
-
+*/
             Litho.addLayer(
                 'clamped',
                 {
@@ -478,6 +478,30 @@
                 maxZoom: 18,
             })
             //Litho.removeLayer('vectorPoint')
+
+            Litho.addLayer('model', {
+                name: 'rover',
+                order: 1,
+                on: true,
+                path:
+                    'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb',
+                hoverName: 'Hovering Rover',
+                opacity: 1,
+                minZoom: 0,
+                maxZoom: 22,
+                position: {
+                    longitude: 137.3572927368641, // default 0
+                    latitude: -4.674971631163808, // default 0
+                    elevation: 0, //-4443, // default 0
+                },
+                scale: 1000000, // default 1
+                rotation: {
+                    x: Math.PI / 2, // in radians | default 0
+                    y: 0, // default 0
+                    z: 0, // default 0
+                    order: 'XYZ', //default 'XYZ'
+                },
+            })
 
             Litho.addControl('myHome', Litho.controls.home)
             Litho.addControl('myExaggerate', Litho.controls.exaggerate)

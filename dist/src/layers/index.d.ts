@@ -2,12 +2,14 @@ import Tile3dLayerer from './tile3d';
 import TileLayerer from './tile';
 import ClampedLayerer from './clamped';
 import VectorLayerer from './vector';
+import ModelLayerer from './model';
 interface Private {
     layerers: {
         tile3d: Tile3dLayerer;
         tile: TileLayerer;
         clamped: ClampedLayerer;
         vector: VectorLayerer;
+        model: ModelLayerer;
     };
 }
 export default class Layers {
@@ -18,6 +20,7 @@ export default class Layers {
     tile: any;
     clamped: any;
     vector: any;
+    model: any;
     all: any;
     constructor(parent: any);
     _reset(): void;
