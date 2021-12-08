@@ -96,6 +96,8 @@ export default class Events {
             },
             false
         )
+
+        window.addEventListener('keydown', this._onKeyDown, false)
         //container.addEventListener('click', onGlobeClick, false)
         //document.addEventListener('click', onGlobeClickPointerLock, false)
 
@@ -394,6 +396,59 @@ export default class Events {
                     )
                 }
             }
+        }
+    }
+
+    private _onKeyDown = (e): void => {
+        if (this.p._.cameras.isFirstPerson) return
+
+        const speed = e.shiftKey ? 20 : 8
+
+        switch (e.key) {
+            case 'w':
+            case 'ArrowUp':
+                this._rotateGlobe({ pageX: 0, pageY: speed }, { x: 0, y: 0 })
+                break
+            case 'a':
+            case 'ArrowLeft':
+                this._rotateGlobe({ pageX: speed, pageY: 0 }, { x: 0, y: 0 })
+                break
+            case 's':
+            case 'ArrowDown':
+                this._rotateGlobe({ pageX: 0, pageY: -speed }, { x: 0, y: 0 })
+                break
+            case 'd':
+            case 'ArrowRight':
+                this._rotateGlobe({ pageX: -speed, pageY: 0 }, { x: 0, y: 0 })
+                break
+            case 'q':
+            case 'PageDown':
+                const lerpedDown = new Vector3().lerpVectors(
+                    this.p._.cameras.orbit.camera.position,
+                    this.p._.cameras.orbit.controls.target,
+                    e.shiftKey ? -0.025 : -0.015
+                )
+                this.p._.cameras.orbit.camera.position.set(
+                    lerpedDown.x,
+                    lerpedDown.y,
+                    lerpedDown.z
+                )
+                this._onZoom()
+                break
+            case 'e':
+            case 'PageUp':
+                const lerpedUp = new Vector3().lerpVectors(
+                    this.p._.cameras.orbit.camera.position,
+                    this.p._.cameras.orbit.controls.target,
+                    e.shiftKey ? 0.025 : 0.015
+                )
+                this.p._.cameras.orbit.camera.position.set(
+                    lerpedUp.x,
+                    lerpedUp.y,
+                    lerpedUp.z
+                )
+                this._onZoom()
+                break
         }
     }
 

@@ -1,10 +1,12 @@
-import { Object3D, Vector3 } from 'three'
+import { Object3D, Vector3, Quaternion } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import Utils from '../utils'
 
 const objLoader = new OBJLoader()
+const mtlLoader = new MTLLoader()
 const colladaLoader = new ColladaLoader()
 const gltfLoader = new GLTFLoader()
 
@@ -36,11 +38,11 @@ export default class ModelLayerer {
             if (!alreadyExists) {
                 this.generateModel(layerObj, (model) => {
                     if (model) {
+                        model = this.localizeModel(layerObj, model)
                         this.p.p.planet.add(model)
-                        this.localizeModel(layerObj, model)
                         layerObj.model = model
                         this.p.model.push(layerObj)
-                        this.p.mode.sort((a, b) => b.order - a.order)
+                        this.p.model.sort((a, b) => b.order - a.order)
                     }
                     if (typeof callback === 'function') callback()
                 })
@@ -85,14 +87,13 @@ export default class ModelLayerer {
         return false
     }
 
-    // TODO
     remove = (name: string): boolean => {
         if (!this.p.p._.wasInitialized) return false
-
-        for (let i = 0; i < this.p.vector.length; i++) {
-            if (this.p.vector[i].name === name) {
-                this.p.p.planet.remove(this.p.vector[i].meshes)
-                this.p.vector.splice(i, 1)
+        console.log('model remove', name)
+        for (let i = 0; i < this.p.model.length; i++) {
+            if (this.p.model[i].name === name) {
+                this.p.p.planet.remove(this.p.model[i].model)
+                this.p.model.splice(i, 1)
                 return true
             }
         }
@@ -122,20 +123,40 @@ export default class ModelLayerer {
     }
 
     private objToModel = async (layerObj, callback: Function) => {
-        objLoader.load(
-            layerObj.path,
-            function (mesh) {
-                //Done
-                console.log(mesh)
-                callback(mesh)
-            },
-            function (xhr) {},
-            function (error) {
-                //Error
-                console.warn('Failed to load .obj at: ' + layerObj.path)
-                callback(false)
-            }
-        )
+        if (layerObj.mtlPath) {
+            mtlLoader.load(layerObj.mtlPath, function (materials) {
+                const objMtlLoader = new OBJLoader()
+                objMtlLoader.setMaterials(materials)
+                materials.preload()
+                objMtlLoader.load(
+                    layerObj.path,
+                    function (mesh) {
+                        //Done
+                        callback(mesh)
+                    },
+                    function (xhr) {},
+                    function (error) {
+                        //Error
+                        console.warn('Failed to load .obj at: ' + layerObj.path)
+                        callback(false)
+                    }
+                )
+            })
+        } else {
+            objLoader.load(
+                layerObj.path,
+                function (mesh) {
+                    //Done
+                    callback(mesh)
+                },
+                function (xhr) {},
+                function (error) {
+                    //Error
+                    console.warn('Failed to load .obj at: ' + layerObj.path)
+                    callback(false)
+                }
+            )
+        }
     }
 
     private daeToModel = (layerObj, callback: Function, options?: any) => {
@@ -145,36 +166,7 @@ export default class ModelLayerer {
             layerObj.path,
             function (mesh) {
                 //Done
-                //care alphatest
-                /*
-                if (
-                    !isNaN(options.opacity) &&
-                    options.opacity >= 0 &&
-                    options.opacity <= 1
-                ) {
-                    for (let c = 0; c < mesh.scene.children.length; c++) {
-                        mesh.scene.children[c].material.opacity =
-                            options.opacity
-                        mesh.scene.children[c].material.transparent = true
-                        for (let i in mesh.scene.children[c].material) {
-                            if (mesh.scene.children[c].material[i]) {
-                                mesh.scene.children[c].material[i].opacity =
-                                    options.opacity
-                                mesh.scene.children[c].material[
-                                    i
-                                ].transparent = true
-                            }
-                        }
-                    }
-                }
-                */
-                if (options.inAParent) {
-                    const dae = new Object3D()
-                    dae.add(mesh.scene)
-                    callback(dae)
-                } else {
-                    callback(mesh.scene)
-                }
+                callback(mesh.scene)
             },
             function (xhr) {},
             function (error) {
@@ -190,7 +182,6 @@ export default class ModelLayerer {
             layerObj.path,
             function (mesh) {
                 //Done
-                console.log('mesh', mesh)
                 callback(mesh.scene)
             },
             function (xhr) {
@@ -212,64 +203,62 @@ export default class ModelLayerer {
 
     // Sets model position, scale, rotation, &c.
     private localizeModel = (layerObj, model) => {
-        // scale
-        let scale = layerObj.scale
-        if (scale == null) scale = 1
-        model.scale.set(scale, scale, scale)
+        const parentMesh = new Object3D()
 
-        // position
-        const v = this.p.p.projection.lonLatToVector3(
-            layerObj.position.longitude || layerObj.position.lng || 0,
-            layerObj.position.latitude || layerObj.position.lat || 0,
+        const lng = layerObj.position.longitude || layerObj.position.lng || 0
+        const lat = layerObj.position.latitude || layerObj.position.lat || 0
+        const elev =
             (layerObj.position.elevation || layerObj.position.elev || 0) *
-                this.p.p.options.exaggeration
+            this.p.p.options.exaggeration
+        const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
+        model.position.set(pos.x, pos.y, pos.z)
+
+        const quaternion = new Quaternion()
+        quaternion.setFromUnitVectors(
+            new Vector3(0, 1, 0),
+            new Vector3(pos.x, pos.y, pos.z).normalize()
         )
-        model.position.set(v.x, v.y, v.z)
+        model.applyQuaternion(quaternion)
+        model.rotateY(-lng * (Math.PI / 180))
 
-        // rotation
-        const rotation = layerObj.rotation || {}
-
-        // Adjust to y+ coords
-        rotation.x = rotation.x || 0
-
-        let order = rotation.order || 'XYZ'
-        if (order.length != 3) {
-            console.warn(
-                `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'XYZ'`
-            )
-            order = 'XYZ'
-        }
-        model.rotation.order = order
-        order = order.toLowerCase()
-        for (let a of order.split('')) {
-            switch (a) {
-                case 'x':
-                    Utils.rotateAroundArbAxis(
-                        model,
-                        new Vector3(1, 0, 0),
-                        rotation.x || 0
-                    )
-                    break
-                case 'y':
-                    Utils.rotateAroundArbAxis(
-                        model,
-                        new Vector3(0, 1, 0),
-                        rotation.y || 0
-                    )
-                    break
-                case 'z':
-                    Utils.rotateAroundArbAxis(
-                        model,
-                        new Vector3(0, 0, 1),
-                        rotation.z || 0
-                    )
-                    break
-                default:
-                    console.warn(
-                        `Lithosphere: Warning - Model Layer "${layerObj.name}" has an unknown rotation.order axis: ${a}`
-                    )
-                    break
+        if (layerObj.rotation) {
+            let order = layerObj.rotation.order || 'YXZ'
+            if (order.length != 3) {
+                console.warn(
+                    `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'YXZ'`
+                )
+                order = 'YXZ'
             }
+            model.rotation.order = order
+            order.split('').forEach((axis) => {
+                switch (axis) {
+                    case 'X':
+                        model.rotateX(layerObj.rotation.x || 0)
+                        break
+                    case 'Y':
+                        model.rotateY(layerObj.rotation.y || 0)
+                        break
+                    case 'Z':
+                        model.rotateZ(layerObj.rotation.z || 0)
+                        break
+                    default:
+                        console.warn(
+                            `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order axis: ${axis}. Must be one of X, Y, Z`
+                        )
+                        break
+                }
+            })
         }
+        if (layerObj.scale != null) {
+            const s = layerObj.scale
+            model.scale.set(s || 1, s || 1, s || 1)
+        }
+
+        if (layerObj.on == false) {
+            model.visible = false
+        }
+
+        parentMesh.add(model)
+        return parentMesh
     }
 }
