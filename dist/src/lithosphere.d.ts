@@ -42,6 +42,8 @@ export default class LithoSphere {
     removeLayer: Function;
     toggleLayer: Function;
     setLayerOpacity: Function;
+    getLayerByName: Function;
+    hasLayer: Function;
     addControl: Function;
     removeControl: Function;
     scene: Scene;

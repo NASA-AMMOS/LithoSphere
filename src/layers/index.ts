@@ -183,6 +183,10 @@ export default class Layers {
         return null
     }
 
+    hasLayer = (layerName: string): any => {
+        return this.getLayerByName(layerName) != null
+    }
+
     // Computes a feature's style given it layer styling configuration
     // Does fancy things like letting you set style from properties and by properties
     getFeatureStyle = (layer: any, feature: any, isStrokeless?: boolean) => {

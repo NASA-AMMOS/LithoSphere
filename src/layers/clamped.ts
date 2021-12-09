@@ -467,6 +467,75 @@ export default class ClampedLayerer {
                         // @ts-ignore
                         const canvasY = parseInt((y - xyz.y) * canvas.height)
 
+                        // Bearing is a triangle indicating direction
+                        if (c.style?.bearing) {
+                            const unit = c.style.bearing.angleUnit || 'deg'
+                            const bearingProp =
+                                c.style.bearing.angleProp || false
+
+                            let yaw = 0
+                            if (bearingProp !== false) {
+                                yaw = parseFloat(
+                                    Utils.getIn(f.properties, bearingProp, 0)
+                                )
+                                if (unit === 'deg') {
+                                    yaw = yaw * (Math.PI / 180)
+                                }
+                            }
+
+                            const startingPoint = Utils.rotatePoint(
+                                {
+                                    x: canvasX,
+                                    y:
+                                        canvasY +
+                                        style.radius +
+                                        ctx.lineWidth -
+                                        2,
+                                },
+                                [canvasX, canvasY],
+                                yaw - 45 * (Math.PI / 180)
+                            )
+                            const indicator = [
+                                Utils.rotatePoint(
+                                    {
+                                        x: canvasX,
+                                        y: canvasY + style.radius * 2,
+                                    },
+                                    [canvasX, canvasY],
+                                    yaw
+                                ),
+                                Utils.rotatePoint(
+                                    {
+                                        x: canvasX,
+                                        y:
+                                            canvasY +
+                                            style.radius +
+                                            ctx.lineWidth -
+                                            2,
+                                    },
+                                    [canvasX, canvasY],
+                                    yaw + 45 * (Math.PI / 180)
+                                ),
+                                startingPoint,
+                            ]
+
+                            ctx.fillStyle = c.style.bearing.color || 'red'
+                            ctx.lineWidth = (1 / scaleFactor) * 1
+
+                            ctx.beginPath()
+                            ctx.moveTo(startingPoint.x, startingPoint.y)
+                            indicator.forEach((ind) => {
+                                ctx.lineTo(ind.x, ind.y)
+                            })
+                            ctx.closePath()
+                            ctx.fill()
+                            ctx.stroke()
+
+                            ctx.fillStyle = style.fillColor
+                            ctx.lineWidth =
+                                style.weight * ((1 / scaleFactor) * 1)
+                        }
+
                         ctx.beginPath()
                         ctx.arc(
                             canvasX,

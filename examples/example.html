@@ -149,16 +149,16 @@
                 minZoom: 11,
                 maxZoom: 18,
                 position: {
-                    longitude: 137.4091927368641, // default 0
+                    longitude: 137.4071927368641, // default 0
                     latitude: -4.626571631163808, // default 0
-                    elevation: -4470, // default 0
+                    elevation: -4480, // default 0
                 },
-                scale: 2, // default 1
+                scale: 1, // default 1
                 rotation: {
-                    x: 0, // in radians | default 0
+                    x: Math.PI / 2, // in radians | default 0
                     y: -Math.PI / 2, // default 0
-                    z: Math.PI / 4, // default 0
-                    order: 'ZXY', //default 'XYZ'
+                    z: 0, // default 0
+                    order: 'YXZ', //default 'YXZ'
                 },
             })
             //Litho.removeLayer('3dTileExample')
@@ -176,17 +176,24 @@
                         // Prefer feature[f].properties.style values
                         letPropertiesStyleOverride: true, // default false
                         default: {
-                            fillColor: 'white', //Use only rgb and hex. No css color names
+                            fillColor: '#444444', //Use only rgb and hex. No css color names
                             fillOpacity: 1,
                             color: 'black',
                             weight: 2,
                             radius: 'prop=radius',
                         },
-                        point: {},
+                        point: {
+                            radius: 8,
+                        },
                         line: {},
                         polygon: {},
                         byProp: {
                             'prop=images.0.test:blue': {},
+                        },
+                        bearing: {
+                            angleProp: 'yaw_rad',
+                            angleUnit: 'rad',
+                            color: 'lime',
                         },
                     },
                     opacity: 1,
@@ -259,6 +266,7 @@
                 }
             )
 
+            /*
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
                 order: 5,
@@ -295,6 +303,7 @@
                 //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
                 //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
             })
+            */
 
             Litho.addLayer('clamped', {
                 name: 'clampedPoly',
@@ -487,9 +496,7 @@
                     on: true,
                     path:
                         'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb',
-                    opacity: 1,
-                    minZoom: 0,
-                    maxZoom: 22,
+                    opacity: 0.5,
                     position: {
                         longitude: 137.3572927368641, // default 0
                         latitude: -4.674971631163808, // default 0
@@ -497,6 +504,7 @@
                     },
                     scale: 10, // default 1
                     rotation: {
+                        // y-up is away from planet center. x is pitch, y is yaw, z is roll
                         x: Math.PI / 12, // in radians | default 0
                         y: Math.PI / 1.5, // default 0
                         z: 0, // default 0
@@ -504,8 +512,15 @@
                     },
                 },
                 () => {
-                    //console.log('Rover loaded')
+                    console.log('Rover loaded')
+                    //Litho.setLayerOpacity('roverGLTF', 0.25)
                     //Litho.removeLayer('roverGLTF')
+                    /*
+                    Litho.toggleLayer('roverGLTF', false)
+                    setTimeout(() => {
+                        Litho.toggleLayer('roverGLTF', true)
+                    }, 10000)
+                    */
                 }
             )
 
@@ -519,8 +534,6 @@
                 mtlPath:
                     'http://localhost:8888/Missions/MSL/Data/models/moon/moon.mtl',
                 opacity: 1,
-                minZoom: 0,
-                maxZoom: 22,
                 position: {
                     longitude: 137.3572927368641, // default 0
                     latitude: -4.674971631163808, // default 0
@@ -540,8 +553,6 @@
                 path:
                     'http://localhost:8888/Missions/MSL/Data/models/Killer_Whale.dae',
                 opacity: 1,
-                minZoom: 0,
-                maxZoom: 22,
                 position: {
                     longitude: 137.3582927368641, // default 0
                     latitude: -4.674971631163808, // default 0

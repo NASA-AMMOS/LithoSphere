@@ -16,6 +16,7 @@
     "scripts": {
         "start": "npm run start:dev",
         "start:dev": "webpack --mode=development --watch --progress",
+        "start:docs": "cd ./docs && bundle exec jekyll serve",
         "build": "npm run build:prod",
         "build:prod": "webpack --mode=production",
         "prepublishOnly": "webpack --mode=production",

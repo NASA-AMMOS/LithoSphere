@@ -43,6 +43,7 @@ export default class ModelLayerer {
                         layerObj.model = model
                         this.p.model.push(layerObj)
                         this.p.model.sort((a, b) => b.order - a.order)
+                        this.setOpacity(layerObj.name, layerObj.opacity)
                     }
                     if (typeof callback === 'function') callback()
                 })
@@ -54,33 +55,30 @@ export default class ModelLayerer {
         }
     }
 
-    // TODO
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.vector.forEach((layer) => {
+        this.p.model.forEach((layer) => {
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
-                layer.meshes.visible = layer.on
+                layer.model.visible = layer.on
 
-                this.p.p._.events._attenuate()
                 return true
             }
         })
         return false
     }
 
-    // TODO
     setOpacity = (name: string, opacity: number): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        for (let i = 0; i < this.p.vector.length; i++) {
-            const layer = this.p.vector[i]
+        if (opacity == null) opacity = 1
+
+        for (let i = 0; i < this.p.model.length; i++) {
+            const layer = this.p.model[i]
             if (name === layer.name) {
                 layer.opacity = Math.max(Math.min(opacity, 1), 0)
-                layer.meshes.children.forEach((mesh) => {
-                    mesh.material.opacity = layer.opacity
-                })
+                Utils.setAllMaterialOpacity(layer.model, layer.opacity)
                 return true
             }
         }
@@ -89,7 +87,6 @@ export default class ModelLayerer {
 
     remove = (name: string): boolean => {
         if (!this.p.p._.wasInitialized) return false
-        console.log('model remove', name)
         for (let i = 0; i < this.p.model.length; i++) {
             if (this.p.model[i].name === name) {
                 this.p.p.planet.remove(this.p.model[i].model)

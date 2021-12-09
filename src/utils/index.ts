@@ -289,6 +289,32 @@ const Utils = {
     isArray(object: any): boolean {
         return Object.prototype.toString.call(object) === '[object Array]'
     },
+    // Sets a model's direct children's opacities
+    setChildrenMaterialOpacity(model, opacity: number, recurse?: Function) {
+        model.children.forEach((mesh) => {
+            if (mesh.material) {
+                mesh.material.transparent = true
+                mesh.material.opacity = opacity
+            }
+            if (
+                typeof recurse === 'function' &&
+                mesh.children &&
+                mesh.children.length > 0
+            ) {
+                recurse(mesh)
+            }
+        })
+    },
+    // Traverses through all children and children's children, &c. and changes their material opacities
+    setAllMaterialOpacity(model, opacity): void {
+        if (model.material) {
+            model.material.transparent = true
+            model.material.opacity = opacity
+        }
+        Utils.setChildrenMaterialOpacity(model, opacity, (mesh) => {
+            Utils.setAllMaterialOpacity(mesh, opacity)
+        })
+    },
 }
 
 export default Utils

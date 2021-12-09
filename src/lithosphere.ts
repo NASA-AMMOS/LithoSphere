@@ -73,6 +73,8 @@ export default class LithoSphere {
     removeLayer: Function
     toggleLayer: Function
     setLayerOpacity: Function
+    getLayerByName: Function
+    hasLayer: Function
     addControl: Function
     removeControl: Function
     scene: Scene
@@ -198,6 +200,8 @@ export default class LithoSphere {
         this.removeLayer = this.layers.removeLayer
         this.toggleLayer = this.layers.toggleLayer
         this.setLayerOpacity = this.layers.setLayerOpacity
+        this.getLayerByName = this.layers.getLayerByName
+        this.hasLayer = this.layers.hasLayer
 
         // Initialize Tiled World
         this._.tiledWorld = new TiledWorld(this)

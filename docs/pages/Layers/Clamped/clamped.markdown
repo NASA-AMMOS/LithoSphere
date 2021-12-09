@@ -40,6 +40,11 @@ Litho.addLayer(
             byProp: {
                 'prop=images.0.test:blue': {},
             },
+            bearing: {
+                angleProp: 'yaw_rad', // path.to.bearing.prop
+                angleUnit: 'rad', //rad | deg
+                color: 'cyan', //css color
+            },
         },
         opacity: 1,
         minZoom: 11,
