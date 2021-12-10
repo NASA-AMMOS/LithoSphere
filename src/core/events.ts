@@ -426,7 +426,7 @@ export default class Events {
                 const lerpedDown = new Vector3().lerpVectors(
                     this.p._.cameras.orbit.camera.position,
                     this.p._.cameras.orbit.controls.target,
-                    e.shiftKey ? -0.025 : -0.015
+                    e.shiftKey ? -0.035 : -0.02
                 )
                 this.p._.cameras.orbit.camera.position.set(
                     lerpedDown.x,
@@ -440,7 +440,7 @@ export default class Events {
                 const lerpedUp = new Vector3().lerpVectors(
                     this.p._.cameras.orbit.camera.position,
                     this.p._.cameras.orbit.controls.target,
-                    e.shiftKey ? 0.025 : 0.015
+                    e.shiftKey ? 0.035 : 0.02
                 )
                 this.p._.cameras.orbit.camera.position.set(
                     lerpedUp.x,

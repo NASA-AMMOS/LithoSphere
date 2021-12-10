@@ -482,6 +482,7 @@ export default class ClampedLayerer {
                                     yaw = yaw * (Math.PI / 180)
                                 }
                             }
+                            yaw += Math.PI
 
                             const startingPoint = Utils.rotatePoint(
                                 {

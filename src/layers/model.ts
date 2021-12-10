@@ -233,7 +233,7 @@ export default class ModelLayerer {
                         model.rotateX(layerObj.rotation.x || 0)
                         break
                     case 'Y':
-                        model.rotateY(layerObj.rotation.y || 0)
+                        model.rotateY(-layerObj.rotation.y || 0)
                         break
                     case 'Z':
                         model.rotateZ(layerObj.rotation.z || 0)
