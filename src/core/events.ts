@@ -421,7 +421,7 @@ export default class Events {
             case 'ArrowRight':
                 this._rotateGlobe({ pageX: -speed, pageY: 0 }, { x: 0, y: 0 })
                 break
-            case 'q':
+            case 'g':
             case 'PageDown':
                 const lerpedDown = new Vector3().lerpVectors(
                     this.p._.cameras.orbit.camera.position,
@@ -435,7 +435,7 @@ export default class Events {
                 )
                 this._onZoom()
                 break
-            case 'e':
+            case 't':
             case 'PageUp':
                 const lerpedUp = new Vector3().lerpVectors(
                     this.p._.cameras.orbit.camera.position,
@@ -448,6 +448,18 @@ export default class Events {
                     lerpedUp.z
                 )
                 this._onZoom()
+                break
+            case 'q':
+                this.p._.cameras.orbit.controls.rotateLeft(Math.PI / 64)
+                break
+            case 'e':
+                this.p._.cameras.orbit.controls.rotateLeft(-Math.PI / 64)
+                break
+            case 'r':
+                this.p._.cameras.orbit.controls.rotateUp(Math.PI / 64)
+                break
+            case 'f':
+                this.p._.cameras.orbit.controls.rotateUp(-Math.PI / 64)
                 break
         }
     }

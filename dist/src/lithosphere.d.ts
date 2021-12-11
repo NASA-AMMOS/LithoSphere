@@ -8,6 +8,7 @@ interface Private {
     container: HTMLElement;
     sceneContainer: HTMLElement;
     wasInitialized: boolean;
+    rendererWrapper: any;
     renderer: any;
     cameras: any;
     cameraPositionTarget: number[];

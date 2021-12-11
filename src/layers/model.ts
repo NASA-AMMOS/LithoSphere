@@ -13,8 +13,11 @@ const gltfLoader = new GLTFLoader()
 export default class ModelLayerer {
     // parent
     p: any
+    modelCache: any
+
     constructor(parent: any) {
         this.p = parent
+        this.modelCache = {}
     }
 
     add = (layerObj: any, callback?: Function): void => {
@@ -100,16 +103,28 @@ export default class ModelLayerer {
     private generateModel = (layerObj: any, callback: Function) => {
         const modelType = Utils.getExtension(layerObj.path).toLowerCase()
 
+        if (this.modelCache[layerObj.path]) {
+            callback(this.modelCache[layerObj.path].clone())
+            return
+        }
+
+        const callback2 = (model) => {
+            if (model && layerObj.cache !== false) {
+                this.modelCache[layerObj.path] = model.clone()
+            }
+            callback(model)
+        }
+
         switch (modelType) {
             case 'obj':
-                this.objToModel(layerObj, callback)
+                this.objToModel(layerObj, callback2)
                 break
             case 'dae':
-                this.daeToModel(layerObj, callback)
+                this.daeToModel(layerObj, callback2)
                 break
             case 'glb':
             case 'gltf':
-                this.gltfToModel(layerObj, callback)
+                this.gltfToModel(layerObj, callback2)
                 break
             default:
                 console.warn(
@@ -201,61 +216,138 @@ export default class ModelLayerer {
     // Sets model position, scale, rotation, &c.
     private localizeModel = (layerObj, model) => {
         const parentMesh = new Object3D()
+        let position
+        let rotation
+        let scale
+        if (layerObj.isArrayed) {
+            let models = []
+            for (let i = 0; i < layerObj.position.length; i++) {
+                const modelC = model.clone()
+                const lng =
+                    layerObj.position[i].longitude ||
+                    layerObj.position[i].lng ||
+                    0
+                const lat =
+                    layerObj.position[i].latitude ||
+                    layerObj.position[i].lat ||
+                    0
+                const elev =
+                    (layerObj.position[i].elevation ||
+                        layerObj.position[i].elev ||
+                        0) * this.p.p.options.exaggeration
+                const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
+                modelC.position.set(pos.x, pos.y, pos.z)
 
-        const lng = layerObj.position.longitude || layerObj.position.lng || 0
-        const lat = layerObj.position.latitude || layerObj.position.lat || 0
-        const elev =
-            (layerObj.position.elevation || layerObj.position.elev || 0) *
-            this.p.p.options.exaggeration
-        const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
-        model.position.set(pos.x, pos.y, pos.z)
-
-        const quaternion = new Quaternion()
-        quaternion.setFromUnitVectors(
-            new Vector3(0, 1, 0),
-            new Vector3(pos.x, pos.y, pos.z).normalize()
-        )
-        model.applyQuaternion(quaternion)
-        model.rotateY(-lng * (Math.PI / 180))
-
-        if (layerObj.rotation) {
-            let order = layerObj.rotation.order || 'YXZ'
-            if (order.length != 3) {
-                console.warn(
-                    `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'YXZ'`
+                const quaternion = new Quaternion()
+                quaternion.setFromUnitVectors(
+                    new Vector3(0, 1, 0),
+                    new Vector3(pos.x, pos.y, pos.z).normalize()
                 )
-                order = 'YXZ'
-            }
-            model.rotation.order = order
-            order.split('').forEach((axis) => {
-                switch (axis) {
-                    case 'X':
-                        model.rotateX(layerObj.rotation.x || 0)
-                        break
-                    case 'Y':
-                        model.rotateY(-layerObj.rotation.y || 0)
-                        break
-                    case 'Z':
-                        model.rotateZ(layerObj.rotation.z || 0)
-                        break
-                    default:
+                modelC.applyQuaternion(quaternion)
+                modelC.rotateY(-lng * (Math.PI / 180))
+
+                if (layerObj.rotation) {
+                    const rotation =
+                        layerObj.rotation.length != null
+                            ? layerObj.rotation.length > i
+                                ? layerObj.rotation[i]
+                                : layerObj.rotation[
+                                      layerObj.rotation.length - 1
+                                  ]
+                            : layerObj.rotation
+
+                    let order = rotation.order || 'YXZ'
+                    if (order.length != 3) {
                         console.warn(
-                            `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order axis: ${axis}. Must be one of X, Y, Z`
+                            `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'YXZ'`
                         )
-                        break
+                        order = 'YXZ'
+                    }
+                    modelC.rotation.order = order
+                    order.split('').forEach((axis) => {
+                        switch (axis) {
+                            case 'X':
+                                modelC.rotateX(rotation.x || 0)
+                                break
+                            case 'Y':
+                                modelC.rotateY(-rotation.y || 0)
+                                break
+                            case 'Z':
+                                modelC.rotateZ(rotation.z || 0)
+                                break
+                            default:
+                                console.warn(
+                                    `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order axis: ${axis}. Must be one of X, Y, Z`
+                                )
+                                break
+                        }
+                    })
                 }
-            })
-        }
-        if (layerObj.scale != null) {
-            const s = layerObj.scale
-            model.scale.set(s || 1, s || 1, s || 1)
+                if (layerObj.scale != null) {
+                    const s = layerObj.scale[i] || layerObj.scale || 1
+                    modelC.scale.set(s || 1, s || 1, s || 1)
+                }
+
+                parentMesh.add(modelC)
+            }
+        } else {
+            const lng =
+                layerObj.position.longitude || layerObj.position.lng || 0
+            const lat = layerObj.position.latitude || layerObj.position.lat || 0
+            const elev =
+                (layerObj.position.elevation || layerObj.position.elev || 0) *
+                this.p.p.options.exaggeration
+            const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
+            model.position.set(pos.x, pos.y, pos.z)
+
+            const quaternion = new Quaternion()
+            quaternion.setFromUnitVectors(
+                new Vector3(0, 1, 0),
+                new Vector3(pos.x, pos.y, pos.z).normalize()
+            )
+            model.applyQuaternion(quaternion)
+            model.rotateY(-lng * (Math.PI / 180))
+
+            if (layerObj.rotation) {
+                let order = layerObj.rotation.order || 'YXZ'
+                if (order.length != 3) {
+                    console.warn(
+                        `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'YXZ'`
+                    )
+                    order = 'YXZ'
+                }
+                model.rotation.order = order
+                order.split('').forEach((axis) => {
+                    switch (axis) {
+                        case 'X':
+                            model.rotateX(layerObj.rotation.x || 0)
+                            break
+                        case 'Y':
+                            model.rotateY(-layerObj.rotation.y || 0)
+                            break
+                        case 'Z':
+                            model.rotateZ(layerObj.rotation.z || 0)
+                            break
+                        default:
+                            console.warn(
+                                `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order axis: ${axis}. Must be one of X, Y, Z`
+                            )
+                            break
+                    }
+                })
+            }
+            if (layerObj.scale != null) {
+                const s = layerObj.scale
+                model.scale.set(s || 1, s || 1, s || 1)
+            }
+
+            parentMesh.add(model)
         }
 
         if (layerObj.on == false) {
-            model.visible = false
+            parentMesh.visible = false
         }
 
-        parentMesh.add(model)
         return parentMesh
     }
 }

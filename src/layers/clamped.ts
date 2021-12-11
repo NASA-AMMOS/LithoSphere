@@ -451,7 +451,7 @@ export default class ClampedLayerer {
 
                         // Compute radius in meters
                         const lnglatRadiusAway = this.p.p.projection.tileXYZ2LatLng(
-                            x + style.radius / canvas.width,
+                            x + (style.radius + ctx.lineWidth) / canvas.width,
                             y,
                             this.p.p.zoom
                         )

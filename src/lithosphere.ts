@@ -34,6 +34,7 @@ interface Private {
     container: HTMLElement
     sceneContainer: HTMLElement
     wasInitialized: boolean
+    rendererWrapper: any
     renderer: any
     cameras: any
     cameraPositionTarget: number[]
@@ -106,6 +107,7 @@ export default class LithoSphere {
             container: document.getElementById(containerId),
             sceneContainer: sceneContainer,
             wasInitialized: false,
+            rendererWrapper: null,
             renderer: null,
             cameras: null,
             cameraPositionTarget: null,
@@ -115,7 +117,7 @@ export default class LithoSphere {
             minNativeZoom: 0,
             loader: new TextureLoader(),
             raycaster: new Raycaster(),
-            updateEveryNthRender: 2,
+            updateEveryNthRender: 1,
             counters: {
                 update: 0,
                 frame: 0,
@@ -170,7 +172,8 @@ export default class LithoSphere {
 
     _init(): boolean {
         // Create the renderer
-        this._.renderer = new Renderer(this._.sceneContainer).renderer
+        this._.rendererWrapper = new Renderer(this._.sceneContainer)
+        this._.renderer = this._.rendererWrapper.renderer
 
         // Make sure it was made and set to initialized
         if (this._.renderer) {
@@ -339,7 +342,7 @@ export default class LithoSphere {
         this._.counters.update =
             (this._.counters.update + 1) % this._.updateEveryNthRender
         if (this._.counters.update === 0) this._update()
-        else if (!this._.cameras.isFirstPerson)
+        if (!this._.cameras.isFirstPerson)
             this._.cameras.orbit.controls.update()
 
         this.layers.tile3d.forEach((tile3d) => {
@@ -439,6 +442,8 @@ export default class LithoSphere {
             { pageX: 0, pageY: 0 },
             { x: 0.0001, y: 0.0001 }
         )
+        // Just in case canvas width and height messes up in some setups
+        this._.rendererWrapper.updateSize()
 
         setTimeout(() => {
             // Repositions center

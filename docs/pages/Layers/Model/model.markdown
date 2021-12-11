@@ -36,6 +36,7 @@ Litho.addLayer(
             z: 0, // default 0
             order: 'YXZ', //default YXZ
         },
+        // cache: true, // default true // If true, uses cloned meshes from the first download
     },
     () => {
         console.log('Rover loaded')
