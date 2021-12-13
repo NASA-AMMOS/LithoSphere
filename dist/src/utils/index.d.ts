@@ -18,5 +18,7 @@ declare const Utils: {
     rotateAroundArbAxis(object: any, axis: any, radians: any, noPremultiply?: boolean): void;
     getParamString(params: any, baseUrl: string, isUppercase?: boolean): string;
     isArray(object: any): boolean;
+    setChildrenMaterialOpacity(model: any, opacity: number, recurse?: Function): void;
+    setAllMaterialOpacity(model: any, opacity: any): void;
 };
 export default Utils;

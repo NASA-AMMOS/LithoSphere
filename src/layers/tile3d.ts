@@ -1,5 +1,5 @@
 import { TilesRenderer } from '3d-tiles-renderer'
-import { Vector3, Object3D, MeshBasicMaterial } from 'three'
+import { Vector3, Object3D, Quaternion, MeshBasicMaterial } from 'three'
 
 import Utils from '../utils'
 
@@ -34,7 +34,6 @@ export default class Tile3dLayerer {
             }
             if (!alreadyExists) {
                 const tilesRenderer = this.generateTile3ds(layerObj)
-                const meshes = tilesRenderer.group
                 const tile3dLayer = new Object3D()
                 // @ts-ignore
                 tile3dLayer.material = new MeshBasicMaterial({
@@ -42,10 +41,10 @@ export default class Tile3dLayerer {
                     opacity: 0.5,
                     color: 0xaaaaaa,
                 })
-                tile3dLayer.add(meshes)
                 this.p.p.planet.add(tile3dLayer)
-                this.localizeTile3ds(layerObj, tilesRenderer)
-                layerObj.meshes = meshes
+                const model = this.localizeTile3ds(layerObj, tilesRenderer)
+                tile3dLayer.add(model)
+                layerObj.meshes = model
                 layerObj.renderer = tilesRenderer
                 layerObj.tile3dLayer = tile3dLayer
                 this.p.tile3d.push(layerObj)
@@ -115,6 +114,66 @@ export default class Tile3dLayerer {
     }
 
     private localizeTile3ds = (layerObj: any, tilesRenderer: any) => {
+        const parentMesh = new Object3D()
+
+        const lng = layerObj.position.longitude || layerObj.position.lng || 0
+        const lat = layerObj.position.latitude || layerObj.position.lat || 0
+        const elev =
+            (layerObj.position.elevation || layerObj.position.elev || 0) *
+            this.p.p.options.exaggeration
+        const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
+        tilesRenderer.group.position.set(pos.x, pos.y, pos.z)
+
+        const quaternion = new Quaternion()
+        quaternion.setFromUnitVectors(
+            new Vector3(0, 1, 0),
+            new Vector3(pos.x, pos.y, pos.z).normalize()
+        )
+        tilesRenderer.group.applyQuaternion(quaternion)
+        tilesRenderer.group.rotateY(-lng * (Math.PI / 180))
+
+        if (layerObj.rotation) {
+            let order = layerObj.rotation.order || 'YXZ'
+            if (order.length != 3) {
+                console.warn(
+                    `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'YXZ'`
+                )
+                order = 'YXZ'
+            }
+            tilesRenderer.group.rotation.order = order
+            order.split('').forEach((axis) => {
+                switch (axis) {
+                    case 'X':
+                        tilesRenderer.group.rotateX(layerObj.rotation.x || 0)
+                        break
+                    case 'Y':
+                        tilesRenderer.group.rotateY(layerObj.rotation.y || 0)
+                        break
+                    case 'Z':
+                        tilesRenderer.group.rotateZ(layerObj.rotation.z || 0)
+                        break
+                    default:
+                        console.warn(
+                            `Lithosphere: Warning - Model Layer "${layerObj.name}" has an invalid rotation.order axis: ${axis}. Must be one of X, Y, Z`
+                        )
+                        break
+                }
+            })
+        }
+        if (layerObj.scale != null) {
+            const s = layerObj.scale
+            tilesRenderer.group.scale.set(s || 1, s || 1, s || 1)
+        }
+
+        if (layerObj.on == false) {
+            tilesRenderer.group.visible = false
+        }
+
+        parentMesh.add(tilesRenderer.group)
+        return parentMesh
+
+        /*
+        ///
         // position
         const v = this.p.p.projection.lonLatToVector3(
             layerObj.position.longitude || layerObj.position.lng || 0,
@@ -175,5 +234,6 @@ export default class Tile3dLayerer {
                     break
             }
         }
+        */
     }
 }

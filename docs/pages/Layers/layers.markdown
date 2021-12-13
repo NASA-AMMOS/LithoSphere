@@ -19,4 +19,6 @@ Litho.addLayer(type, options)
 Litho.setLayerOpacity(name, opacity)
 Litho.toggleLayer(name)
 Litho.removeLayer(name)
+Litho.getLayerByName(name)
+Litho.hasLayer(name)
 ```

@@ -4,6 +4,7 @@ import Tile3dLayerer from './tile3d'
 import TileLayerer from './tile'
 import ClampedLayerer from './clamped'
 import VectorLayerer from './vector'
+import ModelLayerer from './model'
 
 interface Private {
     layerers: {
@@ -11,6 +12,7 @@ interface Private {
         tile: TileLayerer
         clamped: ClampedLayerer
         vector: VectorLayerer
+        model: ModelLayerer
     }
 }
 
@@ -23,6 +25,7 @@ export default class Layers {
     tile: any
     clamped: any
     vector: any
+    model: any
     all: any
 
     constructor(parent: any) {
@@ -40,6 +43,7 @@ export default class Layers {
                 tile: new TileLayerer(this),
                 clamped: new ClampedLayerer(this),
                 vector: new VectorLayerer(this),
+                model: new ModelLayerer(this),
             },
         }
         this._reset()
@@ -50,6 +54,7 @@ export default class Layers {
         this.tile = []
         this.clamped = []
         this.vector = []
+        this.model = []
 
         // For convenience
         // The order here is also used by the layers control
@@ -58,6 +63,7 @@ export default class Layers {
             tile: this.tile,
             clamped: this.clamped,
             vector: this.vector,
+            model: this.model,
         }
     }
 
@@ -175,6 +181,10 @@ export default class Layers {
             }
         }
         return null
+    }
+
+    hasLayer = (layerName: string): any => {
+        return this.getLayerByName(layerName) != null
     }
 
     // Computes a feature's style given it layer styling configuration
