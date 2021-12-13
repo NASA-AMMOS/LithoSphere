@@ -18,3 +18,20 @@ LithoSphere's first release!
 ### Changed
 
 -   PNG.js and zlib.js are now modules instead of globals
+
+## v1.0.3
+
+#### Added
+
+-   {constructor}.demFallback
+
+#### Fixed
+
+-   {vector/clamped layer}.letPropertiesStyleOverride
+
+## v1.1.0
+
+#### Added
+
+-   Model layer type (.dae, .gltf, .obj)
+-   Keyboard navigation controls (wasd = pan, qe = rotate, rf = dolly, tg: zoom)
