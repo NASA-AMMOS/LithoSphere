@@ -34,4 +34,5 @@ LithoSphere's first release!
 #### Added
 
 -   Model layer type (.dae, .gltf, .obj)
+-   Bearings (directional arrows) for clamped vector points
 -   Keyboard navigation controls (wasd = pan, qe = rotate, rf = dolly, tg: zoom)
