@@ -73,6 +73,26 @@ const Shaders = {
                 'vec4 C' + i + ' = texture2D(t' + i + ', vUv);\n' +
                 'C = vec4( C' + i + '.rgb * (C' + i + '.a * tA' + i + ') + C.rgb * C.a * (1.0 - (C' + i + '.a * tA' + i + ')), 1);\n'
         }
+        // prettier-ignore
+        baseShaderFrag += 
+        // Unmultiply Alpha
+        'C.rgb /= C.a;\n'
+        // Apply Contrast
+        + 'C.rgb = ((C.rgb - 0.5f) * max(2.5f, 0.0f)) + 0.5f;\n'
+        // Apply Brightness
+        //+ 'C.rgb *= 1.8f;\n'
+        // Apply Saturation
+        /*
+        + 'float sat = 1.4f;\n'
+        + 'float x = sat * (2.0f / 3.0f) + 1.0f;\n'
+        + 'float y = (x - 1.0f) * -0.5f;\n'
+        + 'vec4 Csat = C;\n' 
+        + 'C.r = Csat.r * x + Csat.g * y + Csat.b * y;\n'
+        + 'C.g = Csat.r * y + Csat.g * x + Csat.b * y;\n'
+        + 'C.b = Csat.r * y + Csat.g * y + Csat.b * x;\n'
+        */
+        // Reset alpha
+        + 'C.rgb *= C.a;\n'
 
         baseShaderFrag += 'if ('
         for (let i = 0; i < numberOfTextures; i++) {
