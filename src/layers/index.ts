@@ -136,6 +136,40 @@ export default class Layers {
         return true
     }
 
+    setLayerFilterEffect = (
+        name: string,
+        filter: string,
+        value: number
+    ): boolean => {
+        const allowableFilterEffects = [
+            'brightness',
+            'contrast',
+            'saturation',
+            'blendCode',
+            'blend',
+        ]
+        if (!allowableFilterEffects.includes(filter)) {
+            console.warn(
+                `Filter ${filter} must be one of: ${allowableFilterEffects.toString()}.`
+            )
+            return false
+        }
+
+        const didFilter = this._.layerers.tile.setFilterEffect(
+            name,
+            filter,
+            // @ts-ignore
+            parseFloat(value)
+        )
+        if (!didFilter) {
+            console.warn(
+                `Could not find tile layer named '${name}' to set the filter of.`
+            )
+            return false
+        }
+        return true
+    }
+
     // Helper
     findHighestMaxZoom = (): number => {
         let highest = 0

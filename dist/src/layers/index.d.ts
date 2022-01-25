@@ -28,6 +28,7 @@ export default class Layers {
     removeLayer: (name: string) => boolean;
     toggleLayer: (name: string, on?: boolean) => boolean;
     setLayerOpacity: (name: string, opacity: number) => boolean;
+    setLayerFilterEffect: (name: string, filter: string, value: number) => boolean;
     findHighestMaxZoom: () => number;
     findLowestMinZoom: () => number;
     private getFeatureStyleProp;

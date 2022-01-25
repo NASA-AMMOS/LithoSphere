@@ -34,11 +34,8 @@ const Shaders = {
             'precision highp float;\n' +
             '#endif\n' +
             'varying vec2 vUv;\n' +
-            'attribute vec3 customColor;\n' +
-            'varying vec3 vColor;\n' +
             'void main() {\n' +
                 'vUv = uv;\n' +
-                'vColor = customColor;\n' +
                 'vec4 mvPosition = viewMatrix * modelMatrix * vec4(position, 1.0);\n' +
                 'gl_Position = projectionMatrix * mvPosition;\n' +
             '}'
@@ -51,49 +48,55 @@ const Shaders = {
             baseShaderFrag +=
                 'uniform sampler2D t' + i + ';\n' +
                 'uniform float tA' + i + ';\n' +
-                'uniform float tVAT' + i + ';\n'
+                'uniform float tVAT' + i + ';\n' +
+                'uniform float fbrightness' + i + ';\n' +
+                'uniform float fcontrast' + i + ';\n' +
+                'uniform float fsaturation' + i + ';\n' +
+                'uniform float fblendCode' + i + ';\n' +
+                'uniform float fblend' + i + ';\n'
         }
 
         // prettier-ignore
         baseShaderFrag +=
             'varying vec2 vUv;\n' +
-            'varying vec3 vColor;\n' +
             'void main(void) {\n' +
-                'vec4 C;\n' +
-                'vec4 B = vec4(0,0,0,0);\n' + //transparent base layer
-                'vec4 C0 = texture2D(t0, vUv);\n' +
-                'float highestA = tA0;\n'
-
-        baseShaderFrag +=
-            'C = vec4( C0.rgb * (C0.a * tA0) + B.rgb * B.a * (1.0 - (C0.a * tA0)), 1);\n' // blending equation
-        for (let i = 1; i < numberOfTextures; i++) {
+                'vec4 C = vec4(0,0,0,0);\n' //transparent base layer
+        // This will be our base alpha
+        let highestA = 0
+        for (let i = 0; i < numberOfTextures; i++) {
             // prettier-ignore
             baseShaderFrag +=
-                'if ( tVAT' + i + ' == 0.0 && tA' + i +' > highestA ){ highestA = tA' + i + '; }\n' +
-                'vec4 C' + i + ' = texture2D(t' + i + ', vUv);\n' +
-                'C = vec4( C' + i + '.rgb * (C' + i + '.a * tA' + i + ') + C.rgb * C.a * (1.0 - (C' + i + '.a * tA' + i + ')), 1);\n'
-        }
-        // prettier-ignore
-        baseShaderFrag += 
-        // Unmultiply Alpha
-        'C.rgb /= C.a;\n'
-        // Apply Contrast
-        + 'C.rgb = ((C.rgb - 0.5f) * max(2.5f, 0.0f)) + 0.5f;\n'
-        // Apply Brightness
-        //+ 'C.rgb *= 1.8f;\n'
-        // Apply Saturation
-        /*
-        + 'float sat = 1.4f;\n'
-        + 'float x = sat * (2.0f / 3.0f) + 1.0f;\n'
-        + 'float y = (x - 1.0f) * -0.5f;\n'
-        + 'vec4 Csat = C;\n' 
-        + 'C.r = Csat.r * x + Csat.g * y + Csat.b * y;\n'
-        + 'C.g = Csat.r * y + Csat.g * x + Csat.b * y;\n'
-        + 'C.b = Csat.r * y + Csat.g * y + Csat.b * x;\n'
-        */
-        // Reset alpha
-        + 'C.rgb *= C.a;\n'
+                `vec4 C${i} = texture2D(t${i}, vUv);\n`
+                + `if ( tVAT${i} == 0.0 ) {\n`
+                    // Apply Contrast
+                    + `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n`
+                    // Apply Brightness
+                    + `C${i}.rgb *= fbrightness${i};\n`
+                    // Apply Saturation
+                    + `float sat = fsaturation${i} - 1.0f;\n`
+                    + `float x = sat * (2.0f / 3.0f) + 1.0f;\n`
+                    + `float y = (x - 1.0f) * -0.5f;\n`
+                    + `vec4 Csat = C${i};\n` 
+                    + `C${i}.r = Csat.r * x + Csat.g * y + Csat.b * y;\n`
+                    + `C${i}.g = Csat.r * y + Csat.g * x + Csat.b * y;\n`
+                    + `C${i}.b = Csat.r * y + Csat.g * y + Csat.b * x;\n`
+                + '}\n'
+                // prettier-ignore
+                + `C = vec4( C${i}.rgb * (C${i}.a * tA${i}) + C.rgb * C.a * (1.0 - (C${i}.a * tA${i})), 1);\n`
 
+            // Find highest alpha of non-vector-as-tile-layers (VAT) too
+            if (textures[i].isVat === 0 && textures[i].opacity > highestA)
+                highestA = textures[i].opacity
+        }
+        if (highestA === 0) highestA = 1
+        // prettier-ignore
+        //baseShaderFrag +=
+        // Unmultiply Alpha
+        //'C.rgb /= C.a;\n'
+        // Reset alpha
+        //+ 'C.rgb *= C.a;\n'
+
+        // discard if all transparent
         baseShaderFrag += 'if ('
         for (let i = 0; i < numberOfTextures; i++) {
             baseShaderFrag += ' C' + i + '.a == 0.0'
@@ -106,13 +109,8 @@ const Shaders = {
                 '){\n' +
                     'discard;\n' +
                 '}\n' +
-                'if (vColor.r * vColor.g * vColor.b == 1.0){\n' +
-                    'discard;\n' +
-                '}\n' +
-                'if (!(vColor.r == 0.0 && vColor.g == 0.0 && vColor.b == 0.0)){\n' +
-                    'C = vec4(vColor, 1);\n' +
-                '}\n' +
-                'C.a = highestA;\n' +
+                
+                `C.a = ${highestA.toFixed(1)}f;\n` +
                 'gl_FragColor = C;\n' +
             '}'
 
@@ -122,6 +120,17 @@ const Shaders = {
             uniforms['t' + i] = { value: textures[i].texture }
             uniforms['tA' + i] = { value: fadeIn ? 0 : textures[i].opacity }
             uniforms['tVAT' + i] = { value: textures[i].isVAT }
+            uniforms['fbrightness' + i] = {
+                value: textures[i].filters.brightness,
+            }
+            uniforms['fcontrast' + i] = { value: textures[i].filters.contrast }
+            uniforms['fsaturation' + i] = {
+                value: textures[i].filters.saturation,
+            }
+            uniforms['fblendCode' + i] = {
+                value: textures[i].filters.blendCode,
+            }
+            uniforms['fblend' + i] = { value: textures[i].filters.blend }
         }
 
         //Now make the material
