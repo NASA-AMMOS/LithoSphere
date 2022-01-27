@@ -216,7 +216,7 @@ export default class Layers {
         return null
     }
 
-    hasLayer = (layerName: string): any => {
+    hasLayer = (layerName: string): boolean => {
         return this.getLayerByName(layerName) != null
     }
 

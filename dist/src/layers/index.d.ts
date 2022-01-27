@@ -33,7 +33,7 @@ export default class Layers {
     findLowestMinZoom: () => number;
     private getFeatureStyleProp;
     getLayerByName: (layerName: string) => any;
-    hasLayer: (layerName: string) => any;
+    hasLayer: (layerName: string) => boolean;
     getFeatureStyle: (layer: any, feature: any, isStrokeless?: boolean) => any;
 }
 export {};

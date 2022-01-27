@@ -69,7 +69,7 @@
                     resunitsperpixel: 34,
                     reszoomlevel: 0,
                 },
-                radiusOfTiles: 6, //default 4
+                radiusOfTiles: 4, //default 4
                 //wireframeMode: true,
                 //exaggeration: 1, //default 1
                 showAxes: true,
@@ -147,6 +147,7 @@
                 noDataValue: 0, //opt (number) - no data dem value //unused
             })
             Litho.setLayerFilterEffect('HiRISE', 'blendCode', 2)
+            //Litho.options.radiusOfTiles = 10
 
             Litho.addLayer('tile3d', {
                 name: '3dTileExample',

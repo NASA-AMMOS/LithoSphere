@@ -75,6 +75,27 @@ const Shaders = {
                 `vec4 C${i} = texture2D(t${i}, vUv);\n` +
                  (( textures[i].isVAT ===  0) ?
                     (( i > 0 ) ?
+                        // Color Blend
+                        `if (fblendCode${i} == 2.0) {\n` + 
+                            `backdropHSL = RGBtoHSL(C.rgb);\n` +
+                            `currentHSL = RGBtoHSL(C${i}.rgb);\n` +
+                            `currentHSL.z = backdropHSL.z;\n` +
+                            `C${i}.rgb = HSLtoRGB(currentHSL);\n` +
+                        `}\n`
+                    : '') + 
+                    // Apply Contrast
+                    `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n` +
+                    // Apply Brightness
+                    `C${i}.rgb *= fbrightness${i};\n` +
+                    // Apply Saturation
+                    `sat = fsaturation${i} - 1.0f;\n` +
+                    `x = sat * (2.0f / 3.0f) + 1.0f;\n` +
+                    `y = (x - 1.0f) * -0.5f;\n` +
+                    `Csat = C${i};\n` +
+                    `C${i}.r = Csat.r * x + Csat.g * y + Csat.b * y;\n` +
+                    `C${i}.g = Csat.r * y + Csat.g * x + Csat.b * y;\n` +
+                    `C${i}.b = Csat.r * y + Csat.g * y + Csat.b * x;\n` +
+                    (( i > 0 ) ?
                         // Overlay Blend
                         `if (fblendCode${i} == 1.0) {\n` + 
                             `if (C${i}.r < 0.5f) {\n` +
@@ -92,27 +113,8 @@ const Shaders = {
                             `} else {\n` +
                                 `C${i}.b = 1.0f - (2.0f * (1.0f - C.b) * (1.0f - C${i}.b));\n` +
                             `}\n` +
-                        `}\n` +
-                        // Color Blend
-                        `if (fblendCode${i} == 2.0) {\n` + 
-                            `backdropHSL = RGBtoHSL(C.rgb);\n` +
-                            `currentHSL = RGBtoHSL(C${i}.rgb);\n` +
-                            `currentHSL.z = backdropHSL.z;\n` +
-                            `C${i}.rgb = HSLtoRGB(currentHSL);\n` +
                         `}\n`
-                    : '') +
-                    // Apply Contrast
-                    `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n` +
-                    // Apply Brightness
-                    `C${i}.rgb *= fbrightness${i};\n` +
-                    // Apply Saturation
-                    `sat = fsaturation${i} - 1.0f;\n` +
-                    `x = sat * (2.0f / 3.0f) + 1.0f;\n` +
-                    `y = (x - 1.0f) * -0.5f;\n` +
-                    `Csat = C${i};\n` +
-                    `C${i}.r = Csat.r * x + Csat.g * y + Csat.b * y;\n` +
-                    `C${i}.g = Csat.r * y + Csat.g * x + Csat.b * y;\n` +
-                    `C${i}.b = Csat.r * y + Csat.g * y + Csat.b * x;\n`
+                    : '')
                 : '') +
                 // prettier-ignore
                 `C = vec4( C${i}.rgb * (C${i}.a * tA${i}) + C.rgb * C.a * (1.0 - (C${i}.a * tA${i})), 1);\n`
@@ -241,7 +243,7 @@ const Shaders = {
 function getColorSpaceFunctions() {
     // prettier-ignore
     return [
-        'vec3 RGBtoHSL(in vec3 RGB) {',
+        'vec3 RGBtoHSL(in vec3 RGB) {\n',
             'float cMax = max(max(RGB.r, RGB.g), RGB.b);\n',
             'float cMin = min(min(RGB.r, RGB.g), RGB.b);\n',
             'float delta = cMax - cMin;\n',
