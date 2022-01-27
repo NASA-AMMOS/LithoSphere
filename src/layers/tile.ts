@@ -80,6 +80,25 @@ export default class TileLayerer {
         return false
     }
 
+    setFilterEffect = (
+        name: string,
+        filter: string,
+        value: number
+    ): boolean => {
+        if (!this.p.p._.wasInitialized) return false
+
+        for (let i = 0; i < this.p.tile.length; i++) {
+            if (this.p.tile[i].hasOwnProperty('name')) {
+                this.p.tile[i].filters = this.p.tile[i].filters || {}
+                if (this.p.tile[i].name == name) {
+                    this.p.tile[i].filters[filter] = value
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     remove = (name: string): boolean => {
         if (!this.p.p._.wasInitialized) return false
 

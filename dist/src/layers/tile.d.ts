@@ -4,5 +4,6 @@ export default class TileLayerer {
     add: (layerObj: any) => void;
     toggle: (name: string, on?: boolean) => boolean;
     setOpacity: (name: string, opacity: number) => boolean;
+    setFilterEffect: (name: string, filter: string, value: number) => boolean;
     remove: (name: string) => boolean;
 }

@@ -168,6 +168,8 @@ export default class TiledWorld {
         }
         if (percent) percent.innerHTML = this.tilesToBeDrawn.length
 
+        // Adjust brightness, contrast, blend, &c.
+        this.filterEffects()
         //Fade in existing tiles
         // Tile by default start at 0 opacity and increase until the set opacity
         this.fadeInTiles()
@@ -738,6 +740,13 @@ export default class TiledWorld {
                             texture: textures[i].texture,
                             opacity: textures[i].opacity,
                             isVAT: 0,
+                            filters: {
+                                brightness: 1,
+                                contrast: 1,
+                                saturation: 1,
+                                blendCode: 0, //0 = none, 1 = overlay, 2 = color
+                                blend: 0,
+                            },
                             i: orderingI,
                         })
                         orderingI++
@@ -751,6 +760,13 @@ export default class TiledWorld {
                             texture: textures[i].texture,
                             opacity: textures[i].opacity,
                             isVAT: 1,
+                            filters: {
+                                brightness: 1,
+                                contrast: 1,
+                                saturation: 1,
+                                blendCode: 0, //0 = none, 1 = overlay, 2 = color
+                                blend: 0,
+                            },
                             i: orderingI,
                         })
                         orderingI++
@@ -1044,6 +1060,61 @@ export default class TiledWorld {
         }
         for (const t in this.tilesBeingDrawn) {
             this.tilesBeingDrawn[t].make = false
+        }
+    }
+
+    // Smoothly transitions filter effects
+    filterEffects(): void {
+        const transitionFilters = [
+            'brightness',
+            'contrast',
+            'saturation',
+            'blendCode',
+        ]
+        for (const m in this.tilesDrawn) {
+            for (const n in this.tilesDrawn[m].from.rasters) {
+                if (
+                    this.tilesDrawn[m] &&
+                    this.tilesDrawn[m].t &&
+                    this.tilesDrawn[m].t.material.hasOwnProperty('uniforms')
+                ) {
+                    const layer = this.p.layers.getLayerByName(
+                        this.tilesDrawn[m].from.rasters[n].name
+                    )
+                    if (layer && layer.filters) {
+                        // Brightness
+                        transitionFilters.forEach((f) => {
+                            const desiredFilter = layer.filters[f]
+                            if (desiredFilter == null) return
+                            const currentFilter = this.tilesDrawn[m].t.material
+                                .uniforms[`f${f}${n}`].value
+                            if (f == 'blendCode') {
+                                this.tilesDrawn[m].t.material.uniforms[
+                                    `f${f}${n}`
+                                ].value = desiredFilter
+                            } else if (desiredFilter > currentFilter) {
+                                this.tilesDrawn[m].t.material.uniforms[
+                                    `f${f}${n}`
+                                ].value = Math.min(
+                                    this.tilesDrawn[m].t.material.uniforms[
+                                        `f${f}${n}`
+                                    ].value + 0.1,
+                                    desiredFilter
+                                )
+                            } else {
+                                this.tilesDrawn[m].t.material.uniforms[
+                                    `f${f}${n}`
+                                ].value = Math.max(
+                                    this.tilesDrawn[m].t.material.uniforms[
+                                        `f${f}${n}`
+                                    ].value - 0.1,
+                                    desiredFilter
+                                )
+                            }
+                        })
+                    }
+                }
+            }
         }
     }
 
