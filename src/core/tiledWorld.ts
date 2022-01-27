@@ -1069,7 +1069,7 @@ export default class TiledWorld {
             'brightness',
             'contrast',
             'saturation',
-            'blend',
+            'blendCode',
         ]
         for (const m in this.tilesDrawn) {
             for (const n in this.tilesDrawn[m].from.rasters) {
@@ -1088,8 +1088,11 @@ export default class TiledWorld {
                             if (desiredFilter == null) return
                             const currentFilter = this.tilesDrawn[m].t.material
                                 .uniforms[`f${f}${n}`].value
-
-                            if (desiredFilter > currentFilter) {
+                            if (f == 'blendCode') {
+                                this.tilesDrawn[m].t.material.uniforms[
+                                    `f${f}${n}`
+                                ].value = desiredFilter
+                            } else if (desiredFilter > currentFilter) {
                                 this.tilesDrawn[m].t.material.uniforms[
                                     `f${f}${n}`
                                 ].value = Math.min(

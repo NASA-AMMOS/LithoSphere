@@ -69,6 +69,7 @@
                     resunitsperpixel: 34,
                     reszoomlevel: 0,
                 },
+                radiusOfTiles: 6, //default 4
                 //wireframeMode: true,
                 //exaggeration: 1, //default 1
                 showAxes: true,
@@ -108,10 +109,10 @@
                 minZoom: 10,
                 maxZoom: 17,
                 filters: {
-                    brightness: 1.5,
+                    brightness: 1,
                     contrast: 1,
                     saturation: 1,
-                    blendCode: 0, //0 = none, 1 = overlay, 2 = color
+                    blendCode: 0, //0 = none, 1 = overlay - caveat - tile zooms for all layers should line up,
                     blend: 0,
                 },
                 boundingBox: [
@@ -145,7 +146,7 @@
                 ],
                 noDataValue: 0, //opt (number) - no data dem value //unused
             })
-            Litho.setLayerFilterEffect('HiRISE', 'contrast', 1.5)
+            Litho.setLayerFilterEffect('HiRISE', 'blendCode', 2)
 
             Litho.addLayer('tile3d', {
                 name: '3dTileExample',

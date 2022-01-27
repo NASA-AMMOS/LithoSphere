@@ -146,7 +146,6 @@ export default class Layers {
             'contrast',
             'saturation',
             'blendCode',
-            'blend',
         ]
         if (!allowableFilterEffects.includes(filter)) {
             console.warn(
