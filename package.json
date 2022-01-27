@@ -1,6 +1,6 @@
 {
     "name": "lithosphere",
-    "version": "1.0.3",
+    "version": "1.2.0",
     "description": "LithoSphere is a GIS JavaScript library for building 3D tile-based globes in the web browser.",
     "author": "Tariq Soliman",
     "license": "Apache-2.0",
@@ -16,6 +16,7 @@
     "scripts": {
         "start": "npm run start:dev",
         "start:dev": "webpack --mode=development --watch --progress",
+        "start:docs": "cd ./docs && bundle exec jekyll serve",
         "build": "npm run build:prod",
         "build:prod": "webpack --mode=production",
         "prepublishOnly": "webpack --mode=production",

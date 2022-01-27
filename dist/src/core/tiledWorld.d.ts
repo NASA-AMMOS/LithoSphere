@@ -27,6 +27,7 @@ export default class TiledWorld {
     removeAllOutdatedTiles(): void;
     removeTileXYZ(xyz: XYZ): void;
     killDrawingTiles(): void;
+    filterEffects(): void;
     fadeInTiles(): void;
     fadeOutTiles(): void;
 }

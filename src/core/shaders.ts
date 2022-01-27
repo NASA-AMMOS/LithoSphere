@@ -34,46 +34,98 @@ const Shaders = {
             'precision highp float;\n' +
             '#endif\n' +
             'varying vec2 vUv;\n' +
-            'attribute vec3 customColor;\n' +
-            'varying vec3 vColor;\n' +
             'void main() {\n' +
                 'vUv = uv;\n' +
-                'vColor = customColor;\n' +
                 'vec4 mvPosition = viewMatrix * modelMatrix * vec4(position, 1.0);\n' +
                 'gl_Position = projectionMatrix * mvPosition;\n' +
             '}'
 
         let baseShaderFrag =
-            '#ifdef GL_ES\n' + 'precision highp float;\n' + '#endif\n'
+            `${getColorSpaceFunctions()}\n\n` +
+            '#ifdef GL_ES\n' +
+            'precision highp float;\n' +
+            '#endif\n'
 
         for (let i = 0; i < numberOfTextures; i++) {
             // prettier-ignore
             baseShaderFrag +=
                 'uniform sampler2D t' + i + ';\n' +
                 'uniform float tA' + i + ';\n' +
-                'uniform float tVAT' + i + ';\n'
+                'uniform float fbrightness' + i + ';\n' +
+                'uniform float fcontrast' + i + ';\n' +
+                'uniform float fsaturation' + i + ';\n' +
+                'uniform float fblendCode' + i + ';\n'
         }
 
         // prettier-ignore
         baseShaderFrag +=
             'varying vec2 vUv;\n' +
-            'varying vec3 vColor;\n' +
+            'float sat;\n' +
+            'float x;\n' +
+            'float y;\n' +
+            'vec4 Csat;\n' + // saturation related
+            'vec3 backdropHSL;\nvec3 currentHSL;\n' + // color blend related
             'void main(void) {\n' +
-                'vec4 C;\n' +
-                'vec4 B = vec4(0,0,0,0);\n' + //transparent base layer
-                'vec4 C0 = texture2D(t0, vUv);\n' +
-                'float highestA = tA0;\n'
-
-        baseShaderFrag +=
-            'C = vec4( C0.rgb * (C0.a * tA0) + B.rgb * B.a * (1.0 - (C0.a * tA0)), 1);\n' // blending equation
-        for (let i = 1; i < numberOfTextures; i++) {
+                'vec4 C = vec4(0,0,0,0);\n' //transparent base layer
+        // This will be our base alpha
+        let highestA = 0
+        for (let i = 0; i < numberOfTextures; i++) {
             // prettier-ignore
             baseShaderFrag +=
-                'if ( tVAT' + i + ' == 0.0 && tA' + i +' > highestA ){ highestA = tA' + i + '; }\n' +
-                'vec4 C' + i + ' = texture2D(t' + i + ', vUv);\n' +
-                'C = vec4( C' + i + '.rgb * (C' + i + '.a * tA' + i + ') + C.rgb * C.a * (1.0 - (C' + i + '.a * tA' + i + ')), 1);\n'
-        }
+                `vec4 C${i} = texture2D(t${i}, vUv);\n` +
+                 (( textures[i].isVAT ===  0) ?
+                    (( i > 0 ) ?
+                        // Color Blend
+                        `if (fblendCode${i} == 2.0) {\n` + 
+                            `backdropHSL = RGBtoHSL(C.rgb);\n` +
+                            `currentHSL = RGBtoHSL(C${i}.rgb);\n` +
+                            `currentHSL.z = backdropHSL.z;\n` +
+                            `C${i}.rgb = HSLtoRGB(currentHSL);\n` +
+                        `}\n`
+                    : '') + 
+                    // Apply Contrast
+                    `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n` +
+                    // Apply Brightness
+                    `C${i}.rgb *= fbrightness${i};\n` +
+                    // Apply Saturation
+                    `sat = fsaturation${i} - 1.0f;\n` +
+                    `x = sat * (2.0f / 3.0f) + 1.0f;\n` +
+                    `y = (x - 1.0f) * -0.5f;\n` +
+                    `Csat = C${i};\n` +
+                    `C${i}.r = Csat.r * x + Csat.g * y + Csat.b * y;\n` +
+                    `C${i}.g = Csat.r * y + Csat.g * x + Csat.b * y;\n` +
+                    `C${i}.b = Csat.r * y + Csat.g * y + Csat.b * x;\n` +
+                    (( i > 0 ) ?
+                        // Overlay Blend
+                        `if (fblendCode${i} == 1.0) {\n` + 
+                            `if (C${i}.r < 0.5f) {\n` +
+                                `C${i}.r = 2.0f * C${i}.r * C.r;\n` +
+                            `} else {\n` +
+                                `C${i}.r = 1.0f - (2.0f * (1.0f - C.r) * (1.0f - C${i}.r));\n` +
+                            `}\n` +
+                            `if (C${i}.g < 0.5f) {\n` +
+                                `C${i}.g = 2.0f * C${i}.g * C.g;\n` +
+                            `} else {\n` +
+                                `C${i}.g = 1.0f - (2.0f * (1.0f - C.g) * (1.0f - C${i}.g));\n` +
+                            `}\n` +
+                            `if (C${i}.b < 0.5f) {\n` +
+                                `C${i}.b = 2.0f * C${i}.b * C.b;\n` +
+                            `} else {\n` +
+                                `C${i}.b = 1.0f - (2.0f * (1.0f - C.b) * (1.0f - C${i}.b));\n` +
+                            `}\n` +
+                        `}\n`
+                    : '')
+                : '') +
+                // prettier-ignore
+                `C = vec4( C${i}.rgb * (C${i}.a * tA${i}) + C.rgb * C.a * (1.0 - (C${i}.a * tA${i})), 1);\n`
 
+            // Find highest alpha of non-vector-as-tile-layers (VAT) too
+            if (textures[i].isVat === 0 && textures[i].opacity > highestA)
+                highestA = textures[i].opacity
+        }
+        if (highestA === 0) highestA = 1
+
+        // discard if all transparent
         baseShaderFrag += 'if ('
         for (let i = 0; i < numberOfTextures; i++) {
             baseShaderFrag += ' C' + i + '.a == 0.0'
@@ -86,13 +138,8 @@ const Shaders = {
                 '){\n' +
                     'discard;\n' +
                 '}\n' +
-                'if (vColor.r * vColor.g * vColor.b == 1.0){\n' +
-                    'discard;\n' +
-                '}\n' +
-                'if (!(vColor.r == 0.0 && vColor.g == 0.0 && vColor.b == 0.0)){\n' +
-                    'C = vec4(vColor, 1);\n' +
-                '}\n' +
-                'C.a = highestA;\n' +
+                
+                `C.a = ${highestA.toFixed(1)}f;\n` +
                 'gl_FragColor = C;\n' +
             '}'
 
@@ -101,7 +148,16 @@ const Shaders = {
         for (let i = 0; i < numberOfTextures; i++) {
             uniforms['t' + i] = { value: textures[i].texture }
             uniforms['tA' + i] = { value: fadeIn ? 0 : textures[i].opacity }
-            uniforms['tVAT' + i] = { value: textures[i].isVAT }
+            uniforms['fbrightness' + i] = {
+                value: textures[i].filters.brightness,
+            }
+            uniforms['fcontrast' + i] = { value: textures[i].filters.contrast }
+            uniforms['fsaturation' + i] = {
+                value: textures[i].filters.saturation,
+            }
+            uniforms['fblendCode' + i] = {
+                value: textures[i].filters.blendCode,
+            }
         }
 
         //Now make the material
@@ -182,6 +238,60 @@ const Shaders = {
             depthWrite: false,
         })
     },
+}
+
+function getColorSpaceFunctions() {
+    // prettier-ignore
+    return [
+        'vec3 RGBtoHSL(in vec3 RGB) {\n',
+            'float cMax = max(max(RGB.r, RGB.g), RGB.b);\n',
+            'float cMin = min(min(RGB.r, RGB.g), RGB.b);\n',
+            'float delta = cMax - cMin;\n',
+
+            'float lightness = (cMax + cMin) / 2.0f;\n', //(0.299f*RGB.r + 0.587f*RGB.g + 0.114f*RGB.b);\n',
+
+            'float hue = 0.0f;\n',
+            'if (delta == 0.0f) {\n',
+                'hue = 0.0f;\n',
+            '}\n',
+            'else if (cMax == RGB.r) {\n',
+                'hue = (60.0f / 360.0f) * mod((RGB.g - RGB.b) / delta , 6.0f);\n',
+            '}\n',
+            'else if (cMax == RGB.g) {\n',
+                'hue = (60.0f / 360.0f) * (((RGB.b - RGB.r) / delta) + 2.0f);\n',
+            '}\n',
+            'else if (cMax == RGB.b) {\n',
+                'hue = (60.0f / 360.0f) * (((RGB.r - RGB.g) / delta) + 4.0f);\n',
+            '}\n',
+
+            'float saturation = 0.0f;\n',
+            'if (delta > 0.0f) {\n',
+                'saturation = delta / (1.0f - abs((2.0f * lightness) - 1.0f));\n',
+            '}\n',
+
+            'return vec3(hue, saturation, lightness);\n',
+        '}',
+        'vec3 HSLtoRGB(in vec3 HSL) {',
+            'float C = (1.0f - abs((2.0f * HSL.z) - 1.0f)) * HSL.y;\n',
+            'float X = C * (1.0f - abs(mod(HSL.x / (60.0f / 360.0f), 2.0f) - 1.0f));\n',
+            'float m = HSL.z - C / 2.0f;\n',
+            'vec3 rgb;\n',
+            'if (HSL.x < (60.0f / 360.0f)) {\n',
+                'rgb = vec3(C, X, 0);\n',
+            '} else if (HSL.x < (120.0f / 360.0f)) {\n',
+                'rgb = vec3(X, C, 0);\n',
+            '} else if (HSL.x < (180.0f / 360.0f)) {\n',
+                'rgb = vec3(0, C, X);\n',
+            '} else if (HSL.x < (240.0f / 360.0f)) {\n',
+                'rgb = vec3(0, X, C);\n',
+            '} else if (HSL.x < (300.0f / 360.0f)) {\n',
+                'rgb = vec3(X, 0, C);\n',
+            '} else {\n',
+                'rgb = vec3(C, 0, X);\n',
+            '}\n',
+            'return vec3(rgb.r + m, rgb.g + m, rgb.b + m);\n',
+        '}',   
+    ].join('\n')
 }
 
 export default Shaders

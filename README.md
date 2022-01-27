@@ -38,13 +38,13 @@ Head over to the **[Documentation](https://nasa-ammos.github.io/LithoSphere/)** 
     -   Overlay (upcoming)
     -   Tile
     -   Tile3d
-    -   Model (upcoming)
+    -   Model
 -   Adjustable planetary radii
 -   Scripts for tiling Digital Elevation Maps (DEM) and custom projections
 -   Various tile formats:
     -   TMS
     -   WMTS
-    -   WMS (upcoming)
+    -   WMS
 -   Full Proj4 support to render tile sets of any projection
 -   A suite of pluginable UI controls:
     -   Compass

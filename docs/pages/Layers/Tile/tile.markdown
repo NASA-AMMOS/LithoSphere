@@ -32,6 +32,13 @@ Litho.addLayer('tile', {
     opacity: 1,
     minZoom: 10,
     maxZoom: 17,
+    filters: {
+        brightness: 1,
+        contrast: 1,
+        saturation: 1,
+        blendCode: 0, //0 = none, 1 = overlay - caveat - tile zooms for all layers should line up,
+        blend: 0,
+    },
     boundingBox: [
         137.09995782300004,
         -5.10494553812677,

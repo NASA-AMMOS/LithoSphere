@@ -4,6 +4,7 @@ import Tile3dLayerer from './tile3d'
 import TileLayerer from './tile'
 import ClampedLayerer from './clamped'
 import VectorLayerer from './vector'
+import ModelLayerer from './model'
 
 interface Private {
     layerers: {
@@ -11,6 +12,7 @@ interface Private {
         tile: TileLayerer
         clamped: ClampedLayerer
         vector: VectorLayerer
+        model: ModelLayerer
     }
 }
 
@@ -23,6 +25,7 @@ export default class Layers {
     tile: any
     clamped: any
     vector: any
+    model: any
     all: any
 
     constructor(parent: any) {
@@ -40,6 +43,7 @@ export default class Layers {
                 tile: new TileLayerer(this),
                 clamped: new ClampedLayerer(this),
                 vector: new VectorLayerer(this),
+                model: new ModelLayerer(this),
             },
         }
         this._reset()
@@ -50,6 +54,7 @@ export default class Layers {
         this.tile = []
         this.clamped = []
         this.vector = []
+        this.model = []
 
         // For convenience
         // The order here is also used by the layers control
@@ -58,6 +63,7 @@ export default class Layers {
             tile: this.tile,
             clamped: this.clamped,
             vector: this.vector,
+            model: this.model,
         }
     }
 
@@ -74,6 +80,8 @@ export default class Layers {
         // Support 1/0 on params
         if (layerObj.on == 1) layerObj.on = true
         else if (layerObj.on == 0) layerObj.on = false
+
+        layerObj._type = type
 
         if (this._.layerers[type]) this._.layerers[type].add(layerObj, callback)
         else console.warn(`Cannot add unknown layer type ${type}.`)
@@ -128,6 +136,39 @@ export default class Layers {
         return true
     }
 
+    setLayerFilterEffect = (
+        name: string,
+        filter: string,
+        value: number
+    ): boolean => {
+        const allowableFilterEffects = [
+            'brightness',
+            'contrast',
+            'saturation',
+            'blendCode',
+        ]
+        if (!allowableFilterEffects.includes(filter)) {
+            console.warn(
+                `Filter ${filter} must be one of: ${allowableFilterEffects.toString()}.`
+            )
+            return false
+        }
+
+        const didFilter = this._.layerers.tile.setFilterEffect(
+            name,
+            filter,
+            // @ts-ignore
+            parseFloat(value)
+        )
+        if (!didFilter) {
+            console.warn(
+                `Could not find tile layer named '${name}' to set the filter of.`
+            )
+            return false
+        }
+        return true
+    }
+
     // Helper
     findHighestMaxZoom = (): number => {
         let highest = 0
@@ -173,6 +214,10 @@ export default class Layers {
             }
         }
         return null
+    }
+
+    hasLayer = (layerName: string): boolean => {
+        return this.getLayerByName(layerName) != null
     }
 
     // Computes a feature's style given it layer styling configuration
@@ -252,11 +297,29 @@ export default class Layers {
         // Final format
         if (style.fillColor === 'none') style.fillColor = 'rgba(0,0,0,0)'
 
+        const type = feature.geometry?.type
+            ? feature.geometry.type.toLowerCase()
+            : ''
+
         // Active && Highlights
         if (feature._active) {
-            style.fillColor = this.p.options.activeColor || 'red'
+            if (
+                this.p.options.canBecomeActive !== false &&
+                layer.canBecomeActive !== false &&
+                (layer.style[type] == null ||
+                    (layer.style[type] &&
+                        layer.style[type].canBecomeActive !== false))
+            )
+                style.fillColor = this.p.options.activeColor || 'red'
         } else if (feature._highlighted) {
-            style.fillColor = this.p.options.highlightColor || 'yellow'
+            if (
+                this.p.options.canBecomeHighlighted !== false &&
+                layer.canBecomeHighlighted !== false &&
+                (layer.style[type] == null ||
+                    (layer.style[type] &&
+                        layer.style[type].canBecomeHighlighted !== false))
+            )
+                style.fillColor = this.p.options.highlightColor || 'yellow'
         }
 
         // For lines and what not

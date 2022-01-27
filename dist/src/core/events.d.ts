@@ -36,6 +36,7 @@ export default class Events {
     _matchPlanetsLODToPlanet(): void;
     _refreshFrontGroupRotation(): void;
     private _onClick;
+    private _onKeyDown;
     _onMouseMove: (e?: any) => void;
     private _updateMouseCoords;
     private updateHoverInfoPosition;

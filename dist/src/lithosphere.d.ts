@@ -8,6 +8,7 @@ interface Private {
     container: HTMLElement;
     sceneContainer: HTMLElement;
     wasInitialized: boolean;
+    rendererWrapper: any;
     renderer: any;
     cameras: any;
     cameraPositionTarget: number[];
@@ -42,6 +43,9 @@ export default class LithoSphere {
     removeLayer: Function;
     toggleLayer: Function;
     setLayerOpacity: Function;
+    setLayerFilterEffect: Function;
+    getLayerByName: Function;
+    hasLayer: Function;
     addControl: Function;
     removeControl: Function;
     scene: Scene;
