@@ -74,19 +74,6 @@ const Shaders = {
             baseShaderFrag +=
                 `vec4 C${i} = texture2D(t${i}, vUv);\n` +
                  (( textures[i].isVAT ===  0) ?
-                    (( i > 0 ) ?
-                        // Color Blend
-                        `if (fblendCode${i} == 2.0) {\n` + 
-                            `backdropHSL = RGBtoHSL(C.rgb);\n` +
-                            `currentHSL = RGBtoHSL(C${i}.rgb);\n` +
-                            `currentHSL.z = backdropHSL.z;\n` +
-                            `C${i}.rgb = HSLtoRGB(currentHSL);\n` +
-                        `}\n`
-                    : '') + 
-                    // Apply Contrast
-                    `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n` +
-                    // Apply Brightness
-                    `C${i}.rgb *= fbrightness${i};\n` +
                     // Apply Saturation
                     `sat = fsaturation${i} - 1.0f;\n` +
                     `x = sat * (2.0f / 3.0f) + 1.0f;\n` +
@@ -95,24 +82,31 @@ const Shaders = {
                     `C${i}.r = Csat.r * x + Csat.g * y + Csat.b * y;\n` +
                     `C${i}.g = Csat.r * y + Csat.g * x + Csat.b * y;\n` +
                     `C${i}.b = Csat.r * y + Csat.g * y + Csat.b * x;\n` +
+                    // Apply Brightness
+                    `C${i}.rgb *= fbrightness${i};\n` +
+                    // Apply Contrast
+                    `C${i}.rgb = ((C${i}.rgb - 0.5f) * max(fcontrast${i}, 0.0f)) + 0.5f;\n` +
                     (( i > 0 ) ?
                         // Overlay Blend
-                        `if (fblendCode${i} == 1.0) {\n` + 
-                            `if (C${i}.r < 0.5f) {\n` +
+                        `if (fblendCode${i} == 1.0f) {\n` + 
+                            `if (C${i}.r <= 0.5f) {\n` +
                                 `C${i}.r = 2.0f * C${i}.r * C.r;\n` +
                             `} else {\n` +
-                                `C${i}.r = 1.0f - (2.0f * (1.0f - C.r) * (1.0f - C${i}.r));\n` +
+                                `C${i}.r = Screen(C.r, (2.0f * C${i}.r) - 1.0f);\n` +
                             `}\n` +
-                            `if (C${i}.g < 0.5f) {\n` +
+                            `if (C${i}.g <= 0.5f) {\n` +
                                 `C${i}.g = 2.0f * C${i}.g * C.g;\n` +
                             `} else {\n` +
-                                `C${i}.g = 1.0f - (2.0f * (1.0f - C.g) * (1.0f - C${i}.g));\n` +
+                                `C${i}.g = Screen(C.g, (2.0f * C${i}.g) - 1.0f);\n` +
                             `}\n` +
-                            `if (C${i}.b < 0.5f) {\n` +
+                            `if (C${i}.b <= 0.5f) {\n` +
                                 `C${i}.b = 2.0f * C${i}.b * C.b;\n` +
                             `} else {\n` +
-                                `C${i}.b = 1.0f - (2.0f * (1.0f - C.b) * (1.0f - C${i}.b));\n` +
+                                `C${i}.b = Screen(C.b, (2.0f * C${i}.b) - 1.0f);\n` +
                             `}\n` +
+                        `}\n` +
+                        `if (fblendCode${i} == 2.0f) {\n` + 
+                            `C${i}.rgb = SetLum(C${i}.rgb, Lum(C.rgb));\n` +
                         `}\n`
                     : '')
                 : '') +
@@ -243,54 +237,35 @@ const Shaders = {
 function getColorSpaceFunctions() {
     // prettier-ignore
     return [
-        'vec3 RGBtoHSL(in vec3 RGB) {\n',
-            'float cMax = max(max(RGB.r, RGB.g), RGB.b);\n',
-            'float cMin = min(min(RGB.r, RGB.g), RGB.b);\n',
-            'float delta = cMax - cMin;\n',
-
-            'float lightness = (cMax + cMin) / 2.0f;\n', //(0.299f*RGB.r + 0.587f*RGB.g + 0.114f*RGB.b);\n',
-
-            'float hue = 0.0f;\n',
-            'if (delta == 0.0f) {\n',
-                'hue = 0.0f;\n',
+        'float Lum(in vec3 RGB) {\n',
+            'return 0.3f * RGB.r + 0.59f * RGB.g + 0.11f * RGB.b;\n',
+        '}\n',
+        'vec3 ClipColor(in vec3 RGB) {\n',
+            'float L =Lum(RGB);\n',
+            'float x = max(max(RGB.r, RGB.g), RGB.b);\n',
+            'float n = min(min(RGB.r, RGB.g), RGB.b);\n',
+            'if (n < 0.0f) {\n',
+                'RGB.r = L + (((RGB.r - L) * L) / (L - n));\n',
+                'RGB.g = L + (((RGB.g - L) * L) / (L - n));\n',
+                'RGB.b = L + (((RGB.b - L) * L) / (L - n));\n',
             '}\n',
-            'else if (cMax == RGB.r) {\n',
-                'hue = (60.0f / 360.0f) * mod((RGB.g - RGB.b) / delta , 6.0f);\n',
+            'if (x > 1.0f) {\n',
+                'RGB.r = L + (((RGB.r - L) * (1.0f - L)) / (x - L));\n',
+                'RGB.g = L + (((RGB.g - L) * (1.0f - L)) / (x - L));\n',
+                'RGB.b = L + (((RGB.b - L) * (1.0f - L)) / (x - L));\n',
             '}\n',
-            'else if (cMax == RGB.g) {\n',
-                'hue = (60.0f / 360.0f) * (((RGB.b - RGB.r) / delta) + 2.0f);\n',
-            '}\n',
-            'else if (cMax == RGB.b) {\n',
-                'hue = (60.0f / 360.0f) * (((RGB.r - RGB.g) / delta) + 4.0f);\n',
-            '}\n',
-
-            'float saturation = 0.0f;\n',
-            'if (delta > 0.0f) {\n',
-                'saturation = delta / (1.0f - abs((2.0f * lightness) - 1.0f));\n',
-            '}\n',
-
-            'return vec3(hue, saturation, lightness);\n',
-        '}',
-        'vec3 HSLtoRGB(in vec3 HSL) {',
-            'float C = (1.0f - abs((2.0f * HSL.z) - 1.0f)) * HSL.y;\n',
-            'float X = C * (1.0f - abs(mod(HSL.x / (60.0f / 360.0f), 2.0f) - 1.0f));\n',
-            'float m = HSL.z - C / 2.0f;\n',
-            'vec3 rgb;\n',
-            'if (HSL.x < (60.0f / 360.0f)) {\n',
-                'rgb = vec3(C, X, 0);\n',
-            '} else if (HSL.x < (120.0f / 360.0f)) {\n',
-                'rgb = vec3(X, C, 0);\n',
-            '} else if (HSL.x < (180.0f / 360.0f)) {\n',
-                'rgb = vec3(0, C, X);\n',
-            '} else if (HSL.x < (240.0f / 360.0f)) {\n',
-                'rgb = vec3(0, X, C);\n',
-            '} else if (HSL.x < (300.0f / 360.0f)) {\n',
-                'rgb = vec3(X, 0, C);\n',
-            '} else {\n',
-                'rgb = vec3(C, 0, X);\n',
-            '}\n',
-            'return vec3(rgb.r + m, rgb.g + m, rgb.b + m);\n',
-        '}',   
+            'return RGB;\n',
+        '}\n',
+        'vec3 SetLum(in vec3 RGB, in float l) {\n',
+            'float d = l - Lum(RGB);\n',
+            'RGB.r = RGB.r + d;\n',
+            'RGB.g = RGB.g + d;\n',
+            'RGB.b = RGB.b + d;\n',
+            'return ClipColor(RGB);\n',
+        '}\n',
+        'float Screen(in float RGBs, in float RGBb) {\n',
+            'return RGBb + RGBs - (RGBb * RGBs);\n',
+        '}\n' 
     ].join('\n')
 }
 
