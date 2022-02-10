@@ -4,6 +4,7 @@ import Tile3dLayerer from './tile3d'
 import TileLayerer from './tile'
 import ClampedLayerer from './clamped'
 import VectorLayerer from './vector'
+import CurtainLayerer from './curtain'
 import ModelLayerer from './model'
 
 interface Private {
@@ -12,6 +13,7 @@ interface Private {
         tile: TileLayerer
         clamped: ClampedLayerer
         vector: VectorLayerer
+        curtain: CurtainLayerer
         model: ModelLayerer
     }
 }
@@ -25,6 +27,7 @@ export default class Layers {
     tile: any
     clamped: any
     vector: any
+    curtain: any
     model: any
     all: any
 
@@ -43,6 +46,7 @@ export default class Layers {
                 tile: new TileLayerer(this),
                 clamped: new ClampedLayerer(this),
                 vector: new VectorLayerer(this),
+                curtain: new CurtainLayerer(this),
                 model: new ModelLayerer(this),
             },
         }
@@ -54,6 +58,7 @@ export default class Layers {
         this.tile = []
         this.clamped = []
         this.vector = []
+        this.curtain = []
         this.model = []
 
         // For convenience
@@ -63,6 +68,7 @@ export default class Layers {
             tile: this.tile,
             clamped: this.clamped,
             vector: this.vector,
+            curtain: this.curtain,
             model: this.model,
         }
     }

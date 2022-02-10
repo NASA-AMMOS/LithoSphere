@@ -2,6 +2,7 @@ import Tile3dLayerer from './tile3d';
 import TileLayerer from './tile';
 import ClampedLayerer from './clamped';
 import VectorLayerer from './vector';
+import CurtainLayerer from './curtain';
 import ModelLayerer from './model';
 interface Private {
     layerers: {
@@ -9,6 +10,7 @@ interface Private {
         tile: TileLayerer;
         clamped: ClampedLayerer;
         vector: VectorLayerer;
+        curtain: CurtainLayerer;
         model: ModelLayerer;
     };
 }
@@ -20,6 +22,7 @@ export default class Layers {
     tile: any;
     clamped: any;
     vector: any;
+    curtain: any;
     model: any;
     all: any;
     constructor(parent: any);

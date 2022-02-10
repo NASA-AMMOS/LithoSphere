@@ -171,9 +171,7 @@ export default class ModelLayerer {
         }
     }
 
-    private daeToModel = (layerObj, callback: Function, options?: any) => {
-        options = options || {}
-
+    private daeToModel = (layerObj, callback: Function) => {
         colladaLoader.load(
             layerObj.path,
             function (mesh) {
@@ -216,11 +214,8 @@ export default class ModelLayerer {
     // Sets model position, scale, rotation, &c.
     private localizeModel = (layerObj, model) => {
         const parentMesh = new Object3D()
-        let position
-        let rotation
-        let scale
+
         if (layerObj.isArrayed) {
-            let models = []
             for (let i = 0; i < layerObj.position.length; i++) {
                 const modelC = model.clone()
                 const lng =

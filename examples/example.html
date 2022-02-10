@@ -497,6 +497,31 @@
                 maxZoom: 18,
             })
             //Litho.removeLayer('vectorPoint')
+
+            // "Curtains" are vertical 2D images draped from a line
+            Litho.addLayer('curtain', {
+                name: 'GroundPenetratingRadar',
+                on: true,
+                opacity: 1,
+                imagePath:
+                    'http://localhost:8888/Missions/MTTT/Layers/GPR/ARIMFAX_0285_XM1_0285-profile-noaxis.png',
+                // depth of image in meters
+                depth: 10,
+                // length of image in meters
+                length: 62.35,
+                // GeoJSON feature geometry that corresponds to the top of the curtain/image
+                lineGeometry: {
+                    type: 'LineString',
+                    coordinates: [
+                        [137.36637024, -4.67291534, -4420],
+                        [137.3652909, -4.67169839, -4420],
+                    ],
+                },
+                onClick: function (feature, lnglat, layer) {
+                    console.log(feature, lnglat, layer)
+                },
+            })
+
             /*
             Litho.addLayer(
                 'model',
