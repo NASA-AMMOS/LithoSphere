@@ -75,6 +75,7 @@ export default class LithoSphere {
     toggleLayer: Function
     setLayerOpacity: Function
     setLayerFilterEffect: Function
+    setLayerSpecificOptions: Function
     getLayerByName: Function
     hasLayer: Function
     addControl: Function
@@ -205,6 +206,7 @@ export default class LithoSphere {
         this.toggleLayer = this.layers.toggleLayer
         this.setLayerOpacity = this.layers.setLayerOpacity
         this.setLayerFilterEffect = this.layers.setLayerFilterEffect
+        this.setLayerSpecificOptions = this.layers.setLayerSpecificOptions
         this.getLayerByName = this.layers.getLayerByName
         this.hasLayer = this.layers.hasLayer
 

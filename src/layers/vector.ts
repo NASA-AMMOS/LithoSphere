@@ -308,6 +308,8 @@ export default class VectorLayerer {
                     (g[i][2] || 0) * this.p.p.options.exaggeration
                 )
                 if (i == 0) {
+                    // firstPos hack to recenter coordinates on parent's (not planet's) center
+                    // to reduce floating point rounding jitter
                     firstPos = new Vector3(v.x, v.y, v.z)
                 }
                 path.push(

@@ -1,12 +1,10 @@
-export default class CurtainLayerer {
+import { XYZ } from '../generalTypes.d.ts';
+export default class ClampedLayerer {
     p: any;
     constructor(parent: any);
     add: (layerObj: any, callback?: Function) => void;
     toggle: (name: string, on?: boolean) => boolean;
     setOpacity: (name: string, opacity: number) => boolean;
     remove: (name: string) => boolean;
-    setLayerSpecificOptions: (name: string, options: any) => boolean;
-    private generateCurtain;
-    private getCurtainMesh;
-    private getCurtainVertices;
+    getClampedTexture: (i: number, xyz: XYZ) => any;
 }

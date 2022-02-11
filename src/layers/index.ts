@@ -134,9 +134,7 @@ export default class Layers {
             if (didOpacity) foundMatch = true
         }
         if (!foundMatch) {
-            console.warn(
-                `Could not find a layer named '${name}' to set the opacity of.`
-            )
+            // console.warn(`Could not find a layer named '${name}' to set the opacity of.`)
             return false
         }
         return true
@@ -167,9 +165,27 @@ export default class Layers {
             parseFloat(value)
         )
         if (!didFilter) {
-            console.warn(
-                `Could not find tile layer named '${name}' to set the filter of.`
-            )
+            // console.warn(`Could not find tile layer named '${name}' to set the filter of.`)
+            return false
+        }
+        return true
+    }
+
+    setLayerSpecificOptions = (name: string, options: any): boolean => {
+        let foundMatch = false
+
+        for (const type in this._.layerers) {
+            if (
+                typeof this._.layerers[type].setLayerSpecificOptions ===
+                'function'
+            ) {
+                const didOptions = this._.layerers[
+                    type
+                ].setLayerSpecificOptions(name, options)
+                if (didOptions) foundMatch = true
+            }
+        }
+        if (!foundMatch) {
             return false
         }
         return true

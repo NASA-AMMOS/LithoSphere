@@ -399,8 +399,8 @@
                             geometry: {
                                 type: 'LineString',
                                 coordinates: [
-                                    [137.3250006349, -4.72500217818315, -3000],
-                                    [137.42500036372522, -4.62500251269999],
+                                    [137.36637024, -4.67291534, -4420],
+                                    [137.3652909, -4.67169839, -4420],
                                 ],
                             },
                         },
@@ -412,7 +412,7 @@
                     // Prefer feature[f].properties.style values
                     letPropertiesStyleOverride: false, // default false
                     default: {
-                        fillColor: 'white', //Use only rgb and hex. No css color names
+                        fillColor: 'cyan', //Use only rgb and hex. No css color names
                         fillOpacity: 1,
                         color: 'white', //Not relevant for lines because fillColor is the primary color
                         weight: 6,
@@ -499,28 +499,51 @@
             //Litho.removeLayer('vectorPoint')
 
             // "Curtains" are vertical 2D images draped from a line
-            Litho.addLayer('curtain', {
-                name: 'GroundPenetratingRadar',
-                on: true,
-                opacity: 1,
-                imagePath:
-                    'http://localhost:8888/Missions/MTTT/Layers/GPR/ARIMFAX_0285_XM1_0285-profile-noaxis.png',
-                // depth of image in meters
-                depth: 10,
-                // length of image in meters
-                length: 62.35,
-                // GeoJSON feature geometry that corresponds to the top of the curtain/image
-                lineGeometry: {
-                    type: 'LineString',
-                    coordinates: [
-                        [137.36637024, -4.67291534, -4420],
-                        [137.3652909, -4.67169839, -4420],
-                    ],
+            Litho.addLayer(
+                'curtain',
+                {
+                    name: 'GroundPenetratingRadar',
+                    on: true,
+                    opacity: 1,
+                    imagePath:
+                        'http://localhost:8888/Missions/MTTT/Layers/GPR/ARIMFAX_0285_XM1_0285-profile-noaxis.png',
+                    // depth of image in meters
+                    depth: 10,
+                    // length of image in meters
+                    length: 62.35,
+                    options: {
+                        // optional
+                        verticalExaggeration: 1, // default 1x
+                        verticalOffset: 30, // default 0
+                    },
+                    // GeoJSON feature geometry that corresponds to the top of the curtain/image
+                    lineGeometry: {
+                        type: 'LineString',
+                        coordinates: [
+                            [137.36637024, -4.67291534, -4427],
+                            [137.3652909, -4.67169839, -4427],
+                        ],
+                    },
+                    onClick: function (feature, lnglat, layer) {
+                        console.log(feature, lnglat, layer)
+                    },
                 },
-                onClick: function (feature, lnglat, layer) {
-                    console.log(feature, lnglat, layer)
-                },
-            })
+                () => {
+                    /*
+                    console.log('Curtain loaded')
+                    let exag = 1
+                    setInterval(() => {
+                        exag += 0.01
+                        Litho.setLayerSpecificOptions(
+                            'GroundPenetratingRadar',
+                            {
+                                verticalExaggeration: exag,
+                            }
+                        )
+                    }, 100)
+                    */
+                }
+            )
 
             /*
             Litho.addLayer(

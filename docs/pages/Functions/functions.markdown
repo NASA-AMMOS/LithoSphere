@@ -53,6 +53,12 @@ _filter_ | _string_ | Filter name to apply | One of ['brightness', 'saturation',
 _value_ | _string_ | The value to set the filter to
 _returns_ | _boolean_ | `true` only if layer was found and filtered upon
 
+### setLayerSpecificOptions()
+
+Changes and applies a layers options object dynamically. The `options` parameter is merged with the existing layer's options object (it's not a full replacement). Not all layer types support options.
+
+`setLayerSpecificOptions = (name: string, options: object): boolean`
+
 ### getLayerByName()
 
 `getLayerByName = (layerName: string): any`

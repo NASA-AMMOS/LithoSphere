@@ -5,8 +5,9 @@ import {
     BufferAttribute,
     MeshBasicMaterial,
     Vector2,
-    Object3D,
+    Vector3,
     DoubleSide,
+    NearestFilter,
 } from 'three'
 import Utils from '../utils'
 
@@ -42,8 +43,8 @@ export default class CurtainLayerer {
             if (!alreadyExists) {
                 this.generateCurtain(layerObj, (curtain) => {
                     if (curtain) {
-                        this.p.p.planet.add(curtain)
                         layerObj.curtain = curtain
+                        this.p.p.planet.add(layerObj.curtain)
                         this.p.curtain.push(layerObj)
                         this.p.curtain.sort((a, b) => b.order - a.order)
                         this.setOpacity(layerObj.name, layerObj.opacity)
@@ -100,7 +101,43 @@ export default class CurtainLayerer {
         return false
     }
 
+    setLayerSpecificOptions = (name: string, options: any): boolean => {
+        if (!this.p.p._.wasInitialized) return false
+
+        for (let i = 0; i < this.p.curtain.length; i++) {
+            if (this.p.curtain[i].name === name) {
+                this.p.curtain[i].options = {
+                    ...(this.p.curtain[i].options || {}),
+                    ...(options || {}),
+                }
+                // Refresh
+                this.p.p.planet.remove(this.p.curtain[i].curtain)
+                this.p.curtain[i].curtain = this.getCurtainMesh(
+                    this.p.curtain[i]
+                )
+                this.p.p.planet.add(this.p.curtain[i].curtain)
+
+                return true
+            }
+        }
+        return false
+    }
+
     private generateCurtain = (layerObj: any, callback: Function) => {
+        //Make radargram mesh
+        loader.load(layerObj.imagePath, (texture) => {
+            texture.magFilter = NearestFilter
+            texture.minFilter = NearestFilter
+            const material = new MeshBasicMaterial({
+                map: texture,
+                side: DoubleSide,
+            })
+            layerObj._material = material
+            callback(this.getCurtainMesh(layerObj))
+        })
+    }
+
+    private getCurtainMesh = (layerObj: any) => {
         // Standardize geometry
         let g
         if (layerObj.lineGeometry.type === 'LineString') {
@@ -111,50 +148,49 @@ export default class CurtainLayerer {
             console.warn(
                 `Invalid Curtain layer "lineGeometry" type: ${layerObj.lineGeometry.type}. Must be one of: ['LineString', 'MultiLineString']`
             )
-            callback()
             return
         }
 
-        //Make radargram mesh
-        loader.load(layerObj.imagePath, (texture) => {
-            const geometry = new BufferGeometry()
-            const material = new MeshBasicMaterial({
-                map: texture,
-                side: DoubleSide,
-            })
+        const geometry = new BufferGeometry()
 
-            const vertices = this.getCurtainVertices(g, layerObj)
-            const positionNumComponents = 3
-            const uvNumComponents = 2
-            geometry.setAttribute(
-                'position',
-                new BufferAttribute(
-                    new Float32Array(vertices.positions),
-                    positionNumComponents
-                )
+        const vertices = this.getCurtainVertices(g, layerObj)
+        const positionNumComponents = 3
+        const uvNumComponents = 2
+        geometry.setAttribute(
+            'position',
+            new BufferAttribute(
+                new Float32Array(vertices.positions),
+                positionNumComponents
             )
-            geometry.setAttribute(
-                'uv',
-                new BufferAttribute(
-                    new Float32Array(vertices.uvs),
-                    uvNumComponents
-                )
-            )
+        )
+        geometry.setAttribute(
+            'uv',
+            new BufferAttribute(new Float32Array(vertices.uvs), uvNumComponents)
+        )
 
-            const mesh = new Mesh(geometry, material)
+        const mesh = new Mesh(geometry, layerObj._material)
+        mesh.geometry.computeVertexNormals()
+        mesh.position.set(
+            vertices.firstPos.x,
+            vertices.firstPos.y,
+            vertices.firstPos.z
+        )
 
-            mesh.geometry.computeVertexNormals()
-
-            const parentMesh = new Object3D()
-            parentMesh.add(mesh)
-
-            if (layerObj.on == false) {
-                parentMesh.visible = false
-            }
-            callback(parentMesh)
-        })
+        if (layerObj.on == false) {
+            mesh.visible = false
+        }
+        return mesh
     }
     private getCurtainVertices = (g: any, layerObj: any) => {
+        // Make sure relevant options are set or defaulted
+        const options = layerObj.options || {}
+        options.verticalExaggeration =
+            options.verticalExaggeration != null
+                ? options.verticalExaggeration
+                : 1
+        options.verticalOffset =
+            options.verticalOffset != null ? options.verticalOffset : 0
+
         // First get the length of each line segment (if any), as well as the total length
         const lengthArray = [0]
         let totalLength = 0
@@ -182,6 +218,7 @@ export default class CurtainLayerer {
         const vertices = {
             positions: [],
             uvs: [],
+            firstPos: null,
         }
         let currentLength = 0
         /* Built in triangles like so:
@@ -201,61 +238,108 @@ export default class CurtainLayerer {
             }
 
             // Vertical Surface xyz
-            let vSurface = this.p.p.projection.lonLatToVector3(
+            const vSurface = this.p.p.projection.lonLatToVector3(
                 g[i][i0],
                 g[i][i1],
-                g[i][2]
+                g[i][2] + options.verticalOffset
             )
-            vSurface = [vSurface.x, vSurface.y, vSurface.z]
             // Vertical Depth xyz
-            let vDepth = this.p.p.projection.lonLatToVector3(
+            const vDepth = this.p.p.projection.lonLatToVector3(
                 g[i][i0],
                 g[i][i1],
-                g[i][2] - depth
+                g[i][2] -
+                    depth * options.verticalExaggeration +
+                    options.verticalOffset
             )
-            vDepth = [vDepth.x, vDepth.y, vDepth.z]
             // Previous Vertical Surface xyz
-            let vSurfacePrev = this.p.p.projection.lonLatToVector3(
+            const vSurfacePrev = this.p.p.projection.lonLatToVector3(
                 g[i - 1][i0],
                 g[i - 1][i1],
-                g[i - 1][2]
+                g[i - 1][2] + options.verticalOffset
             )
-            vSurfacePrev = [vSurfacePrev.x, vSurfacePrev.y, vSurfacePrev.z]
             // Previous Vertical Depth xyz
-            let vDepthPrev = this.p.p.projection.lonLatToVector3(
+            const vDepthPrev = this.p.p.projection.lonLatToVector3(
                 g[i - 1][i0],
                 g[i - 1][i1],
-                g[i - 1][2] - depth
+                g[i - 1][2] -
+                    depth * options.verticalExaggeration +
+                    options.verticalOffset
             )
-            vDepthPrev = [vDepthPrev.x, vDepthPrev.y, vDepthPrev.z]
 
+            // firstPos hack to recenter coordinates on parent's (not planet's) center
+            // to reduce floating point rounding jitter
+            if (i == 1) {
+                vertices.firstPos = new Vector3(
+                    vSurfacePrev.x,
+                    vSurfacePrev.y,
+                    vSurfacePrev.z
+                )
+            }
+
+            // Now build the positions and uvs
             let uv
             // L-shaped triangle (lower-left)
             // Prev Top
-            vertices.positions.push(...vSurfacePrev)
+            vertices.positions.push(
+                ...[
+                    vSurfacePrev.x - vertices.firstPos.x,
+                    vSurfacePrev.y - vertices.firstPos.y,
+                    vSurfacePrev.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2(currentLength / totalLength, 1)
             vertices.uvs.push(...[uv.x, uv.y])
             // Prev Bottom
-            vertices.positions.push(...vDepthPrev)
+            vertices.positions.push(
+                ...[
+                    vDepthPrev.x - vertices.firstPos.x,
+                    vDepthPrev.y - vertices.firstPos.y,
+                    vDepthPrev.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2(currentLength / totalLength, 0)
             vertices.uvs.push(...[uv.x, uv.y])
 
             // Current Top
-            vertices.positions.push(...vSurface)
+            vertices.positions.push(
+                ...[
+                    vSurface.x - vertices.firstPos.x,
+                    vSurface.y - vertices.firstPos.y,
+                    vSurface.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2((currentLength + lengthArray[i]) / totalLength, 1)
             vertices.uvs.push(...[uv.x, uv.y])
 
             // 7-shaped triangle (upper-right)
             // Current Bottom
-            vertices.positions.push(...vDepth)
+            vertices.positions.push(
+                ...[
+                    vDepth.x - vertices.firstPos.x,
+                    vDepth.y - vertices.firstPos.y,
+                    vDepth.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2((currentLength + lengthArray[i]) / totalLength, 0)
             vertices.uvs.push(...[uv.x, uv.y])
             // Current Top
-            vertices.positions.push(...vSurface)
+            vertices.positions.push(
+                ...[
+                    vSurface.x - vertices.firstPos.x,
+                    vSurface.y - vertices.firstPos.y,
+                    vSurface.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2((currentLength + lengthArray[i]) / totalLength, 1)
             vertices.uvs.push(...[uv.x, uv.y])
             // Prev Bottom
-            vertices.positions.push(...vDepthPrev)
+            vertices.positions.push(
+                ...[
+                    vDepthPrev.x - vertices.firstPos.x,
+                    vDepthPrev.y - vertices.firstPos.y,
+                    vDepthPrev.z - vertices.firstPos.z,
+                ]
+            )
             uv = new Vector2(currentLength / totalLength, 0)
             vertices.uvs.push(...[uv.x, uv.y])
 
