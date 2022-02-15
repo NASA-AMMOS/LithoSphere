@@ -343,6 +343,8 @@ export default class ModelLayerer {
             parentMesh.visible = false
         }
 
+        // @ts-ignore
+        parentMesh.layerType = 'model'
         return parentMesh
     }
 }

@@ -351,4 +351,28 @@ export default class Layers {
 
         return style
     }
+
+    _onMouseMove = (
+        intersectedLL,
+        e: MouseEvent,
+        obj,
+        intersectionRaw,
+        intersectionPoint
+    ) => {
+        if (obj.layerType && this[obj.layerType]) {
+            const layers = this[obj.layerType]
+            for (const l in layers) {
+                if (obj.uuid === layers[l].curtain.uuid)
+                    if (typeof layers[l].onMouseMove === 'function')
+                        layers[l].onMouseMove(
+                            e,
+                            layers[l],
+                            obj,
+                            intersectionRaw,
+                            intersectedLL,
+                            intersectionPoint
+                        )
+            }
+        }
+    }
 }

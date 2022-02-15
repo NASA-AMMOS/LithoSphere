@@ -29,6 +29,7 @@ export default class Renderer {
             this.renderer = new WebGLRenderer({
                 logarithmicDepthBuffer: false,
                 alpha: true,
+                powerPreference: 'high-performance',
             })
             this.renderer.setClearColor(0x000000, 0)
             this.renderer.sortObjects = false

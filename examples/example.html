@@ -514,7 +514,7 @@
                     options: {
                         // optional
                         verticalExaggeration: 1, // default 1x
-                        verticalOffset: 30, // default 0
+                        verticalOffset: 0, // default 0
                     },
                     // GeoJSON feature geometry that corresponds to the top of the curtain/image
                     lineGeometry: {
@@ -524,8 +524,16 @@
                             [137.3652909, -4.67169839, -4427],
                         ],
                     },
-                    onClick: function (feature, lnglat, layer) {
-                        console.log(feature, lnglat, layer)
+                    onMouseMove: function (
+                        e,
+                        layer,
+                        mesh,
+                        intersection,
+                        intersectedLngLat,
+                        intersectionXYZ
+                    ) {
+                        // intersection.uv gives mouse's texture coords
+                        //console.log(intersection.uv)
                     },
                 },
                 () => {
@@ -538,6 +546,7 @@
                             'GroundPenetratingRadar',
                             {
                                 verticalExaggeration: exag,
+                                //verticalOffset: exag,
                             }
                         )
                     }, 100)

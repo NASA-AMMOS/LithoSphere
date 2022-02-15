@@ -278,7 +278,7 @@ export default class LithoSphere {
             this.sceneBack.add(this.atmosphere)
         }
 
-        //AXES - Uncomment for
+        //AXES
         if (this.options.showAxes === true) {
             const materialx = new LineBasicMaterial({ color: 0xff0000 })
             const geometryx = new BufferGeometry().setFromPoints([
@@ -688,57 +688,4 @@ export default class LithoSphere {
             this._.cameras.updateSize()
         }
     }
-
-    // TODO: UNUSED?
-    // Converts a geojson feature to a THREE Geometry
-    /*
-    geoJSONFeatureToGeometry = (feature: any): Geometry => {
-        const geometry = new Geometry()
-
-        const coords = feature.geometry.coordinates
-        let g
-
-        switch (feature.type) {
-            case 'Point':
-                // Actual Point
-                geometry.vertices.push(
-                    this.projection.lonLatToVector3(
-                        coords[0][0],
-                        coords[0][1],
-                        coords[0][2]
-                    )
-                )
-                // Vector Up
-                geometry.vertices.push(
-                    this.projection.lonLatToVector3(
-                        coords[0][0],
-                        coords[0][1] + 0.1,
-                        coords[0][2]
-                    )
-                )
-                break
-            case 'LineString':
-                for (let i = 0; i < coords.length; i++) {
-                    geometry.vertices.push(
-                        this.projection.lonLatToVector3(
-                            coords[i][0],
-                            coords[i][1],
-                            coords[i][2]
-                        )
-                    )
-                }
-                break
-            case 'MultiLineString':
-                break
-            case 'Polygon':
-                break
-            default:
-                console.warn(
-                    `Unfortunately the feature type '${feature.type}' is not supported.`
-                )
-        }
-
-        return geometry
-    }
-    */
 }

@@ -39,5 +39,6 @@ export default class Layers {
     getLayerByName: (layerName: string) => any;
     hasLayer: (layerName: string) => boolean;
     getFeatureStyle: (layer: any, feature: any, isStrokeless?: boolean) => any;
+    _onMouseMove: (intersectedLL: any, e: MouseEvent, obj: any, intersectionRaw: any, intersectionPoint: any) => void;
 }
 export {};

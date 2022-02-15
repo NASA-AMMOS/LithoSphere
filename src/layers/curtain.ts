@@ -179,6 +179,9 @@ export default class CurtainLayerer {
         if (layerObj.on == false) {
             mesh.visible = false
         }
+
+        // @ts-ignore
+        mesh.layerType = 'curtain'
         return mesh
     }
     private getCurtainVertices = (g: any, layerObj: any) => {
