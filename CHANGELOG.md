@@ -11,6 +11,10 @@ _Feb 23, 2022_
 -   Curtain layer type
 -   Full local data example
 
+#### Fixed
+
+-   Removed extraneous addition of "ratio of surface areas" to `reszoomlevel`
+
 ## v1.2.0
 
 _Jan 27, 2022_

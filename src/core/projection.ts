@@ -56,14 +56,9 @@ export default class Projection {
             this.tileMapResource.resunitsperpixel != null &&
             this.tileMapResource.reszoomlevel != null
         ) {
-            let reszoomlevel = this.tileMapResource.reszoomlevel
-            reszoomlevel += Math.round(
-                (4 * Math.PI * Math.pow(3396190, 2)) /
-                    (4 * Math.PI * Math.pow(this.radii.major, 2))
-            )
             const baseRes =
                 this.tileMapResource.resunitsperpixel *
-                Math.pow(2, reszoomlevel)
+                Math.pow(2, this.tileMapResource.reszoomlevel)
             const res = []
             for (let i = 0; i < 32; i++) {
                 res.push(baseRes / Math.pow(2, i))
