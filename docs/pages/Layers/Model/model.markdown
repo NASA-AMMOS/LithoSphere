@@ -11,7 +11,7 @@ Adds a model to the scene.
 
 Supports: .glb, .gltf, .dae, .obj
 
-Example
+### Example
 
 ```javascript
 Litho.addLayer(

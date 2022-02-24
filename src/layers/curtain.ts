@@ -1,11 +1,14 @@
 import {
+    Object3D,
     TextureLoader,
     Mesh,
     BufferGeometry,
     BufferAttribute,
     MeshBasicMaterial,
+    MeshPhongMaterial,
     Vector2,
     Vector3,
+    CanvasTexture,
     DoubleSide,
     NearestFilter,
 } from 'three'
@@ -28,8 +31,8 @@ export default class CurtainLayerer {
         if (
             layerObj.hasOwnProperty('name') &&
             layerObj.hasOwnProperty('on') &&
-            layerObj.hasOwnProperty('imagePath') &&
-            layerObj.hasOwnProperty('lineGeometry')
+            (layerObj.hasOwnProperty('geojson') ||
+                layerObj.hasOwnProperty('lineGeometry'))
         ) {
             for (let i = 0; i < this.p.curtain.length; i++) {
                 if (this.p.curtain[i].hasOwnProperty('name')) {
@@ -54,7 +57,7 @@ export default class CurtainLayerer {
             } else if (typeof callback === 'function') callback()
         } else {
             console.warn(
-                `Attempted to add an invalid model layer: ${layerObj.name}. Required props: name, on, imagePath, lineGeometry`
+                `Attempted to add an invalid model layer: ${layerObj.name}. Required props: name, on, geojson | lineGeometry`
             )
         }
     }
@@ -62,14 +65,15 @@ export default class CurtainLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.curtain.forEach((layer) => {
+        for (let i = 0; i < this.p.curtain.length; i++) {
+            const layer = this.p.curtain[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.curtain.visible = layer.on
 
                 return true
             }
-        })
+        }
         return false
     }
 
@@ -112,10 +116,10 @@ export default class CurtainLayerer {
                 }
                 // Refresh
                 this.p.p.planet.remove(this.p.curtain[i].curtain)
-                this.p.curtain[i].curtain = this.getCurtainMesh(
-                    this.p.curtain[i]
-                )
-                this.p.p.planet.add(this.p.curtain[i].curtain)
+                this.generateCurtain(this.p.curtain[i], (curtain) => {
+                    this.p.curtain[i].curtain = curtain
+                    this.p.p.planet.add(this.p.curtain[i].curtain)
+                })
 
                 return true
             }
@@ -124,31 +128,109 @@ export default class CurtainLayerer {
     }
 
     private generateCurtain = (layerObj: any, callback: Function) => {
+        const group = new Object3D()
+
+        const geometries = []
+        if (layerObj.geojson) {
+            layerObj.geojson.features.forEach((f) => {
+                if (
+                    ['LineString', 'MultiLineString', 'Polygon'].includes(
+                        f.geometry.type
+                    )
+                )
+                    geometries.push(f.geometry)
+            })
+        } else geometries.push(layerObj.lineGeometry)
+
+        // If we're reusing a material
+        if (layerObj._material != null) {
+            geometries.forEach((g) => {
+                group.add(this.getCurtainMesh(layerObj, g))
+            })
+            callback(group)
+        }
         //Make radargram mesh
-        loader.load(layerObj.imagePath, (texture) => {
-            texture.magFilter = NearestFilter
-            texture.minFilter = NearestFilter
+        else if (layerObj.imagePath) {
+            loader.load(layerObj.imagePath, (texture) => {
+                texture.magFilter = NearestFilter
+                texture.minFilter = NearestFilter
+                const material = new MeshBasicMaterial({
+                    map: texture,
+                    transparent: true,
+                    side: DoubleSide,
+                })
+                layerObj._material = material
+                geometries.forEach((g) => {
+                    group.add(this.getCurtainMesh(layerObj, g))
+                })
+                callback(group)
+            })
+        } else if (Array.isArray(layerObj.imageColor)) {
+            const size = 128
+
+            // create canvas
+            const canvas = document.createElement('canvas')
+            canvas.width = size
+            canvas.height = size
+
+            // get context
+            const context = canvas.getContext('2d')
+
+            // draw gradient
+            context.rect(0, 0, size, size)
+            const gradient = context.createLinearGradient(0, 0, 0, size)
+            layerObj.imageColor.forEach((color, idx) => {
+                gradient.addColorStop(
+                    idx / (layerObj.imageColor.length - 1),
+                    color || '#FFFFFF'
+                )
+            })
+            context.fillStyle = gradient
+            context.fill()
+
             const material = new MeshBasicMaterial({
-                map: texture,
+                map: new CanvasTexture(canvas),
+                transparent: true,
                 side: DoubleSide,
             })
             layerObj._material = material
-            callback(this.getCurtainMesh(layerObj))
-        })
+            geometries.forEach((g) => {
+                group.add(this.getCurtainMesh(layerObj, g))
+            })
+            callback(group)
+        } else {
+            const material = new MeshPhongMaterial({
+                color: layerObj.imageColor || '#FFFFFF',
+                transparent: true,
+                side: DoubleSide,
+            })
+            layerObj._material = material
+            geometries.forEach((g) => {
+                group.add(this.getCurtainMesh(layerObj, g))
+            })
+            callback(group)
+        }
     }
 
-    private getCurtainMesh = (layerObj: any) => {
+    private getCurtainMesh = (layerObj: any, featureGeometry: any) => {
         // Standardize geometry
         let g
-        if (layerObj.lineGeometry.type === 'LineString') {
-            g = layerObj.lineGeometry.coordinates
-        } else if (layerObj.lineGeometry.type === 'MultiLineString') {
-            g = layerObj.lineGeometry.coordinates[0]
-        } else {
-            console.warn(
-                `Invalid Curtain layer "lineGeometry" type: ${layerObj.lineGeometry.type}. Must be one of: ['LineString', 'MultiLineString']`
-            )
-            return
+        switch (featureGeometry.type) {
+            case 'LineString':
+                g = featureGeometry.coordinates
+                break
+            case 'MultiLineString':
+                g = featureGeometry.coordinates[0]
+                break
+            case 'Polygon':
+                g = featureGeometry.coordinates[0]
+                break
+            default:
+                console.warn(
+                    `Invalid Curtain layer "lineGeometry" type: ${featureGeometry.type}. Must be one of: ['LineString', 'MultiLineString']`
+                )
+                return
+                break
         }
 
         const geometry = new BufferGeometry()

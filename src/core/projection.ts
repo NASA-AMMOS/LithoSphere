@@ -340,21 +340,6 @@ export default class Projection {
         return { x: x, y: y, z: z }
     }
 
-    // TODO: Check that these obey different projections -- they look web mercator specific
-    //From: http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
-    lon2tileUnfloored = (lon: number, zoom: number): number =>
-        ((lon + 180) / 360) * Math.pow(2, zoom)
-
-    lat2tileUnfloored = (lat: number, zoom: number): number =>
-        ((1 -
-            Math.log(
-                Math.tan((lat * Math.PI) / 180) +
-                    1 / Math.cos((lat * Math.PI) / 180)
-            ) /
-                Math.PI) /
-            2) *
-        Math.pow(2, zoom)
-
     //Uses haversine to calculate distances over arcs
     lngLatDistBetween = (
         lon1: number,

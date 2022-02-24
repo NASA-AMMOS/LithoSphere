@@ -94,15 +94,17 @@ export default class VectorLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.vector.forEach((layer) => {
+        for (let i = 0; i < this.p.vector.length; i++) {
+            const layer = this.p.vector[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.meshes.visible = layer.on
+                console.log(layer)
 
                 this.p.p._.events._attenuate()
                 return true
             }
-        })
+        }
         return false
     }
 
@@ -155,6 +157,7 @@ export default class VectorLayerer {
         for (const f of features) {
             const type = f.geometry.type
             let mesh = null
+
             switch (type.toLowerCase()) {
                 case 'point':
                     switch (pointType) {

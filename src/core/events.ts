@@ -524,8 +524,18 @@ export default class Events {
         }
         // Look at all curtains
         for (let i = 0; i < this.p.layers.curtain.length; i++) {
-            if (this.p.layers.curtain[i].curtain)
-                intersectArr.push(this.p.layers.curtain[i].curtain)
+            if (
+                this.p.layers.curtain[i].curtain &&
+                this.p.layers.curtain[i].curtain.children
+            )
+                for (
+                    let j = 0;
+                    j < this.p.layers.curtain[i].curtain.children.length;
+                    j++
+                )
+                    intersectArr.push(
+                        this.p.layers.curtain[i].curtain.children[j]
+                    )
         }
         const intersects = this.p._.raycaster.intersectObjects(intersectArr)
 

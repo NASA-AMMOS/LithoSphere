@@ -11,8 +11,8 @@ const config = {
         index: './src/lithosphere.ts',
     },
     output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: path.resolve(__dirname, './dist') + '/',
+        path: path.resolve(__dirname, './public/dist'),
+        publicPath: path.resolve(__dirname, './public') + '/',
         filename: 'lithosphere.js',
         library: 'LithoSphere',
         libraryTarget: 'umd',
@@ -26,7 +26,9 @@ const config = {
     plugins: [
         new CleanWebpackPlugin({
             cleanStaleWebpackAssets: false,
-            cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, './dist')],
+            cleanOnceBeforeBuildPatterns: [
+                path.resolve(__dirname, './public/dist'),
+            ],
         }),
         process.argv.includes('--analyze') ? new BundleAnalyzerPlugin() : null,
     ].filter(Boolean),

@@ -46,7 +46,8 @@ export default class ModelLayerer {
                         layerObj.model = model
                         this.p.model.push(layerObj)
                         this.p.model.sort((a, b) => b.order - a.order)
-                        this.setOpacity(layerObj.name, layerObj.opacity)
+                        if (layerObj.opacity < 1)
+                            this.setOpacity(layerObj.name, layerObj.opacity)
                     }
                     if (typeof callback === 'function') callback()
                 })
@@ -61,14 +62,15 @@ export default class ModelLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.model.forEach((layer) => {
+        for (let i = 0; i < this.p.model.length; i++) {
+            const layer = this.p.model[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.model.visible = layer.on
 
                 return true
             }
-        })
+        }
         return false
     }
 

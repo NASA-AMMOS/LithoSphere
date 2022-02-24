@@ -58,15 +58,15 @@ export default class Tile3dLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.vector.forEach((layer) => {
+        for (let i = 0; i < this.p.tile3d.length; i++) {
+            const layer = this.p.tile3d[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.meshes.visible = layer.on
 
-                this.p.p._.events._attenuate()
                 return true
             }
-        })
+        }
         return false
     }
 

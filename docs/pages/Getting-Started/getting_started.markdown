@@ -33,13 +33,13 @@ LithoSphere is accessible via the Node.js package manager npm (recommended) as w
 
 If you're not using npm just yet, that's okay, we support you too.
 
-1. Within the LithoSphere GitHub repository, navigate to `/dist` and copy `lithosphere.js` into your project.
+1. Within the LithoSphere GitHub repository, navigate to `/public/dist` and copy `lithosphere.js` into your project.
 
 2. Add the following script tag to your HTML before you intend to invoke it:
     ```html
     <script src="your/path/to/lithosphere.js"></script>
     ```
-3. Using the `examples/example.html` file as a guide, use something like the following to initialize LithoSphere:
+3. Using the `/public/examples` files as a guide, use something like the following to initialize LithoSphere:
     ```html
     <div id="container"></div>
     <script>

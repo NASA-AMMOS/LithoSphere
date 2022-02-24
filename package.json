@@ -1,6 +1,6 @@
 {
     "name": "lithosphere",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "description": "LithoSphere is a GIS JavaScript library for building 3D tile-based globes in the web browser.",
     "author": "Tariq Soliman",
     "license": "Apache-2.0",
@@ -8,14 +8,15 @@
         "url": "https://github.com/NASA-AMMOS/LithoSphere/issues"
     },
     "homepage": "https://nasa-ammos.github.io/LithoSphere/",
-    "main": "./dist/lithosphere.js",
-    "types": "./dist/lithosphere.d.ts",
+    "main": "./public/dist/lithosphere.js",
+    "types": "./public/dist/lithosphere.d.ts",
     "files": [
-        "dist"
+        "public/dist"
     ],
     "scripts": {
         "start": "npm run start:dev",
         "start:dev": "webpack --mode=development --watch --progress",
+        "start:demo": "node demo.server.js",
         "start:docs": "cd ./docs && bundle exec jekyll serve",
         "build": "npm run build:prod",
         "build:prod": "webpack --mode=production",
@@ -83,6 +84,8 @@
         "eslint": "^7.1.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-plugin-import": "^2.20.2",
+        "express": "^4.17.3",
+        "http": "^0.0.1-security",
         "jest": "^26.0.1",
         "jest-canvas-mock": "^2.3.1",
         "postcss-loader": "^4.3.0",
@@ -103,6 +106,6 @@
         "@turf/circle": "^6.3.0",
         "3d-tiles-renderer": "^0.2.6",
         "proj4": "^2.7.0",
-        "three": "^0.125.2"
+        "three": ">=0.122.0"
     }
 }

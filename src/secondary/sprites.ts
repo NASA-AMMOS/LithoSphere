@@ -1,4 +1,10 @@
-import { Sprite, SpriteMaterial, Texture } from 'three'
+import {
+    Sprite,
+    SpriteMaterial,
+    Texture,
+    NearestFilter,
+    ClampToEdgeWrapping,
+} from 'three'
 
 const Sprites = {
     //id -> spriteMaterial
@@ -16,15 +22,16 @@ const Sprites = {
         return sprite
     },
     makeMarkerMaterial: function (parameters, id, forceNewMaterial?: boolean) {
+        if (parameters === undefined) parameters = {}
         if (
             id &&
-            this.spriteMaterials.hasOwnProperty(id) &&
+            this.spriteMaterials.hasOwnProperty(
+                `${id}_${JSON.stringify(parameters)}`
+            ) &&
             forceNewMaterial !== true
         ) {
-            return this.spriteMaterials[id]
+            return this.spriteMaterials[`${id}_${JSON.stringify(parameters)}`]
         } else {
-            if (parameters === undefined) parameters = {}
-
             // Ideally a power of 2
             // This is the canvas size too
             let radius = parameters.hasOwnProperty('radius')
@@ -85,7 +92,7 @@ const Sprites = {
                 context.fillStyle = fillColor
             }
             context.fill()
-            context.lineWidth = strokeWeight * (radius / 8)
+            context.lineWidth = strokeWeight * Math.ceil(radius / 8)
             // border color
             if (typeof strokeColor === 'object') {
                 context.strokeStyle =
@@ -106,6 +113,10 @@ const Sprites = {
             // canvas contents will be used for a texture
             const texture = new Texture(canvas)
             texture.needsUpdate = true
+            texture.anisotropy = 0
+            texture.magFilter = NearestFilter
+            texture.minFilter = NearestFilter
+            texture.wrapT = ClampToEdgeWrapping
 
             const spriteMaterial = new SpriteMaterial({
                 map: texture,
@@ -117,7 +128,9 @@ const Sprites = {
 
             // Save spriteMaterials with id so they don't need to be recreated
             if (id && forceNewMaterial !== true) {
-                this.spriteMaterials[id] = spriteMaterial
+                this.spriteMaterials[
+                    `${id}_${JSON.stringify(parameters)}`
+                ] = spriteMaterial
             }
 
             return spriteMaterial

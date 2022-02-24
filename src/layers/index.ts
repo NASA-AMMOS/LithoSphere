@@ -291,7 +291,7 @@ export default class Layers {
                         const path = propPath.split(':')[0].split('=')[1]
                         const value = propPath.split(':')[1]
                         if (
-                            Utils.getIn(feature.properties, path.split('.')) ===
+                            Utils.getIn(feature.properties, path.split('.')) ==
                             value
                         ) {
                             const propOverride = this.getFeatureStyleProp(
@@ -362,7 +362,7 @@ export default class Layers {
         if (obj.layerType && this[obj.layerType]) {
             const layers = this[obj.layerType]
             for (const l in layers) {
-                if (obj.uuid === layers[l].curtain.uuid)
+                if (obj.parent?.uuid === layers[l].curtain.uuid)
                     if (typeof layers[l].onMouseMove === 'function')
                         layers[l].onMouseMove(
                             e,

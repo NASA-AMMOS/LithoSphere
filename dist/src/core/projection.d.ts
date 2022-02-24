@@ -42,8 +42,6 @@ export default class Projection {
     vector3ToLatLng: (xyz: XYZ) => LatLngH;
     lonLatToVector3: (lon: number, lat: number, height: number) => XYZ;
     rotatePoint3D: (pt: XYZ, angle: XYZ, center?: XYZ) => XYZ;
-    lon2tileUnfloored: (lon: number, zoom: number) => number;
-    lat2tileUnfloored: (lat: number, zoom: number) => number;
     lngLatDistBetween: (lon1: number, lat1: number, lon2: number, lat2: number) => number;
 }
 export {};

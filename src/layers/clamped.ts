@@ -162,8 +162,7 @@ export default class ClampedLayerer {
         canvas.height = canvas.width
         const ctx = canvas.getContext('2d')
         //var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-        let x
-        let y
+        let tileXYZ
 
         let overlappedFeatures = []
 
@@ -256,20 +255,18 @@ export default class ClampedLayerer {
                                     i < f.geometry.coordinates[p].length;
                                     i++
                                 ) {
-                                    x = this.p.p.projection.lon2tileUnfloored(
-                                        f.geometry.coordinates[p][i][0],
-                                        xyz.z
-                                    )
-                                    y = this.p.p.projection.lat2tileUnfloored(
+                                    tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                         f.geometry.coordinates[p][i][1],
-                                        xyz.z
+                                        f.geometry.coordinates[p][i][0],
+                                        xyz.z,
+                                        true
                                     )
                                     // prettier-ignore
                                     // @ts-ignore
-                                    const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                    const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
                                     // prettier-ignore
                                     // @ts-ignore
-                                    const canvasY = parseInt((y - xyz.y) * canvas.height)
+                                    const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                                     if (i == 0) {
                                         ctx.beginPath()
@@ -299,20 +296,18 @@ export default class ClampedLayerer {
                                         j < f.geometry.coordinates[p][i].length;
                                         j++
                                     ) {
-                                        x = this.p.p.projection.lon2tileUnfloored(
-                                            f.geometry.coordinates[p][i][j][0],
-                                            xyz.z
-                                        )
-                                        y = this.p.p.projection.lat2tileUnfloored(
+                                        tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                             f.geometry.coordinates[p][i][j][1],
-                                            xyz.z
+                                            f.geometry.coordinates[p][i][j][0],
+                                            xyz.z,
+                                            true
                                         )
                                         // prettier-ignore
                                         // @ts-ignore
-                                        const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                        const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
                                         // prettier-ignore
                                         // @ts-ignore
-                                        const canvasY = parseInt((y - xyz.y) * canvas.height)
+                                        const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                                         if (j == 0) {
                                             ctx.beginPath()
@@ -344,20 +339,18 @@ export default class ClampedLayerer {
                                 p < f.geometry.coordinates.length;
                                 p++
                             ) {
-                                x = this.p.p.projection.lon2tileUnfloored(
-                                    f.geometry.coordinates[p][0],
-                                    xyz.z
-                                )
-                                y = this.p.p.projection.lat2tileUnfloored(
+                                tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                     f.geometry.coordinates[p][1],
-                                    xyz.z
+                                    f.geometry.coordinates[p][0],
+                                    xyz.z,
+                                    true
                                 )
                                 // prettier-ignore
                                 // @ts-ignore
-                                const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
                                 // prettier-ignore
                                 // @ts-ignore
-                                const canvasY = parseInt((y - xyz.y) * canvas.height)
+                                const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                                 if (p == 0) {
                                     ctx.beginPath()
@@ -387,20 +380,18 @@ export default class ClampedLayerer {
                                     i < f.geometry.coordinates[p].length;
                                     i++
                                 ) {
-                                    x = this.p.p.projection.lon2tileUnfloored(
-                                        f.geometry.coordinates[p][i][0],
-                                        xyz.z
-                                    )
-                                    y = this.p.p.projection.lat2tileUnfloored(
+                                    tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                         f.geometry.coordinates[p][i][1],
-                                        xyz.z
+                                        f.geometry.coordinates[p][i][0],
+                                        xyz.z,
+                                        true
                                     )
                                     // prettier-ignore
                                     // @ts-ignore
-                                    const canvasX = parseInt((x - xyz.x) * canvas.width)
+                                    const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
                                     // prettier-ignore
                                     // @ts-ignore
-                                    const canvasY = parseInt((y - xyz.y) * canvas.height)
+                                    const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                                     if (i == 0) {
                                         ctx.beginPath()
@@ -422,26 +413,22 @@ export default class ClampedLayerer {
                     } else if (f.geometry.type.toLowerCase() === 'point') {
                         let lnglat
                         if (typeof f.geometry.coordinates[0] === 'number') {
-                            x = this.p.p.projection.lon2tileUnfloored(
-                                f.geometry.coordinates[0],
-                                xyz.z
-                            )
-                            y = this.p.p.projection.lat2tileUnfloored(
+                            tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                 f.geometry.coordinates[1],
-                                xyz.z
+                                f.geometry.coordinates[0],
+                                xyz.z,
+                                true
                             )
                             lnglat = {
                                 lng: f.geometry.coordinates[0],
                                 lat: f.geometry.coordinates[1],
                             }
                         } else {
-                            x = this.p.p.projection.lon2tileUnfloored(
-                                f.geometry.coordinates[0][0],
-                                xyz.z
-                            )
-                            y = this.p.p.projection.lat2tileUnfloored(
+                            tileXYZ = this.p.p.projection.latLngZ2TileXYZ(
                                 f.geometry.coordinates[0][1],
-                                xyz.z
+                                f.geometry.coordinates[0][0],
+                                xyz.z,
+                                true
                             )
                             lnglat = {
                                 lng: f.geometry.coordinates[0][0],
@@ -451,8 +438,9 @@ export default class ClampedLayerer {
 
                         // Compute radius in meters
                         const lnglatRadiusAway = this.p.p.projection.tileXYZ2LatLng(
-                            x + (style.radius + ctx.lineWidth) / canvas.width,
-                            y,
+                            tileXYZ.x +
+                                (style.radius + ctx.lineWidth) / canvas.width,
+                            tileXYZ.y,
                             this.p.p.zoom
                         )
                         f._radiusInMeters = this.p.p.projection.lngLatDistBetween(
@@ -462,10 +450,12 @@ export default class ClampedLayerer {
                             lnglatRadiusAway.lat
                         )
 
+                        // prettier-ignore
                         // @ts-ignore
-                        const canvasX = parseInt((x - xyz.x) * canvas.width)
+                        const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
+                        // prettier-ignore
                         // @ts-ignore
-                        const canvasY = parseInt((y - xyz.y) * canvas.height)
+                        const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                         // Bearing is a triangle indicating direction
                         if (c.style?.bearing) {
