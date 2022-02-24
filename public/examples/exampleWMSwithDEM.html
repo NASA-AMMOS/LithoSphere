@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LithoSphere Demo</title>
+
+        <script src="../dist/lithosphere.js"></script>
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                background: black;
+            }
+            #container {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+            #myCustomCoordDiv {
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: white;
+                color: black;
+                padding: 2px 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <!--<div id="myCustomCoordDiv"></div>-->
+        <script>
+            const Litho = new LithoSphere.default('container', {
+                initialView: {
+                    lng: 31.1492746341015, // default 0
+                    lat: -85.391176037601,
+                    zoom: 14,
+                },
+                majorRadius: 1737400,
+                //tileResolution: 3, // Good for debugging
+                tileMapResource: {
+                    bounds: [-1737400, -1737400, 1737400, 1737400],
+                    origin: [-1737400, 1737400],
+                    crsCode: 'IAU2000:30166,31.1492746341015,-85.391176037601',
+                    proj:
+                        '+proj=stere +lat_0=-85.391176037601 +lon_0=31.1492746341015 +k=1 +x_0=0 +y_0=0 +a=1737400 +b=1737400 +units=m +no_defs', // proj4 string describing the global tileset projection: string (opt) | default wgs84
+                    resunitsperpixel: 8192,
+                    reszoomlevel: 0,
+                },
+                //radiusOfTiles: 3,
+                //useLOD: false,
+                //wireframeMode: true,
+                starsphere: {
+                    url:
+                        'https://miplmmgis.jpl.nasa.gov/public/images/eso0932a.jpg',
+                    color: '#444444',
+                },
+                atmosphere: {
+                    color: '#222227',
+                },
+            })
+
+            console.log(Litho)
+
+            Litho.addLayer('tile', {
+                name: 'NAC Nobile',
+                order: 1, //Orders are ordered only within the layer type
+                on: true,
+                path:
+                    'https://viperserv.jpl.nasa.gov/map/lunaserv/?layers=luna_nac_nobile_v5',
+                demPath:
+                    'https://viperserv.jpl.nasa.gov/map/lunaserv/?LAYERS=luna_nac_nobile_dem_v5&FORMAT=image%2Ftiff%3B%20mode=32bit',
+                format: 'wms', // 'wmts' || 'wms' // wms requires a tileMapResource to be set to help compute tile bboxes
+                formatOptions: {},
+                demFormat: 'wms', //
+                demFormatOptions: {
+                    // for wms, will query tile 1px taller and wider and interpolate values so that tile boundaries line up
+                    correctSeams: true,
+                    // GET Parameters to add to the wms query (they can also just be added straight to the demPath string)
+                    wmsParams: {},
+                },
+                parser: 'tif',
+                opacity: 1,
+                minZoom: 0,
+                maxZoom: 20,
+            })
+
+            Litho.addLayer('clamped', {
+                name: 'Waypoints',
+                order: 1, // Since higher order in litho is on top
+                on: true,
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                            type: 'Feature',
+                            properties: {
+                                easting_m: 8146811.2232,
+                                northing_m: -272039.2682,
+                                elev_m: -4501,
+                                pitch_deg: -3.61777,
+                                roll_deg: -2.422351,
+                                tilt_deg: 4.35299,
+                                yaw_rad: 0.6,
+                                yaw_rad_ellipse: 1.2,
+                                uncertainty: [3, 5],
+                                time: '2022-02-03T20:49:04.667Z',
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [31.05844, -85.38741, -4501],
+                            },
+                        },
+                        {
+                            type: 'Feature',
+                            properties: {
+                                easting_m: 8146817.2099,
+                                northing_m: -272039.1497,
+                                elev_m: -4501,
+                                pitch_deg: 5.414165,
+                                roll_deg: -1.329205,
+                                tilt_deg: 5.574478,
+                                yaw_rad: 1.7,
+                                uncertainty: [20, 40],
+                                time: '2022-03-03T20:49:04.667Z',
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [31.22124, -85.38736, -4501],
+                            },
+                        },
+                        {
+                            type: 'Feature',
+                            properties: {
+                                easting_m: 8146817.2099,
+                                northing_m: -272039.1497,
+                                elev_m: -4501,
+                                pitch_deg: 5.414165,
+                                roll_deg: -1.329205,
+                                tilt_deg: 5.574478,
+                                yaw_rad: 2.6,
+                                uncertainty: [10, 25],
+                                time: '2022-04-03T20:49:04.667Z',
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [31.28174, -85.38636, -4501],
+                            },
+                        },
+                        {
+                            type: 'Feature',
+                            properties: {
+                                easting_m: 8146817.2099,
+                                northing_m: -272039.1497,
+                                elev_m: -4501,
+                                pitch_deg: 5.414165,
+                                roll_deg: -1.329205,
+                                tilt_deg: 5.574478,
+                                yaw_rad: -1.7,
+                                uncertainty: [20, 25],
+                                time: '2022-05-03T20:49:04.667Z',
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [31.23134, -85.38686, -4501],
+                            },
+                        },
+                    ],
+                },
+                onClick: (feature, lnglat, layer) => {
+                    this.selectFeature(layer.name, feature)
+                },
+                useKeyAsHoverName: 'time',
+                style: {
+                    // Prefer feature[f].properties.style values
+                    letPropertiesStyleOverride: true, // default false
+                    default: {
+                        fillColor: 'white', //Use only rgb and hex. No css color names
+                        fillOpacity: parseFloat('1'),
+                        color: 'black',
+                        weight: 1,
+                        radius: 6,
+                    },
+                    bearing: {
+                        angleProp: 'yaw_rad',
+                        angleUnit: 'rad',
+                        color: 'cyan',
+                    },
+                },
+                opacity: 1,
+                minZoom: 0, //s.minZoom,
+                maxZoom: 100, //s.maxNativeZoom,
+            })
+
+            // "Curtains" are vertical 2D images draped from a line
+            Litho.addLayer(
+                'curtain',
+                {
+                    name: 'Uncertainty',
+                    on: true,
+                    opacity: 1,
+                    imageSolidColor: '#45F864',
+                    // depth of image in meters
+                    depth: 0.5,
+                    options: {
+                        // optional
+                        verticalExaggeration: 1, // default 1x
+                        verticalOffset: 0, // default 0
+                    },
+                    // Geojson of LineString features
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'LineString',
+                                    coordinates: [
+                                        [31.05844, -85.38741, 6350],
+                                        [31.09844, -85.32741, 6350],
+                                    ],
+                                },
+                            },
+                            {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'LineString',
+                                    coordinates: [
+                                        [31.15844, -85.46741, 6350],
+                                        [31.08844, -85.32741, 6350],
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                    onMouseMove: function (
+                        e,
+                        layer,
+                        mesh,
+                        intersection,
+                        intersectedLngLat,
+                        intersectionXYZ
+                    ) {
+                        // intersection.uv gives mouse's texture coords
+                        //console.log(intersection.uv)
+                    },
+                },
+                () => {
+                    /*
+                    console.log('Curtain loaded')
+                    let exag = 1
+                    setInterval(() => {
+                        exag += 0.01
+                        Litho.setLayerSpecificOptions(
+                            'GroundPenetratingRadar',
+                            {
+                                verticalExaggeration: exag,
+                                //verticalOffset: exag,
+                            }
+                        )
+                    }, 100)
+                    */
+                }
+            )
+
+            Litho.addControl('myLayers', Litho.controls.layers)
+            Litho.addControl('myCompass', Litho.controls.compass)
+            Litho.addControl('myCoords', Litho.controls.coordinates, {
+                //existingDivId: 'myCustomCoordDiv',
+            })
+        </script>
+    </body>
+</html>

@@ -159,7 +159,7 @@ const Shaders = {
             uniforms: uniforms,
             vertexShader: baseShaderVert,
             fragmentShader: baseShaderFrag,
-            transparent: true,
+            transparent: false,
         })
     },
     atmosphere: function (color?: string): ShaderMaterial {

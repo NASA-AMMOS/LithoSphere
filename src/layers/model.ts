@@ -46,7 +46,8 @@ export default class ModelLayerer {
                         layerObj.model = model
                         this.p.model.push(layerObj)
                         this.p.model.sort((a, b) => b.order - a.order)
-                        this.setOpacity(layerObj.name, layerObj.opacity)
+                        if (layerObj.opacity < 1)
+                            this.setOpacity(layerObj.name, layerObj.opacity)
                     }
                     if (typeof callback === 'function') callback()
                 })
@@ -61,14 +62,15 @@ export default class ModelLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.model.forEach((layer) => {
+        for (let i = 0; i < this.p.model.length; i++) {
+            const layer = this.p.model[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.model.visible = layer.on
 
                 return true
             }
-        })
+        }
         return false
     }
 
@@ -171,9 +173,7 @@ export default class ModelLayerer {
         }
     }
 
-    private daeToModel = (layerObj, callback: Function, options?: any) => {
-        options = options || {}
-
+    private daeToModel = (layerObj, callback: Function) => {
         colladaLoader.load(
             layerObj.path,
             function (mesh) {
@@ -216,11 +216,8 @@ export default class ModelLayerer {
     // Sets model position, scale, rotation, &c.
     private localizeModel = (layerObj, model) => {
         const parentMesh = new Object3D()
-        let position
-        let rotation
-        let scale
+
         if (layerObj.isArrayed) {
-            let models = []
             for (let i = 0; i < layerObj.position.length; i++) {
                 const modelC = model.clone()
                 const lng =
@@ -348,6 +345,8 @@ export default class ModelLayerer {
             parentMesh.visible = false
         }
 
+        // @ts-ignore
+        parentMesh.layerType = 'model'
         return parentMesh
     }
 }

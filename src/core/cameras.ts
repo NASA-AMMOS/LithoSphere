@@ -402,6 +402,7 @@ export default class Camera {
         if (this.isFirstPerson) {
             const time = performance.now()
             const delta = (time - this.prevTime) / 1000
+            const speedFactor = 1000
             this.prevTime = time
 
             this.velocity.x -= this.velocity.x * 10.0 * delta
@@ -409,17 +410,20 @@ export default class Camera {
 
             this.velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
 
-            if (this.moveForward) this.velocity.z -= 400.0 * delta
-            if (this.moveBackward) this.velocity.z += 400.0 * delta
+            if (this.moveForward) this.velocity.z -= speedFactor * delta
+            if (this.moveBackward) this.velocity.z += speedFactor * delta
 
-            if (this.moveLeft) this.velocity.x -= 400.0 * delta
-            if (this.moveRight) this.velocity.x += 400.0 * delta
+            if (this.moveLeft) this.velocity.x -= speedFactor * delta
+            if (this.moveRight) this.velocity.x += speedFactor * delta
             const rp = Utils.rotatePoint(
                 { x: this.velocity.x * delta, y: this.velocity.z * delta },
                 [0, 0],
                 -this.firstPerson.controls.getObject().rotation.y
             )
             if (this.isShift) {
+                rp.x *= 7
+                rp.y *= 7
+            } else {
                 rp.x *= 3
                 rp.y *= 3
             }

@@ -9,7 +9,7 @@ parent: Layers
 
 An unclamped vector.
 
-Example
+### Example
 
 ```javascript
 Litho.addLayer('vector', {

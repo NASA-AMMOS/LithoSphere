@@ -1,8 +1,6 @@
 import { TilesRenderer } from '3d-tiles-renderer'
 import { Vector3, Object3D, Quaternion, MeshBasicMaterial } from 'three'
 
-import Utils from '../utils'
-
 export default class Tile3dLayerer {
     // parent
     p: any
@@ -60,15 +58,15 @@ export default class Tile3dLayerer {
     toggle = (name: string, on?: boolean): boolean => {
         if (!this.p.p._.wasInitialized) return false
 
-        this.p.vector.forEach((layer) => {
+        for (let i = 0; i < this.p.tile3d.length; i++) {
+            const layer = this.p.tile3d[i]
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.meshes.visible = layer.on
 
-                this.p.p._.events._attenuate()
                 return true
             }
-        })
+        }
         return false
     }
 
@@ -171,69 +169,5 @@ export default class Tile3dLayerer {
 
         parentMesh.add(tilesRenderer.group)
         return parentMesh
-
-        /*
-        ///
-        // position
-        const v = this.p.p.projection.lonLatToVector3(
-            layerObj.position.longitude || layerObj.position.lng || 0,
-            layerObj.position.latitude || layerObj.position.lat || 0,
-            (layerObj.position.elevation || layerObj.position.elev || 0) *
-                this.p.p.options.exaggeration
-        )
-        tilesRenderer.group.position.set(v.x, v.y, v.z)
-
-        // scale
-        let scale = layerObj.scale
-        if (scale == null) scale = 1
-        tilesRenderer.group.scale.set(scale, scale, scale)
-
-        // rotation
-        const rotation = layerObj.rotation || {}
-
-        // Adjust to y+ coords
-        rotation.x = rotation.x || 0
-
-        let order = rotation.order || 'XYZ'
-        if (order.length != 3) {
-            console.warn(
-                `Lithosphere: Warning - Tile3d Layer "${layerObj.name}" has an invalid rotation.order. Defaulting back to 'XYZ'`
-            )
-            order = 'XYZ'
-        }
-        tilesRenderer.group.rotation.order = order
-        order = order.toLowerCase()
-
-        for (let a of order.split('')) {
-            switch (a) {
-                case 'x':
-                    Utils.rotateAroundArbAxis(
-                        tilesRenderer.group,
-                        new Vector3(1, 0, 0),
-                        rotation.x || 0
-                    )
-                    break
-                case 'y':
-                    Utils.rotateAroundArbAxis(
-                        tilesRenderer.group,
-                        new Vector3(0, 1, 0),
-                        rotation.y || 0
-                    )
-                    break
-                case 'z':
-                    Utils.rotateAroundArbAxis(
-                        tilesRenderer.group,
-                        new Vector3(0, 0, 1),
-                        rotation.z || 0
-                    )
-                    break
-                default:
-                    console.warn(
-                        `Lithosphere: Warning - Tile3d Layer "${layerObj.name}" has an unknown rotation.order axis: ${a}`
-                    )
-                    break
-            }
-        }
-        */
     }
 }

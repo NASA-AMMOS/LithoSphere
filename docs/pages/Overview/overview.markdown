@@ -13,17 +13,18 @@ nav_order: 0
 
 `npm install lithosphere`
 
-Head over to [Getting Started]({{ site.baseurl }}/getting-started) for more or checkout `/example.html`.
+Head over to [Getting Started]({{ site.baseurl }}/getting-started) for more, checkout the examples in `/public/examples`, or start the demo server `npm run start:demo` and open `/public/index.html`.
 
 ### Features
 
 -   Fully configurable layer types:
     -   Vector
     -   Clamped
-    -   Overlay
+    -   Overlay (not implemented)
     -   Tile
     -   Tile3d
     -   Model
+    -   Curtain
 -   Adjustable planetary radii
 -   Scripts for tiling Digital Elevation Maps (DEM) and custom projections
 -   Various tile formats:

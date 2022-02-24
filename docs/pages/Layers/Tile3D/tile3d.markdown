@@ -9,7 +9,7 @@ parent: Layers
 
 3D tiles via [3DTilesRendererJS](https://github.com/NASA-AMMOS/3DTilesRendererJS).
 
-Example
+### Example
 
 ```javascript
 Litho.addLayer('tile3d', {

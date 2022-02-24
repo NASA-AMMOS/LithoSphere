@@ -2,6 +2,7 @@ import Tile3dLayerer from './tile3d';
 import TileLayerer from './tile';
 import ClampedLayerer from './clamped';
 import VectorLayerer from './vector';
+import CurtainLayerer from './curtain';
 import ModelLayerer from './model';
 interface Private {
     layerers: {
@@ -9,6 +10,7 @@ interface Private {
         tile: TileLayerer;
         clamped: ClampedLayerer;
         vector: VectorLayerer;
+        curtain: CurtainLayerer;
         model: ModelLayerer;
     };
 }
@@ -20,6 +22,7 @@ export default class Layers {
     tile: any;
     clamped: any;
     vector: any;
+    curtain: any;
     model: any;
     all: any;
     constructor(parent: any);
@@ -29,11 +32,13 @@ export default class Layers {
     toggleLayer: (name: string, on?: boolean) => boolean;
     setLayerOpacity: (name: string, opacity: number) => boolean;
     setLayerFilterEffect: (name: string, filter: string, value: number) => boolean;
+    setLayerSpecificOptions: (name: string, options: any) => boolean;
     findHighestMaxZoom: () => number;
     findLowestMinZoom: () => number;
     private getFeatureStyleProp;
     getLayerByName: (layerName: string) => any;
     hasLayer: (layerName: string) => boolean;
     getFeatureStyle: (layer: any, feature: any, isStrokeless?: boolean) => any;
+    _onMouseMove: (intersectedLL: any, e: MouseEvent, obj: any, intersectionRaw: any, intersectionPoint: any) => void;
 }
 export {};

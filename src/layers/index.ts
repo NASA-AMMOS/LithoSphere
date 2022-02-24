@@ -4,6 +4,7 @@ import Tile3dLayerer from './tile3d'
 import TileLayerer from './tile'
 import ClampedLayerer from './clamped'
 import VectorLayerer from './vector'
+import CurtainLayerer from './curtain'
 import ModelLayerer from './model'
 
 interface Private {
@@ -12,6 +13,7 @@ interface Private {
         tile: TileLayerer
         clamped: ClampedLayerer
         vector: VectorLayerer
+        curtain: CurtainLayerer
         model: ModelLayerer
     }
 }
@@ -25,6 +27,7 @@ export default class Layers {
     tile: any
     clamped: any
     vector: any
+    curtain: any
     model: any
     all: any
 
@@ -43,6 +46,7 @@ export default class Layers {
                 tile: new TileLayerer(this),
                 clamped: new ClampedLayerer(this),
                 vector: new VectorLayerer(this),
+                curtain: new CurtainLayerer(this),
                 model: new ModelLayerer(this),
             },
         }
@@ -54,6 +58,7 @@ export default class Layers {
         this.tile = []
         this.clamped = []
         this.vector = []
+        this.curtain = []
         this.model = []
 
         // For convenience
@@ -63,6 +68,7 @@ export default class Layers {
             tile: this.tile,
             clamped: this.clamped,
             vector: this.vector,
+            curtain: this.curtain,
             model: this.model,
         }
     }
@@ -128,9 +134,7 @@ export default class Layers {
             if (didOpacity) foundMatch = true
         }
         if (!foundMatch) {
-            console.warn(
-                `Could not find a layer named '${name}' to set the opacity of.`
-            )
+            // console.warn(`Could not find a layer named '${name}' to set the opacity of.`)
             return false
         }
         return true
@@ -161,9 +165,27 @@ export default class Layers {
             parseFloat(value)
         )
         if (!didFilter) {
-            console.warn(
-                `Could not find tile layer named '${name}' to set the filter of.`
-            )
+            // console.warn(`Could not find tile layer named '${name}' to set the filter of.`)
+            return false
+        }
+        return true
+    }
+
+    setLayerSpecificOptions = (name: string, options: any): boolean => {
+        let foundMatch = false
+
+        for (const type in this._.layerers) {
+            if (
+                typeof this._.layerers[type].setLayerSpecificOptions ===
+                'function'
+            ) {
+                const didOptions = this._.layerers[
+                    type
+                ].setLayerSpecificOptions(name, options)
+                if (didOptions) foundMatch = true
+            }
+        }
+        if (!foundMatch) {
             return false
         }
         return true
@@ -269,7 +291,7 @@ export default class Layers {
                         const path = propPath.split(':')[0].split('=')[1]
                         const value = propPath.split(':')[1]
                         if (
-                            Utils.getIn(feature.properties, path.split('.')) ===
+                            Utils.getIn(feature.properties, path.split('.')) ==
                             value
                         ) {
                             const propOverride = this.getFeatureStyleProp(
@@ -328,5 +350,29 @@ export default class Layers {
         }
 
         return style
+    }
+
+    _onMouseMove = (
+        intersectedLL,
+        e: MouseEvent,
+        obj,
+        intersectionRaw,
+        intersectionPoint
+    ) => {
+        if (obj.layerType && this[obj.layerType]) {
+            const layers = this[obj.layerType]
+            for (const l in layers) {
+                if (obj.parent?.uuid === layers[l].curtain.uuid)
+                    if (typeof layers[l].onMouseMove === 'function')
+                        layers[l].onMouseMove(
+                            e,
+                            layers[l],
+                            obj,
+                            intersectionRaw,
+                            intersectedLL,
+                            intersectionPoint
+                        )
+            }
+        }
     }
 }

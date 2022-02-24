@@ -522,6 +522,21 @@ export default class Events {
                         this.p.layers.vector[i].meshes.children[j]
                     )
         }
+        // Look at all curtains
+        for (let i = 0; i < this.p.layers.curtain.length; i++) {
+            if (
+                this.p.layers.curtain[i].curtain &&
+                this.p.layers.curtain[i].curtain.children
+            )
+                for (
+                    let j = 0;
+                    j < this.p.layers.curtain[i].curtain.children.length;
+                    j++
+                )
+                    intersectArr.push(
+                        this.p.layers.curtain[i].curtain.children[j]
+                    )
+        }
         const intersects = this.p._.raycaster.intersectObjects(intersectArr)
 
         if (intersects.length > 0) {
@@ -538,7 +553,9 @@ export default class Events {
                     obj = this.p._.tiledWorld.findTileDrawnBasedOnUUID(
                         intersects[0].object.uuid
                     )
-                    if (obj == null) return
+                    if (obj == null) {
+                        obj = intersects[0].object
+                    }
                     break
                 default:
                     return
@@ -597,9 +614,20 @@ export default class Events {
                     intersectedLL.lng,
                     intersectedLL.lat,
                     type,
-                    obj
+                    obj,
+                    intersects[0],
+                    savedIntersectionPoint
                 )
             }, 10)
+
+            // Call layers onMouseMoves
+            this.p.layers._onMouseMove(
+                intersectedLL,
+                e,
+                obj,
+                intersects[0],
+                savedIntersectionPoint
+            )
 
             // Call control onMouseMoves
             this.p.controls._onMouseMove(
@@ -630,9 +658,15 @@ export default class Events {
     }
 
     // Gets features from tile.features
-    private _highlightFeature(lng, lat, type, obj) {
+    private _highlightFeature(
+        lng,
+        lat,
+        type,
+        obj,
+        intersectionRaw,
+        intersectionPoint
+    ) {
         //const radiansPerPixel = Utils.getRadiansPerPixel(this.p.zoom)
-
         const cursor = { type: 'Point', coordinates: [lng, lat] }
 
         let highlighted = false
@@ -661,7 +695,10 @@ export default class Events {
                 })
                 break
             case 'Mesh':
-                if (obj && obj.contains) {
+                if (obj.layerType === 'curtain') {
+                } else if (obj.layerType === 'model') {
+                } else if (obj.contains) {
+                    // A tile
                     for (let layerName of Object.keys(obj.contains).reverse()) {
                         for (let f of obj.contains[layerName].reverse()) {
                             let feature = Object.assign({}, f)

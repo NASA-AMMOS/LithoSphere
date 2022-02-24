@@ -15,7 +15,7 @@ _Open Source License Approved by Caltech/JPL_
 -   SPDX short identifier: Apache-2.0
 -   OSI Approved License: [https://opensource.org/licenses/Apache-2.0](https://opensource.org/licenses/Apache-2.0)
 
-**Copyright (c) 2021 California Institute of Technology (“Caltech”). U.S. Government sponsorship acknowledged.**
+**Copyright (c) 2022 California Institute of Technology (“Caltech”). U.S. Government sponsorship acknowledged.**
 
 All rights reserved.
 

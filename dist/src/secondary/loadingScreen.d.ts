@@ -1,4 +1,4 @@
-import './loadingScreen.scss';
+import './loadingScreen.css';
 export default class Controls {
     p: any;
     loadingContainer: HTMLElement;
