@@ -22,9 +22,7 @@ title: LithoSphere
 logo: '/assets/images/logo-small-text.png'
 email: Tariq.K.Soliman@jpl.nasa.gov
 description: >- # this means to ignore newlines until "baseurl:"
-    Write an awesome description for your new site here. You can edit this
-    line in _config.yml. It will appear in your document head meta (for
-    Google search results) and in your feed.xml site description.
+    LithoSphere is a completely free and open-sourced tile-based 3D globe renderer. First built within the Geographical Information System (GIS) application MMGIS, LithoSphere has been pulled out and refactored into a standalone, mapping focused, JavaScript library. At its core sits the brilliant Three.js library with all its extensible familiarity.
 baseurl: '/LithoSphere' # the subpath of your site, e.g. /blog
 url: 'https://nasa-ammos.github.io' # the base hostname & protocol for your site, e.g. http://example.com
 github_username: tariqksoliman
