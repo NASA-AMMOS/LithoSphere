@@ -579,6 +579,11 @@ export default class TiledWorld {
                         xyz,
                         this.p.layers.tile[i].boundingBox,
                         this.p.projection
+                    ) &&
+                    Utils.isInExtentEN(
+                        xyz,
+                        this.p.layers.tile[i].boundingBoxEN,
+                        this.p.projection
                     )) ||
                     this.p.layers.tile[i].path == '_vectorsastile_') //TODO: Check this vec as tile
             ) {
