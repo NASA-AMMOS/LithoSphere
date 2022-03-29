@@ -2,6 +2,17 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.4.0
+
+_Mar 29, 2022_
+
+#### Added
+
+-   Navigation control
+-   Easting and northing `boundingBoxEN` option for tile layers
+
+---
+
 ## v1.3.0
 
 _Feb 23, 2022_
@@ -14,6 +25,8 @@ _Feb 23, 2022_
 #### Fixed
 
 -   Removed extraneous addition of "ratio of surface areas" to `reszoomlevel`
+
+---
 
 ## v1.2.0
 
