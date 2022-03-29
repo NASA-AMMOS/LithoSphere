@@ -5,6 +5,7 @@ declare const Utils: {
     findHighestMaxZoom: (tileLayers: any) => number;
     findLowestMinZoom: (tileLayers: any) => number;
     isInExtent: (xyz: XYZ, bb: any, projection: any) => boolean;
+    isInExtentEN: (xyz: XYZ, bb: any, proj: any, margin?: number) => boolean;
     clone: (obj: any) => any;
     capitalizeFirstLetter: (string: string) => string;
     getExtension: (string: string) => string;

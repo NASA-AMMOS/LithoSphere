@@ -699,12 +699,13 @@
 
             Litho.addControl('myHome', Litho.controls.home)
             Litho.addControl('myExaggerate', Litho.controls.exaggerate)
+            Litho.addControl('myNavigation', Litho.controls.navigation)
             Litho.addControl('myLayers', Litho.controls.layers)
             Litho.addControl('myObserve', Litho.controls.observe)
             Litho.addControl('myWalk', Litho.controls.walk)
             Litho.addControl('myCompass', Litho.controls.compass)
             Litho.addControl('myCoords', Litho.controls.coordinates, {
-                //existingDivId: 'myCustomCoordDiv',
+                existingDivId: 'myCustomCoordDiv',
             })
             const myLink = Litho.addControl('myLink', Litho.controls.link, {
                 initiallyLinked: true,

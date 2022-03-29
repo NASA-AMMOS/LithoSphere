@@ -10,6 +10,7 @@ export default class Controls {
     };
     activeControls: any;
     compass: any;
+    navigation: any;
     coordinates: any;
     home: any;
     layers: any;

@@ -1,6 +1,7 @@
 import { Corners, ControlType } from '../generalTypes'
 
 import Compass from './compass'
+import Navigation from './navigation'
 import Coordinates from './coordinates'
 import Home from './home'
 import Layers from './layers'
@@ -8,10 +9,6 @@ import Exaggerate from './exaggerate'
 import Observe from './observe'
 import Walk from './walk'
 import Link from './link'
-
-/*
-import Controls from './controls'
-*/
 
 export default class Controls {
     // parent
@@ -25,6 +22,7 @@ export default class Controls {
     }
     activeControls: any
     compass: any
+    navigation: any
     coordinates: any
     home: any
     layers: any
@@ -32,10 +30,6 @@ export default class Controls {
     observe: any
     walk: any
     link: any
-
-    /*
-    controls: Controls
-    */
 
     constructor(parent: any) {
         this.p = parent
@@ -115,15 +109,13 @@ export default class Controls {
         // Premade controls
         this.compass = Compass
         this.coordinates = Coordinates
+        this.navigation = Navigation
         this.home = Home
         this.layers = Layers
         this.exaggerate = Exaggerate
         this.observe = Observe
         this.walk = Walk
         this.link = Link
-        /*
-        this.controls = Controls
-        */
     }
 
     addControl = (

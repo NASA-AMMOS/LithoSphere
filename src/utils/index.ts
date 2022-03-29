@@ -103,6 +103,16 @@ const Utils = {
         }
         return inExtent
     },
+    // Returns true if the tile at xyz in the bounding box bb where bb is
+    // specified as [minEasting, minNorthing, maxEasting, maxNorthing]
+    // Checks to see if any corners of it fit inside
+    isInExtentEN: function (xyz: XYZ, bb, proj, margin = 0.0000001): boolean {
+        if (!bb) return true
+        const [minE, minN, maxE, maxN] = bb
+        const { min, max } = proj.tileXYZ2NwSe(xyz, proj.trueTileResolution, true)
+        return max.x > minE + margin && min.x < maxE - margin
+            && max.y > minN + margin && min.y < maxN - margin
+    },
     //Return a clone of the object to avoid pass by reference issues
     clone: function (obj: any): any {
         let copy
