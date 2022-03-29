@@ -62,6 +62,14 @@ A menu that lists out the current layers within LithoSphere and provides the abi
 Litho.addControl('myLayers', Litho.controls.layers)
 ```
 
+### Navigation
+
+Adds on-screen spin, tilt, pan and zoom options to navigate and reorientate the scene through clicking.
+
+```javascript
+Litho.addControl('myNavigation', Litho.controls.navigation)
+```
+
 ### Observe
 
 Allows users to set camera parameters and stand at a location in it.
