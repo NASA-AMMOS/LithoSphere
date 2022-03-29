@@ -40,7 +40,7 @@ Head over to [Getting Started]({{ site.baseurl }}/getting-started) for more, che
     -   Home
     -   Exaggerate
     -   Crop
-    -   Controls
+    -   Navigation
     -   Coordinates
     -   Link
 -   A stub to create parsers for your own tiled data formats
