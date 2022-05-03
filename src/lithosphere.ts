@@ -37,7 +37,6 @@ interface Private {
     rendererWrapper: any
     renderer: any
     cameras: any
-    cameraPositionTarget: number[]
     tiledWorld: TiledWorld
     events: Events
     maxZoom: number
@@ -112,7 +111,6 @@ export default class LithoSphere {
             rendererWrapper: null,
             renderer: null,
             cameras: null,
-            cameraPositionTarget: null,
             tiledWorld: null,
             events: null,
             maxZoom: 0,
@@ -322,6 +320,7 @@ export default class LithoSphere {
 
         //Set default view
         this.setCenter(this.options.initialView)
+        this._setInitialCameraPositionTarget()
 
         // Action!
         this._animate()
@@ -399,40 +398,16 @@ export default class LithoSphere {
             this.controls._onOrbitalUpdate()
         }
 
-        /*
         //Globe_.updateTileShaderVars();
-        THREE.VRController.update()
+        //THREE.VRController.update()
 
-        //set default camera from url if there is one
-        if (L_.FUTURES.globeCamera != null) {
-            var c = L_.FUTURES.globeCamera
-            Cameras.orbit.camera.position.set(c[0], c[1], c[2])
-            Cameras.orbit.controls.target.x = c[3]
-            Cameras.orbit.controls.target.y = c[4]
-            Cameras.orbit.controls.target.z = c[5]
-            Cameras.orbit.controls.update()
-            L_.FUTURES.globeCamera = null
-        }
-*/
         if (this._.firstUpdate) {
             //Set default view
             if (this._.firstViewOverride != null)
                 this.setCenter(this._.firstViewOverride)
             else this.setCenter(this.options.initialView, true)
 
-            const o = this._.cameras.orbit
-            const cam = o.camera
-            const con = o.controls
-            const pos = cam.position
-            const tar = con.target
-            this._.cameraPositionTarget = [
-                pos.x,
-                pos.y,
-                pos.z,
-                tar.x,
-                tar.y,
-                tar.z,
-            ]
+            this._setInitialCameraPositionTarget()
 
             this._.firstUpdate = false
         }
@@ -452,6 +427,7 @@ export default class LithoSphere {
         setTimeout(() => {
             // Repositions center
             this.setCenter(this.options.initialView, false, true)
+            this._setInitialCameraPositionTarget()
             this._.events._onZoom()
             this._.loadingScreen.end()
         }, 100)
@@ -668,6 +644,50 @@ export default class LithoSphere {
             firstPerson: this._.cameras.firstPerson,
             orbit: this._.cameras.orbit,
         }
+    }
+
+    _setInitialCameraPositionTarget = () => {
+        const o = this._.cameras.orbit
+        const cam = o.camera
+        const con = o.controls
+        const pos = cam.position
+        const tar = con.target
+
+        let position = { x: pos.x, y: pos.y, z: pos.z }
+        let target = { x: tar.x, y: tar.y, z: tar.z }
+        if (this.options.initialCamera) {
+            const iC = this.options.initialCamera
+            if (iC.position) {
+                position = {
+                    x: iC.position.x || position.x,
+                    y: iC.position.y || position.y,
+                    z: iC.position.z || position.z,
+                }
+            }
+            if (iC.target) {
+                target = {
+                    x: iC.target.x || target.x,
+                    y: iC.target.y || target.y,
+                    z: iC.target.z || target.z,
+                }
+            }
+            this.setCameraPositionTarget(position, target)
+        }
+    }
+    setCameraPositionTarget = (position?: XYZ, target?: XYZ) => {
+        if (position) {
+            this._.cameras.orbit.camera.position.set(
+                position.x || 9,
+                position.y || 0,
+                position.z || 0
+            )
+        }
+        if (target) {
+            this._.cameras.orbit.controls.target.x = target.x || 0
+            this._.cameras.orbit.controls.target.y = target.y || 0
+            this._.cameras.orbit.controls.target.z = target.z || 0
+        }
+        this._.cameras.orbit.controls.update()
     }
 
     // Getter for container
