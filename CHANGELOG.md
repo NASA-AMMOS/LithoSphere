@@ -2,7 +2,17 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.4.1
+
+_May 2, 2022_
+
+#### Added
+
+-   New `initialCamera` constructor option
+
 ## v1.4.0
+
+---
 
 _Mar 29, 2022_
 

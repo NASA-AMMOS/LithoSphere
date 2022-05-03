@@ -31,6 +31,19 @@ export interface LatLngZ {
     zoom?: number
 }
 
+export interface InitialCamera {
+    position: {
+        x: number
+        y: number
+        z: number
+    }
+    target: {
+        x: number
+        y: number
+        z: number
+    }
+}
+
 export interface XY {
     x: number
     y: number
@@ -74,6 +87,7 @@ export interface ControlType {
 
 export interface Options {
     initialView?: LatLngZ
+    initialCamera?: InitialCamera
     // Whether or not to show the loading screen
     loadingScreen?: boolean
     majorRadius?: number
