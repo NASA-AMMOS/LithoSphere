@@ -11,7 +11,6 @@ interface Private {
     rendererWrapper: any;
     renderer: any;
     cameras: any;
-    cameraPositionTarget: number[];
     tiledWorld: TiledWorld;
     events: Events;
     maxZoom: number;
@@ -82,6 +81,8 @@ export default class LithoSphere {
         firstPerson: any;
         orbit: any;
     };
+    _setInitialCameraPositionTarget: () => void;
+    setCameraPositionTarget: (position?: XYZ, target?: XYZ) => void;
     getContainer: () => HTMLElement;
     invalidateSize: () => void;
 }

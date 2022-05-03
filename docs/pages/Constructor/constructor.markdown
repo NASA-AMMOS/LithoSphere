@@ -30,7 +30,8 @@ new LithoSphere(containerId, options)
 
 |        Parameter         |    Type    |                                      Default                                       |                                   Description                                    |
 | :----------------------: | :--------: | :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
-|     **initialView**      |  _object_  |     See [initialView]({{ site.baseurl }}/constructor#optionsinitialview) below     |                  Sets the initial coordinate view of the scene                   |
+|     **initialView**      |  _object_  |     See [initialView]({{ site.baseurl }}/constructor#optionsinitialview) below     |     Sets the initial longitude, latitude, zoom coordinate view of the scene      |
+|    **initialCamera**     |  _object_  |   See [initialCamera]({{ site.baseurl }}/constructor#optionsinitialcamera) below   |           Sets the initial world-space camera coordinates and look-at            |
 |     **majorRadius**      | _integer_  |                                      6371000                                       |                         Major planetary radius in meters                         |
 |     **minorRadius**      | _integer_  |                                    majorRadius                                     |                         Minor planetary radius in meters                         |
 |    **loadingScreen**     | _boolean_  |                                        true                                        |    If true, shows a loading screen until all lithosphere content first loads     |
@@ -71,6 +72,34 @@ The latitude, longitude, and zoom LithoSphere first starts at.
         lat: -4.626571631163808,
         zoom: 16,
     }
+}
+```
+
+### options.initialCamera
+
+Sets the orbit camera's initial position and target. Useful in deeplinks and when a non-top-down camera angle is desired. Note that the camera's look-at target is always along the y-axis.
+
+|         Parameter          | Type  | Default |           Description            |
+| :------------------------: | :---: | :-----: | :------------------------------: |
+| **initialCamera.position** | _XYZ_ |  null   | Sets the initial camera position |
+|  **initialCamera.target**  | _XYZ_ |  null   |  Sets the initial camera target  |
+
+#### Example
+
+```javascript
+{
+    initialCamera: {
+        position: {
+            x: 1570.8134791640523,
+            y: 3125.497317531146,
+            z: 123.76226561404211,
+        },
+        target: {
+            x: 0,
+            y: 4412.141683964059,
+            z: 0,
+        },
+    },
 }
 ```
 
