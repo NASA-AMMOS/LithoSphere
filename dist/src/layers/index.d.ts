@@ -30,6 +30,8 @@ export default class Layers {
     addLayer: (type: string, layerObj: any, callback?: Function, sI?: number) => void;
     removeLayer: (name: string) => boolean;
     toggleLayer: (name: string, on?: boolean) => boolean;
+    orderLayers: (ordering: string[]) => boolean;
+    private getDesiredOrder;
     setLayerOpacity: (name: string, opacity: number) => boolean;
     setLayerFilterEffect: (name: string, filter: string, value: number) => boolean;
     setLayerSpecificOptions: (name: string, options: any) => boolean;

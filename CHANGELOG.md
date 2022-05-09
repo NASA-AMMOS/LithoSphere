@@ -2,6 +2,14 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.4.2
+
+_May 5, 2022_
+
+#### Added
+
+-   New `orderLayers` function
+
 ## v1.4.1
 
 _May 2, 2022_

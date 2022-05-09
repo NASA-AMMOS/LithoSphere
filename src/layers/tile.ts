@@ -66,6 +66,27 @@ export default class TileLayerer {
         return false
     }
 
+    orderLayers = (ordering: string[]): boolean => {
+        let missingCount = 0
+
+        // remember that a higher number for order means it's on top
+        this.p.tile.forEach((layer) => {
+            const newOrder = ordering.indexOf(layer.name)
+            if (newOrder >= 0) {
+                layer.order = this.p.tile.length - newOrder
+            } else {
+                // Place layers missing from the ordering array after
+                layer.order =
+                    this.p.tile.length - ordering.length - missingCount
+                missingCount++
+            }
+        })
+
+        this.p.tile.sort((a, b) => a.order - b.order)
+
+        return true
+    }
+
     setOpacity = (name: string, opacity: number): boolean => {
         if (!this.p.p._.wasInitialized) return false
 

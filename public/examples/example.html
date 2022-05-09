@@ -168,6 +168,8 @@
             Litho.setLayerFilterEffect('HiRISE', 'blendCode', 1)
             //Litho.options.radiusOfTiles = 10
 
+            //Litho.orderLayers(['Aeolis', 'HiRISE'])
+
             Litho.addLayer('tile3d', {
                 name: '3dTileExample',
                 order: 3,
@@ -295,7 +297,6 @@
                 }
             )
 
-            /*
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
                 order: 5,
@@ -332,7 +333,6 @@
                 //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
                 //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
             })
-            */
 
             Litho.addLayer('clamped', {
                 name: 'clampedPoly',
@@ -402,6 +402,53 @@
                 //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
                 //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
             })
+
+            Litho.addLayer('clamped', {
+                name: 'clampedTraverse',
+                order: [
+                    'styledFeatures',
+                    'clampedTraverse',
+                    'clampedPoly',
+                    'clampedWaypoints',
+                    'clampedCCam',
+                ],
+                on: true,
+                // GeoJSON or path to geojson
+                geojsonPath:
+                    ' https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Traverse/MSL_traverse3D_sol1508.json',
+                style: {
+                    default: {
+                        color: 'white',
+                        weight: 5,
+                    },
+                },
+                opacity: 1,
+                minZoom: 11,
+                maxZoom: 18,
+                boundingBox: [
+                    137.3250006349,
+                    -4.72500217818315,
+                    137.42500036372522,
+                    -4.62500251269999,
+                ],
+                //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
+                //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
+            })
+
+            /*
+            setTimeout(() => {
+                // Reverse the order of our layers
+                Litho.orderLayers([
+                    'styledFeatures',
+                    'clampedTraverse',
+                    'clampedPoly',
+                    'clampedWaypoints',
+                    'clampedCCam',
+                    //'Aeolis',
+                    //'HiRISE',
+                ])
+            }, 15000)
+            */
 
             Litho.addLayer('vector', {
                 name: 'vectorLine',
