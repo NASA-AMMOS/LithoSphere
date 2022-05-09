@@ -41,6 +41,7 @@ export default class LithoSphere {
     addLayer: Function;
     removeLayer: Function;
     toggleLayer: Function;
+    orderLayers: Function;
     setLayerOpacity: Function;
     setLayerFilterEffect: Function;
     setLayerSpecificOptions: Function;

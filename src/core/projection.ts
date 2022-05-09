@@ -72,17 +72,35 @@ export default class Projection {
                 ? `EPSG:${tmr.epsg}`
                 : tmr.crsCode,
             tmr.proj,
-            {
-                // @ts-ignore
-                origin: [parseFloat(tmr.origin[0]), parseFloat(tmr.origin[1])],
-                resolutions: this.res,
-                bounds: [
-                    // @ts-ignore
-                    [parseFloat(tmr.bounds[0]), parseFloat(tmr.bounds[1])],
-                    // @ts-ignore
-                    [parseFloat(tmr.bounds[2]), parseFloat(tmr.bounds[3])],
-                ],
-            },
+            tmr.origin != null
+                ? {
+                      origin: [
+                          // @ts-ignore
+                          parseFloat(tmr.origin[0]),
+                          // @ts-ignore
+                          parseFloat(tmr.origin[1]),
+                      ],
+                      resolutions: this.res,
+                      bounds: [
+                          [
+                              // @ts-ignore
+                              parseFloat(tmr.bounds[0]),
+                              // @ts-ignore
+                              parseFloat(tmr.bounds[1]),
+                          ],
+                          [
+                              // @ts-ignore
+                              parseFloat(tmr.bounds[2]),
+                              // @ts-ignore
+                              parseFloat(tmr.bounds[3]),
+                          ],
+                      ],
+                  }
+                : {
+                      origin: [0, 0],
+                      resolutions: this.res,
+                      bounds: [0, 0, 0, 0],
+                  },
             // @ts-ignore
             parseFloat(this.radii.major)
         )

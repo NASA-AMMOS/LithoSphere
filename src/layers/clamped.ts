@@ -102,6 +102,27 @@ export default class ClampedLayerer {
         return false
     }
 
+    orderLayers = (ordering: string[]): boolean => {
+        let missingCount = 0
+
+        // remember that a higher number for order means it's on top
+        this.p.clamped.forEach((layer) => {
+            const newOrder = ordering.indexOf(layer.name)
+            if (newOrder >= 0) {
+                layer.order = this.p.clamped.length - newOrder
+            } else {
+                // Place layers missing from the ordering array after
+                layer.order =
+                    this.p.clamped.length - ordering.length - missingCount
+                missingCount++
+            }
+        })
+
+        this.p.clamped.sort((a, b) => a.order - b.order)
+
+        return true
+    }
+
     setOpacity = (name: string, opacity: number): boolean => {
         if (!this.p.p._.wasInitialized) return false
 

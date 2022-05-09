@@ -89,6 +89,15 @@ export default class Layers {
 
         layerObj._type = type
 
+        if (layerObj.order?.length != null) {
+            layerObj.order = this.getDesiredOrder(
+                layerObj.name,
+                type,
+                layerObj.order
+            )
+        }
+        if (layerObj.order == null) layerObj.order = this.all[type].length
+
         if (this._.layerers[type]) this._.layerers[type].add(layerObj, callback)
         else console.warn(`Cannot add unknown layer type ${type}.`)
     }
@@ -120,6 +129,88 @@ export default class Layers {
             return false
         }
         return true
+    }
+
+    // Takes an array of layer names and does its best to order them
+    // Layer names that come first are on top of all later layers
+    // Ultimately only clamped and tile layers get ordered and clamped layers
+    // are always on top of tile layers
+    // Clamped and tile layers not listed go to the bottom
+    orderLayers = (ordering: string[]): boolean => {
+        const orderingTyped = {}
+
+        ordering.forEach((name) => {
+            const layer = this.getLayerByName(name)
+            if (layer && layer._type) {
+                if (orderingTyped[layer._type] == null)
+                    orderingTyped[layer._type] = []
+                orderingTyped[layer._type].push(name)
+            }
+        })
+
+        let hit = false
+        for (const type in orderingTyped) {
+            if (typeof this._.layerers[type].orderLayers === 'function') {
+                this._.layerers[type].orderLayers(orderingTyped[type])
+                hit = true
+            }
+        }
+
+        // A more expensive option so make sure it's needed
+        if (hit) {
+            this.p._.tiledWorld.removeAllTiles()
+        }
+
+        return true
+    }
+
+    private getDesiredOrder = (
+        name: string,
+        type: string,
+        ordering: string[]
+    ): number => {
+        const orderingTyped = {}
+
+        ordering.forEach((layerName, idx) => {
+            const layer = this.getLayerByName(layerName)
+            if (layer && layer._type) {
+                if (orderingTyped[layer._type] == null)
+                    orderingTyped[layer._type] = []
+                orderingTyped[layer._type].push({
+                    name: layer.name,
+                    order: layer.order,
+                    index: idx,
+                })
+            }
+        })
+
+        if (orderingTyped[type]) {
+            const index = ordering.indexOf(name)
+            let desiredOrder = 0
+            for (let i = 0; i < orderingTyped[type].length; i++) {
+                if (index > orderingTyped[type][i].index) {
+                    if (i == orderingTyped[type].length - 1)
+                        desiredOrder = orderingTyped[type][i].index + 1
+                    else
+                        desiredOrder =
+                            (orderingTyped[type][i].order +
+                                orderingTyped[type][i + 1].order) /
+                            2
+                    return desiredOrder
+                }
+            }
+
+            // Then we have a lower index (higher order) than everything else
+            if (orderingTyped[type].length > 0)
+                return orderingTyped[type][0].order + 1
+        }
+
+        // Default to index position
+        if (ordering.includes(name))
+            return ordering.length - ordering.indexOf(name) - 1
+
+        // Should never get here if functions are used properly
+        return 0
     }
 
     setLayerOpacity = (name: string, opacity: number): boolean => {

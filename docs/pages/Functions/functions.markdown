@@ -12,6 +12,7 @@ A collection of potentially useful functions within the `Litho` object. You can 
 ### addLayer()
 
 Adds a new layer to the globe.
+
 `addLayer = (type: string, layerObj: any, callback?: Function): void`
 
 type | _string_ | Type of layer to add. | One of ['tile', 'tile3d', 'clamped', 'vector', 'model', ...]
@@ -21,6 +22,7 @@ callback | _Function_ | Called when a layer finishes loading (i.e. a vector laye
 ### removeLayer()
 
 Removes an existing layer from the globe.
+
 `removeLayer = (name: string): boolean`
 
 name | _string_ | Layer name to remove
@@ -29,6 +31,15 @@ _returns_ | _boolean_ | `true` only if layer was found and removed
 ### toggleLayer()
 
 `toggleLayer = (name: string, on?: boolean): boolean`
+
+### orderLayers()
+
+Takes an array of layer names and does its best to reorder them. Layer names that come first are on top of all later layers. Ultimately only clamped and tile layers get ordered where clamped layers always draw on top of tile layers. Clamped and tile layers that are not listed in the new `ordering` get placed on the bottom of the new draw stack and are ordered there according to their pre-existing order.
+
+`orderLayers = (ordering: string[]): boolean`
+
+ordering | _string[]_ | A list of layer names. Index 0 draws on top of index 1
+_returns_ | _boolean_ | `true`
 
 ### setLayerOpacity()
 
