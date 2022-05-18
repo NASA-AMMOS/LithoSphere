@@ -30,7 +30,6 @@ interface Private {
     zCutOff: number;
     firstViewOverride: any;
     mouseIsInScene: boolean;
-    marsRadius: number;
 }
 export default class LithoSphere {
     _: Private;

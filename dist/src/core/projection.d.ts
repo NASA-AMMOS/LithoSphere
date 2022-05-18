@@ -13,6 +13,7 @@ declare enum RadiusE {
 export default class Projection {
     _: Private;
     baseRadius: number;
+    radiusCutoff: number;
     radiusScale: number;
     radii: Radii;
     tileMapResource: TileMapResource;
