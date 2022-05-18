@@ -360,11 +360,15 @@ export default class Events {
 
         const nf =
             8 - (parseInt(this.p.projection.radiusScale).toString().length - 1)
+        let rf = Math.max(parseInt(this.p.planetCenter.y).toString().length - 7, 0) + (this.p.options.zoomLevelShift || 0)
+        // Hacky way since zoom per radius functions aren't perfect
+        if(Math.abs(this.p.planetCenter.y) > 30000000) rf += 1
+        
         const dZoom =
             Math.ceil(
                 (nf * Math.log(2) - Math.log(zoomDist / Math.pow(5, nf - 1))) /
                     Math.log(2)
-            ) + 1
+            ) + rf
 
         this._.desiredZoom = dZoom
 

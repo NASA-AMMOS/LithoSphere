@@ -182,7 +182,8 @@ export default class LithoSphere {
             this.options.majorRadius,
             this.options.minorRadius,
             this.options.tileMapResource,
-            this.options.trueTileResolution
+            this.options.trueTileResolution,
+            this.options.radiusCutoff // Experimental
         )
 
         // Camera(s)

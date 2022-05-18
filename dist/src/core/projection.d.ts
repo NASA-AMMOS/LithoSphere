@@ -23,7 +23,7 @@ export default class Projection {
     e: number;
     ep: number;
     flatteningFactor: number;
-    constructor(majorRadius?: number, minorRadius?: number, tileMapResource?: TileMapResource, trueTileResolution?: number);
+    constructor(majorRadius?: number, minorRadius?: number, tileMapResource?: TileMapResource, trueTileResolution?: number, radiusCutoff?: number);
     _reset(): void;
     setRadius: (radius: number, which?: RadiusE) => void;
     invertY: (y: number, z: number) => number;

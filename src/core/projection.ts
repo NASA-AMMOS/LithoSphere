@@ -32,8 +32,13 @@ export default class Projection {
         majorRadius?: number,
         minorRadius?: number,
         tileMapResource?: TileMapResource,
-        trueTileResolution?: number
+        trueTileResolution?: number,
+        radiusCutoff?: number
     ) {
+        // Experimental: Some radii are too big and we need to scale everything down to support them,
+        // this is that cutoff in m
+        this.radiusCutoff = radiusCutoff || Infinity
+
         this._reset()
 
         this.setRadius(majorRadius, RadiusE.Major)
@@ -110,9 +115,6 @@ export default class Projection {
     _reset(): void {
         this.baseRadius = 6371000
         this.radiusScale = 1
-        // Some radii are to big and we need to scale everything down to support them,
-        // this is that cutoff in m
-        this.radiusCutoff = 10000000
 
         this.radii = {
             major: this.baseRadius,

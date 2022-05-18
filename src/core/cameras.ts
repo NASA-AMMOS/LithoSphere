@@ -59,7 +59,7 @@ export default class Camera {
             camera: null,
             controls: null,
             near: 0.1,
-            far: 15000000000,
+            far: 150000000000,
         }
         this.firstPerson = {
             camera: null,
