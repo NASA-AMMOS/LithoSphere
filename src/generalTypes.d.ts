@@ -92,6 +92,8 @@ export interface Options {
     loadingScreen?: boolean
     majorRadius?: number
     minorRadius?: number
+    radiusCutoff?: number
+    zoomLevelShift?: number
     // Specifies map projection
     tileMapResource?: TileMapResource
     customParsers?: any

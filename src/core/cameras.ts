@@ -59,7 +59,7 @@ export default class Camera {
             camera: null,
             controls: null,
             near: 0.1,
-            far: 15000000000,
+            far: 150000000000,
         }
         this.firstPerson = {
             camera: null,
@@ -92,7 +92,7 @@ export default class Camera {
         )
         // Maybe fix: This upside down camera is a bug that works.
         this.orbit.camera.up = new Vector3(0, -1, 0)
-        this.orbit.camera.position.set(0, -10000000 / projection.radiusScale, 0)
+        this.orbit.camera.position.set(0, -10000000 * projection.radiusScale, 0)
 
         // Orbit Controls
         this.orbit.controls = new OrbitControls(
@@ -124,7 +124,7 @@ export default class Camera {
         this.firstPerson.controls.getObject().rotation.set(Math.PI, Math.PI, 0)
         this.firstPerson.controls
             .getObject()
-            .position.set(0, 10000000 / projection.radiusScale, 0)
+            .position.set(0, 10000000 * projection.radiusScale, 0)
         scene.add(this.firstPerson.controls.getObject())
 
         if (this.isFirstPerson) {
@@ -345,13 +345,13 @@ export default class Camera {
         this.firstPerson.camera.updateProjectionMatrix()
     }
 
-    setNearFarPlane = (farther, near, far, keepNear): void => {
+    setNearFarPlane = (scalar = 1, farther, near, far, keepNear): void => {
         if (keepNear === true) this._.keepNear = true
         if (keepNear === false) this._.keepNear = false
 
         if (farther) {
             if (!this._.keepNear)
-                this.orbit.camera.near = this.orbit.near * 10000
+                this.orbit.camera.near = (this.orbit.near * 10000) / scalar
             //Cameras.orbit.camera.far = Cameras.orbit.far / 100
         } else {
             if (!this._.keepNear) this.orbit.camera.near = this.orbit.near

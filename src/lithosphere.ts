@@ -58,9 +58,6 @@ interface Private {
     zCutOff: number
     firstViewOverride: any
     mouseIsInScene: boolean
-    // Was developed for Mars initially and sometimes we scale against it for other bodies
-    // (for stuff like pan speed)
-    marsRadius: number
 }
 
 export default class LithoSphere {
@@ -131,7 +128,6 @@ export default class LithoSphere {
             zCutOff: 3,
             firstViewOverride: null,
             mouseIsInScene: false,
-            marsRadius: 3396190,
         }
 
         this._.container.style.position = 'relative'
@@ -186,7 +182,8 @@ export default class LithoSphere {
             this.options.majorRadius,
             this.options.minorRadius,
             this.options.tileMapResource,
-            this.options.trueTileResolution
+            this.options.trueTileResolution,
+            this.options.radiusCutoff // Experimental
         )
 
         // Camera(s)
@@ -558,8 +555,8 @@ export default class LithoSphere {
             })
             center = this.projection.vector3ToLatLng(center)
             center.height =
-                centerXYZ.length() * this.projection.radiusScale -
-                this.projection.radii.major
+                (centerXYZ.length() - this.planet.position.y) /
+                this.projection.radiusScale
             return center
         }
         return this.projection.vector3ToLatLng(centerXYZ)
@@ -567,8 +564,8 @@ export default class LithoSphere {
 
     getCenterElevation = (): number => {
         return (
-            this.getCenterXYZ(true).length() * this.projection.radiusScale -
-            this.projection.radii.major
+            (this.getCenterXYZ(true).length() - this.planet.position.y) /
+            this.projection.radiusScale
         )
     }
 
@@ -620,9 +617,9 @@ export default class LithoSphere {
         if (intersects.length > 0) {
             intersects[intersects.length - 1].point.y += this.planetCenter.y
             return (
-                intersects[intersects.length - 1].point.length() *
-                    this.projection.radiusScale -
-                this.projection.radii.major
+                (intersects[intersects.length - 1].point.length() -
+                    this.planet.position.y) /
+                this.projection.radiusScale
             )
         }
         return 0

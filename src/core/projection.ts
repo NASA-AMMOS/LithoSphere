@@ -17,6 +17,7 @@ enum RadiusE {
 export default class Projection {
     _: Private
     baseRadius: number
+    radiusCutoff: number
     radiusScale: number
     radii: Radii
     tileMapResource: TileMapResource
@@ -31,8 +32,13 @@ export default class Projection {
         majorRadius?: number,
         minorRadius?: number,
         tileMapResource?: TileMapResource,
-        trueTileResolution?: number
+        trueTileResolution?: number,
+        radiusCutoff?: number
     ) {
+        // Experimental: Some radii are too big and we need to scale everything down to support them,
+        // this is that cutoff in m
+        this.radiusCutoff = radiusCutoff || Infinity
+
         this._reset()
 
         this.setRadius(majorRadius, RadiusE.Major)
@@ -128,9 +134,11 @@ export default class Projection {
     }
 
     setRadius = (radius: number, which: RadiusE = RadiusE.Major): void => {
-        if (which.toLowerCase() == 'major')
+        if (which.toLowerCase() == 'major') {
             this.radii.major = radius || this.baseRadius
-        else if (which.toLowerCase() == 'minor')
+            if (this.radii.major > this.radiusCutoff)
+                this.radiusScale = this.radii.major / this.radiusCutoff
+        } else if (which.toLowerCase() == 'minor')
             this.radii.minor = radius || this.radii.major || this.baseRadius
     }
 
@@ -307,16 +315,11 @@ export default class Projection {
         const phi = lat * (Math.PI / 180)
         const theta = (lon - 180) * (Math.PI / 180)
 
-        const x =
-            ((this.radii.major + height) / this.radiusScale) *
-            Math.cos(phi) *
-            Math.sin(theta)
-        const y =
-            (-(this.radii.major + height) / this.radiusScale) * Math.sin(phi)
-        const z =
-            (-(this.radii.major + height) / this.radiusScale) *
-            Math.cos(phi) *
-            Math.cos(theta)
+        const h = this.radii.major / this.radiusScale + height
+
+        const x = h * Math.cos(phi) * Math.sin(theta)
+        const y = -h * Math.sin(phi)
+        const z = -h * Math.cos(phi) * Math.cos(theta)
 
         return { x: x, y: y, z: z }
     }
