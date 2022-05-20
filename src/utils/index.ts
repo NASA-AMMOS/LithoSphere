@@ -121,6 +121,20 @@ const Utils = {
             min.y < maxN - margin
         )
     },
+    // Simple function to check whether we're inside a zoom range
+    isInZoomRange: function (
+        minZoom: number,
+        maxZoom: number,
+        zoom: number
+    ): boolean {
+        if (minZoom != null || maxZoom != null) {
+            minZoom = minZoom || 0
+            maxZoom = maxZoom || Infinity
+            if (zoom >= minZoom && zoom <= maxZoom) return true
+            else return false
+        }
+        return true
+    },
     //Return a clone of the object to avoid pass by reference issues
     clone: function (obj: any): any {
         let copy

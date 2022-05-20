@@ -52,6 +52,7 @@ export default class Events {
     private clearHoveredFeature;
     private setActiveFeature;
     private clearActiveFeature;
+    _setMissingElevation(mesh: any): void;
     _attenuate(): void;
 }
 export {};

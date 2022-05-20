@@ -35,18 +35,18 @@
         <!--<div id="myCustomCoordDiv"></div>-->
         <script>
             const Litho = new LithoSphere.default('container', {
-                /*
                 initialView: {
                     lng: 137.358048, // default 0
                     lat: -4.673226,
                     zoom: 16,
                 },
-                */
+                /*
                 initialView: {
                     lng: 137.3650974531451,
                     lat: -4.71480304282526,
                     zoom: 16,
                 },
+                */
                 initialCamera: {
                     position: {
                         x: 274.50893509606396,
@@ -165,7 +165,7 @@
                 ],
                 noDataValue: 0, //opt (number) - no data dem value //unused
             })
-            Litho.setLayerFilterEffect('HiRISE', 'blendCode', 1)
+            //Litho.setLayerFilterEffect('HiRISE', 'blendCode', 1)
             //Litho.options.radiusOfTiles = 10
 
             //Litho.orderLayers(['Aeolis', 'HiRISE'])
@@ -297,6 +297,84 @@
                 }
             )
 
+            Litho.addLayer(
+                'clamped',
+                {
+                    name: 'ClampedAnnotation',
+                    on: true,
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [137.358048, -4.673226],
+                                },
+                                properties: {
+                                    annotation: true,
+                                    name: 'Sample Text',
+                                    style: {
+                                        color: 'rgb(0, 0, 0)',
+                                        fillColor: 'rgb(255, 255, 255)',
+                                        fillOpacity: 1,
+                                        weight: 2,
+                                        fontSize: '54px',
+                                        rotation: 0,
+                                        minZoom: 15,
+                                        maxZoom: 16,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    opacity: 1,
+                    style: {
+                        // Prefer feature[f].properties.style values
+                        letPropertiesStyleOverride: true,
+                    },
+                },
+            )
+
+            Litho.addLayer(
+                'vector',
+                {
+                    name: 'vectorAnnotation',
+                    on: true,
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [137.348048, -4.673226],
+                                },
+                                properties: {
+                                    annotation: true,
+                                    name: 'Sample Sprite Text',
+                                    style: {
+                                        color: 'rgb(40, 20, 20)',
+                                        fillColor: 'rgb(0, 255, 255)',
+                                        fillOpacity: 1,
+                                        weight: 2,
+                                        fontSize: '18px',
+                                        elevOffset: 100,
+                                        minZoom: 12,
+                                        maxZoom: 14,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    opacity: 1,
+                    style: {
+                        // Prefer feature[f].properties.style values
+                        letPropertiesStyleOverride: true,
+                    },
+                },
+            )
+
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
                 order: 5,
@@ -313,6 +391,8 @@
                         color: 'black',
                         weight: 2,
                         radius: 4,
+                        minZoom: 14,
+                        maxZoom: 16
                     },
                     point: {},
                     line: {},
@@ -322,8 +402,6 @@
                     },
                 },
                 opacity: 1,
-                minZoom: 11,
-                maxZoom: 18,
                 boundingBox: [
                     137.3250006349,
                     -4.72500217818315,
@@ -391,8 +469,6 @@
                     },
                 },
                 opacity: 1,
-                minZoom: 11,
-                maxZoom: 18,
                 boundingBox: [
                     137.3250006349,
                     -4.72500217818315,
@@ -423,8 +499,6 @@
                     },
                 },
                 opacity: 1,
-                minZoom: 11,
-                maxZoom: 18,
                 boundingBox: [
                     137.3250006349,
                     -4.72500217818315,

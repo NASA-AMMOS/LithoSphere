@@ -233,6 +233,77 @@ Litho.addLayer('vector', {
 })
 //Litho.removeLayer('vectorLine')
 
+Litho.addLayer('clamped', {
+    name: 'clampedAnnotation',
+    on: true,
+    geojson: {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [137.3678972, -4.66902518],
+                },
+                properties: {
+                    annotation: true,
+                    name: 'Annotation [c]',
+                    style: {
+                        color: 'rgb(50, 50, 50)',
+                        fillColor: 'rgb(255, 255, 0)',
+                        fillOpacity: 1,
+                        weight: 2,
+                        fontSize: '12px',
+                        rotation: 45,
+                    },
+                },
+            },
+        ],
+    },
+    opacity: 1,
+    minZoom: 0,
+    maxZoom: 30,
+    style: {
+        // Prefer feature[f].properties.style values
+        letPropertiesStyleOverride: true,
+    },
+})
+
+Litho.addLayer('vector', {
+    name: 'vectorAnnotation',
+    on: true,
+    geojson: {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [137.372697, -4.66928, -4430],
+                },
+                properties: {
+                    annotation: true,
+                    name: 'Annotation [v]',
+                    style: {
+                        color: 'rgb(0, 0, 0)',
+                        fillColor: 'rgb(255, 255, 255)',
+                        fillOpacity: 1,
+                        weight: 2,
+                        fontSize: '18px',
+                    },
+                },
+            },
+        ],
+    },
+    opacity: 1,
+    minZoom: 0,
+    maxZoom: 30,
+    style: {
+        // Prefer feature[f].properties.style values
+        letPropertiesStyleOverride: true,
+    },
+})
+
 Litho.addLayer('vector', {
     name: 'vectorPoints',
     order: 2,

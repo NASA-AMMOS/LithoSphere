@@ -22,7 +22,6 @@ export default class Layers {
     _: Private
     // parent
     p: any
-    baseStyle: any
     tile3d: any
     tile: any
     clamped: any
@@ -33,13 +32,6 @@ export default class Layers {
 
     constructor(parent: any) {
         this.p = parent
-        this.baseStyle = {
-            fillColor: 'rgb(0,0,0)',
-            fillOpacity: 0.4,
-            color: 'rgb(255,255,255)',
-            weight: 2,
-            radius: 6,
-        }
         this._ = {
             layerers: {
                 tile3d: new Tile3dLayerer(this),
@@ -305,20 +297,6 @@ export default class Layers {
         return lowest
     }
 
-    private getFeatureStyleProp = (value: any, feature: any) => {
-        if (value != null && typeof value === 'string' && value.includes('=')) {
-            let propValue = null
-            // Then they're setting the value based a property's value of the feature.
-            // i.e. prop=path.to.my.properties.key
-            const split = value.split('=')
-
-            propValue = Utils.getIn(feature.properties, split[1].split('.'))
-            return propValue
-        } else {
-            return value
-        }
-    }
-
     getLayerByName = (layerName: string): any => {
         for (const type in this.all) {
             for (let i = 0; i < this.all[type].length; i++) {
@@ -333,13 +311,56 @@ export default class Layers {
         return this.getLayerByName(layerName) != null
     }
 
+    private getFeatureStyleProp = (value: any, feature: any) => {
+        if (value != null && typeof value === 'string' && value.includes('=')) {
+            let propValue = null
+            // Then they're setting the value based a property's value of the feature.
+            // i.e. prop=path.to.my.properties.key
+            const split = value.split('=')
+
+            propValue = Utils.getIn(feature.properties, split[1].split('.'))
+            return propValue
+        } else {
+            return value
+        }
+    }
+
+    private getBaseStyle = (
+        feature?: any,
+        type?: string,
+        geomType?: string
+    ) => {
+        const baseStyle: any = {
+            fillColor: 'rgb(0,0,0)',
+            fillOpacity: 0.4,
+            color: 'rgb(255,255,255)',
+            weight: 2,
+            radius: 6,
+        }
+
+        if (feature?.properties?.annotation === true) {
+            baseStyle.fontSize = '16px'
+            baseStyle.rotation = 0
+            baseStyle.fillOpacity = 1
+        }
+        if (type === 'vector' && geomType === 'point') {
+            baseStyle.elevOffset = 20
+        }
+        if (type === 'vector' || type === 'clamped') {
+            baseStyle.minZoom = null
+            baseStyle.maxZoom = null
+        }
+
+        return baseStyle
+    }
+
     // Computes a feature's style given it layer styling configuration
     // Does fancy things like letting you set style from properties and by properties
     getFeatureStyle = (layer: any, feature: any, isStrokeless?: boolean) => {
         // Set as base
-        const style = JSON.parse(JSON.stringify(this.baseStyle))
+        const geomType = feature.geometry.type.toLowerCase()
+        const style = this.getBaseStyle(feature, layer._type, geomType)
         if (layer.style) {
-            const geomType = feature.geometry.type.toLowerCase()
             for (const key in style) {
                 // Set as default
                 if (layer.style.default && layer.style.default[key] != null) {
