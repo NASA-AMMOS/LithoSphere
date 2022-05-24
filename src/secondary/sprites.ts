@@ -6,6 +6,8 @@ import {
     ClampToEdgeWrapping,
 } from 'three'
 
+import Utils from '../utils'
+
 const Sprites = {
     //id -> spriteMaterial
     spriteMaterials: {},
@@ -64,7 +66,8 @@ const Sprites = {
                       g: 255,
                       b: 255,
                       a:
-                          parameters['fillOpacity'] != null
+                          parameters['fillOpacity'] != null &&
+                          options.annotation !== true
                               ? parameters['fillOpacity']
                               : 1.0,
                   }
@@ -92,7 +95,7 @@ const Sprites = {
 
                 const heightInnerOverflow = 10
                 // For chars the extend under the line. Like p
-                const heightOuterOverflow = fontSize / 3.5
+                const heightOuterOverflow = fontSize / 3.5 + 10
 
                 const textSize = {
                     width: ctx.measureText(text).width + fontXOffset * 2,
@@ -103,7 +106,7 @@ const Sprites = {
                 canvas.width = textSize.width
                 canvas.height = textSize.height
 
-                // Important to propogate these through for attenuation to work
+                // Important to propagate these through for attenuation to work
                 parameters.width = canvas.width / 6
                 parameters.height = canvas.height / 6
 
@@ -113,22 +116,17 @@ const Sprites = {
 
                 const canvasX = 0
 
-                // Background rect
+                const textX = canvasX + fontXOffset
+                const textY =
+                    fontSize + heightOuterOverflow / 2 + heightInnerOverflow / 2
+
+                // Background text border
                 ctx.fillStyle = strokeColor
-                ctx.fillRect(
-                    0,
-                    heightOuterOverflow / 2,
-                    textSize.width,
-                    textSize.height - heightOuterOverflow
-                )
+                Utils.drawTextBorder(ctx, text, textX, textY, 3)
 
                 // Text
                 ctx.fillStyle = fillColor
-                ctx.fillText(
-                    text,
-                    canvasX + fontXOffset,
-                    fontSize + heightOuterOverflow / 2 + heightInnerOverflow / 2
-                )
+                ctx.fillText(text, textX, textY)
             } else {
                 const width = radius * 2
                 const height = radius * 2

@@ -237,7 +237,9 @@ export default class ClampedLayerer {
                                 ',' +
                                 col.b +
                                 ',' +
-                                style.fillOpacity +
+                                (f.properties.annotation === true
+                                    ? 1
+                                    : style.fillOpacity) +
                                 ')'
                         }
                     } else {
@@ -254,7 +256,9 @@ export default class ClampedLayerer {
                             ',' +
                             rgb[2] +
                             ',' +
-                            style.fillOpacity +
+                            (f.properties.annotation === true
+                                ? 1
+                                : style.fillOpacity) +
                             ')'
                     }
 
@@ -481,20 +485,20 @@ export default class ClampedLayerer {
 
                         // prettier-ignore
                         // @ts-ignore
-                        const canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
+                        let canvasX = parseInt((tileXYZ.x - xyz.x) * canvas.width)
                         // prettier-ignore
                         // @ts-ignore
                         const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
                         // If Annotation
                         if (f.properties.annotation === true) {
-                            let text = f.properties.name || ''
-                            const fontXOffset = 10
+                            const text = f.properties.name || ''
+                            const fontXOffset = 8
                             let fontSize = style.fontSize || '16px'
                             fontSize =
                                 parseInt(fontSize.replace('px', '')) * 1.2
                             ctx.font = `${fontSize}pt sans-serif`
-                            const heightOverflow = 2
+                            const heightOverflow = 8
                             const textSize = {
                                 width:
                                     ctx.measureText(text).width +
@@ -507,28 +511,23 @@ export default class ClampedLayerer {
                             ctx.translate(canvasX, canvasY)
                             ctx.rotate(rotAngle)
                             ctx.translate(-canvasX, -canvasY)
+                            canvasX -= textSize.width / 2
 
-                            // Background rect
+                            // Background text border
                             ctx.fillStyle = style.color
-                            ctx.fillRect(
-                                canvasX,
-                                canvasY - textSize.height + heightOverflow / 2,
-                                textSize.width,
-                                textSize.height
+                            Utils.drawTextBorder(
+                                ctx,
+                                text,
+                                canvasX + fontXOffset,
+                                canvasY,
+                                3
                             )
 
                             // Text
                             ctx.fillStyle = style.fillColor
                             ctx.fillText(text, canvasX + fontXOffset, canvasY)
 
-                            // Anchor Indicator
-                            const anchorRadius = 6
-                            ctx.lineWidth = anchorRadius
-                            ctx.beginPath()
-                            ctx.arc(canvasX, canvasY, 8, 0, 2 * Math.PI, false)
-                            ctx.fill()
-                            ctx.stroke()
-
+                            canvasX += textSize.width / 2
                             ctx.translate(canvasX, canvasY)
                             ctx.rotate(-rotAngle)
                             ctx.translate(-canvasX, -canvasY)

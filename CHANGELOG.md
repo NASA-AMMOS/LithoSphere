@@ -2,6 +2,16 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.5.1
+
+_May 24, 2022_
+
+#### Fixed
+
+-   Proper annotation borders and centered anchors
+
+---
+
 ## v1.5.0
 
 _May 23, 2022_

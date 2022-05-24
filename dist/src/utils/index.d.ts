@@ -22,5 +22,6 @@ declare const Utils: {
     isArray(object: any): boolean;
     setChildrenMaterialOpacity(model: any, opacity: number, recurse?: Function): void;
     setAllMaterialOpacity(model: any, opacity: any): void;
+    drawTextBorder(ctx: CanvasRenderingContext2D, text: string, textX: number, textY: number, weight: number): void;
 };
 export default Utils;

@@ -35,26 +35,18 @@
         <!--<div id="myCustomCoordDiv"></div>-->
         <script>
             const Litho = new LithoSphere.default('container', {
-                /*
                 initialView: {
                     lng: 137.358048, // default 0
                     lat: -4.673226,
                     zoom: 16,
                 },
-<<<<<<< HEAD
                 /*
-=======
-                */
->>>>>>> 90bbf33b0d5f6410ae5d18b3355fd7b41cf045f2
                 initialView: {
                     lng: 137.3650974531451,
                     lat: -4.71480304282526,
                     zoom: 16,
                 },
-<<<<<<< HEAD
                 */
-=======
->>>>>>> 90bbf33b0d5f6410ae5d18b3355fd7b41cf045f2
                 initialCamera: {
                     position: {
                         x: 274.50893509606396,
@@ -305,83 +297,77 @@
                 }
             )
 
-            Litho.addLayer(
-                'clamped',
-                {
-                    name: 'ClampedAnnotation',
-                    on: true,
-                    geojson: {
-                        type: 'FeatureCollection',
-                        features: [
-                            {
-                                type: 'Feature',
-                                geometry: {
-                                    type: 'Point',
-                                    coordinates: [137.358048, -4.673226],
-                                },
-                                properties: {
-                                    annotation: true,
-                                    name: 'Sample Text',
-                                    style: {
-                                        color: 'rgb(0, 0, 0)',
-                                        fillColor: 'rgb(255, 255, 255)',
-                                        fillOpacity: 1,
-                                        weight: 2,
-                                        fontSize: '54px',
-                                        rotation: 0,
-                                        minZoom: 15,
-                                        maxZoom: 16,
-                                    },
+            Litho.addLayer('clamped', {
+                name: 'ClampedAnnotation',
+                on: true,
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [137.358048, -4.673226],
+                            },
+                            properties: {
+                                annotation: true,
+                                name: 'Sample Text',
+                                style: {
+                                    color: 'rgb(0, 0, 0)',
+                                    fillColor: 'rgb(255, 255, 255)',
+                                    fillOpacity: 1,
+                                    weight: 2,
+                                    fontSize: '54px',
+                                    rotation: 90,
+                                    minZoom: 15,
+                                    maxZoom: 16,
                                 },
                             },
-                        ],
-                    },
-                    opacity: 1,
-                    style: {
-                        // Prefer feature[f].properties.style values
-                        letPropertiesStyleOverride: true,
-                    },
+                        },
+                    ],
                 },
-            )
+                opacity: 1,
+                style: {
+                    // Prefer feature[f].properties.style values
+                    letPropertiesStyleOverride: true,
+                },
+            })
 
-            Litho.addLayer(
-                'vector',
-                {
-                    name: 'vectorAnnotation',
-                    on: true,
-                    geojson: {
-                        type: 'FeatureCollection',
-                        features: [
-                            {
-                                type: 'Feature',
-                                geometry: {
-                                    type: 'Point',
-                                    coordinates: [137.348048, -4.673226],
-                                },
-                                properties: {
-                                    annotation: true,
-                                    name: 'Sample Sprite Text',
-                                    style: {
-                                        color: 'rgb(40, 20, 20)',
-                                        fillColor: 'rgb(0, 255, 255)',
-                                        fillOpacity: 1,
-                                        weight: 2,
-                                        fontSize: '18px',
-                                        elevOffset: 100,
-                                        minZoom: 12,
-                                        maxZoom: 14,
-                                    },
+            Litho.addLayer('vector', {
+                name: 'vectorAnnotation',
+                on: true,
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [137.348048, -4.673226],
+                            },
+                            properties: {
+                                annotation: true,
+                                name: 'Sample Sprite Text',
+                                style: {
+                                    color: 'rgb(0, 0, 0)',
+                                    fillColor: 'rgb(255, 255, 55)',
+                                    fillOpacity: 1,
+                                    weight: 2,
+                                    fontSize: '18px',
+                                    elevOffset: 100,
+                                    minZoom: 12,
+                                    maxZoom: 17,
                                 },
                             },
-                        ],
-                    },
-                    opacity: 1,
-                    style: {
-                        // Prefer feature[f].properties.style values
-                        letPropertiesStyleOverride: true,
-                    },
+                        },
+                    ],
                 },
-            )
+                opacity: 1,
+                style: {
+                    // Prefer feature[f].properties.style values
+                    letPropertiesStyleOverride: true,
+                },
+            })
 
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
@@ -400,7 +386,7 @@
                         weight: 2,
                         radius: 4,
                         minZoom: 14,
-                        maxZoom: 16
+                        maxZoom: 16,
                     },
                     point: {},
                     line: {},
@@ -732,12 +718,12 @@
                     console.log('Rover loaded')
                     //Litho.setLayerOpacity('roverGLTF', 0.25)
                     //Litho.removeLayer('roverGLTF')
-                    
+
                     //Litho.toggleLayer('roverGLTF', false)
                     //setTimeout(() => {
                     //    Litho.toggleLayer('roverGLTF', true)
                     //}, 10000)
-                    
+
                 }
             )
             */
@@ -760,8 +746,8 @@
                             elevation: -4435, // default 0
                         }
                     }),
-                    
-                    //[ 
+
+                    //[
                     //    {
                     //        longitude: 137.3572927368641, // default 0
                     //        latitude: -4.674971631163808, // default 0
@@ -778,7 +764,7 @@
                     //        elevation: -4443.613, // default 0
                     //    },
                     //],
-                    
+
                     scale: 10, // default 1
                     rotation: {
                         // y-up is away from planet center. x is pitch, y is yaw, z is roll
@@ -793,12 +779,12 @@
                     console.log('Rover Array loaded')
                     //Litho.setLayerOpacity('roverGLTF', 0.25)
                     //Litho.removeLayer('roverGLTF')
-                    
+
                     //Litho.toggleLayer('roverGLTF', false)
                     //setTimeout(() => {
                         //Litho.toggleLayer('roverGLTF', true)
                     //}, 10000)
-                    
+
                 }
             )
             */

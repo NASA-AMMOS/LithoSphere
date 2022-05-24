@@ -347,6 +347,22 @@ const Utils = {
             Utils.setAllMaterialOpacity(mesh, opacity)
         })
     },
+    drawTextBorder(
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        textX: number,
+        textY: number,
+        weight: number
+    ): void {
+        ctx.fillText(text, textX - weight, textY - weight)
+        ctx.fillText(text, textX - weight, textY)
+        ctx.fillText(text, textX - weight, textY + weight)
+        ctx.fillText(text, textX, textY - weight)
+        ctx.fillText(text, textX, textY + weight)
+        ctx.fillText(text, textX + weight, textY - weight)
+        ctx.fillText(text, textX + weight, textY)
+        ctx.fillText(text, textX + weight, textY + weight)
+    },
 }
 
 export default Utils
