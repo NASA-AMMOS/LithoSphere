@@ -2,6 +2,19 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.5.0
+
+_May 23, 2022_
+
+#### Added
+
+-   Support for clamped and vector layer annotations
+-   Support for clamped and vector layer visibility cutoffs
+
+#### Fixed
+
+-   Near-Far plane issues with large planetary radii.
+
 ## v1.4.2
 
 _May 5, 2022_

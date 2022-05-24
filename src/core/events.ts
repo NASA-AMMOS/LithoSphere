@@ -295,8 +295,8 @@ export default class Events {
             }
             let difs = []
             while (dif.x > 2 || dif.x < -2 || dif.y > 2 || dif.y < -2) {
-                const xSize = dif.x / 4
-                const ySize = dif.y / 4
+                const xSize = dif.x / 3
+                const ySize = dif.y / 3
                 dif.x -= xSize
                 dif.y -= ySize
                 difs.push({
@@ -360,10 +360,12 @@ export default class Events {
 
         const nf =
             8 - (parseInt(this.p.projection.radiusScale).toString().length - 1)
-        let rf = Math.max(parseInt(this.p.planetCenter.y).toString().length - 7, 0) + (this.p.options.zoomLevelShift || 0)
+        let rf =
+            Math.max(parseInt(this.p.planetCenter.y).toString().length - 7, 0) +
+            (this.p.options.zoomLevelShift || 0)
         // Hacky way since zoom per radius functions aren't perfect
-        if(Math.abs(this.p.planetCenter.y) > 30000000) rf += 1
-        
+        if (Math.abs(this.p.planetCenter.y) > 30000000) rf += 1
+
         const dZoom =
             Math.ceil(
                 (nf * Math.log(2) - Math.log(zoomDist / Math.pow(5, nf - 1))) /
@@ -920,6 +922,41 @@ export default class Events {
         this.activeFeature = null
     }
 
+    _setMissingElevation(mesh) {
+        // @ts-ignore
+        if (mesh.noElevation != null) {
+            const height =
+                this.p.getElevationAtLngLat(
+                    mesh.noElevation.lng,
+                    mesh.noElevation.lat
+                ) || false
+
+            if (height) {
+                const v = this.p.projection.lonLatToVector3(
+                    mesh.noElevation.lng,
+                    mesh.noElevation.lat,
+                    (height || 0) +
+                        (mesh.noElevation.elevOffset || 0) *
+                            this.p.options.exaggeration
+                )
+
+                mesh.position.set(v.x, v.y, v.z)
+                // @ts-ignore
+                delete mesh.noElevation
+            }
+        }
+
+        if (
+            Utils.isInZoomRange(
+                mesh.style?.minZoom,
+                mesh.style?.maxZoom,
+                this.p.zoom
+            )
+        )
+            mesh.visible = true
+        else mesh.visible = false
+    }
+
     // Changes certain vector sizes based on distance to camera
     _attenuate() {
         const zoomDist = this.p._.cameras.camera.position.distanceTo(
@@ -935,12 +972,18 @@ export default class Events {
                         if (mesh instanceof Sprite) {
                             mesh.scale.set(
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.width || mesh.style.radius),
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.height || mesh.style.radius),
                                 // @ts-ignore
                                 attenuationFactor * mesh.style.radius
                             )
+
+                            this._setMissingElevation(mesh)
                         }
                     })
                 }
@@ -954,24 +997,36 @@ export default class Events {
                         if (mesh instanceof Sprite) {
                             mesh.scale.set(
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.width || mesh.style.radius),
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.height || mesh.style.radius),
                                 // @ts-ignore
                                 attenuationFactor * mesh.style.radius
                             )
+
+                            this._setMissingElevation(mesh)
                         }
                     })
                 } else {
                     if (child instanceof Sprite) {
                         child.scale.set(
                             // @ts-ignore
-                            attenuationFactor * mesh.style.radius,
+                            attenuationFactor *
+                                // @ts-ignore
+                                (mesh.style.width || mesh.style.radius),
                             // @ts-ignore
-                            attenuationFactor * mesh.style.radius,
+                            attenuationFactor *
+                                // @ts-ignore
+                                (mesh.style.height || mesh.style.radius),
                             // @ts-ignore
                             attenuationFactor * mesh.style.radius
                         )
+
+                        this._setMissingElevation(child)
                     }
                 }
             })

@@ -15,17 +15,9 @@ import Sprites from '../secondary/sprites'
 export default class VectorLayerer {
     // parent
     p: any
-    baseStyle: any
 
     constructor(parent: any) {
         this.p = parent
-        this.baseStyle = {
-            fillColor: 'rgb(255,255,255)',
-            fillOpacity: 0.4,
-            color: 'rgb(0,0,0)',
-            weight: 2,
-            radius: 6,
-        }
     }
 
     add = (layerObj: any, callback?: Function): void => {
@@ -203,9 +195,16 @@ export default class VectorLayerer {
             let g = feature.geometry.coordinates
             const style = this.p.getFeatureStyle(layerObj, feature)
 
+            const options: any = {}
+            if (feature?.properties?.annotation === true) {
+                options.annotation = true
+                options.name = feature?.properties?.name
+            }
+
             const sprite = Sprites.makeMarkerSprite(
                 style,
                 layerObj.name,
+                options,
                 forceNewMaterial
             )
             let i0 = 0
@@ -215,11 +214,24 @@ export default class VectorLayerer {
                 i1 = 0
             }
             if (typeof g[0] == 'number') g = [g]
+            const height =
+                g[0][2] ||
+                this.p.p.getElevationAtLngLat(g[0][i0], g[0][i1]) ||
+                false
             const v = this.p.p.projection.lonLatToVector3(
                 g[0][i0],
                 g[0][i1],
-                (g[0][2] || 0) * this.p.p.options.exaggeration
+                (height || 0) * this.p.p.options.exaggeration
             )
+
+            if (height === false)
+                // @ts-ignore
+                sprite.noElevation = {
+                    lng: g[0][i0],
+                    lat: g[0][i1],
+                    elevOffset: style.elevOffset,
+                }
+
             sprite.position.set(v.x, v.y, v.z)
             sprite.renderOrder = layerObj.index
             if (layerObj.on == false) {

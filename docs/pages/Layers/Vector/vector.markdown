@@ -9,6 +9,36 @@ parent: Layers
 
 An unclamped vector.
 
+### Annotations
+
+Sprite-based textual annotations can be added using the following extended Point feature schema:
+
+```json
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [137.348048, -4.673226]
+    },
+    "properties": {
+        "annotation": true,
+        "name": "Sample Sprite Text",
+        "style": {
+            "color": "rgb(40, 20, 20)",
+            "fillColor": "rgb(0, 255, 255)",
+            "fillOpacity": 1,
+            "weight": 2,
+            "fontSize": "18px",
+            "elevOffset": 100,
+            "minZoom": 12,
+            "maxZoom": 14
+        }
+    }
+}
+```
+
+On sprite-based vectors, if elevations are not specified in the coordinates pair, the elevation will be automatically computed and given a small vertical offset. Setting the `elevOffset` style allows control (in meters) of what that offset is.
+
 ### Example
 
 ```javascript

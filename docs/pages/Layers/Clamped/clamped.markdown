@@ -9,7 +9,35 @@ parent: Layers
 
 Rasterized vector data clamped to the terrain textures.
 
-Example
+### Annotations
+
+Clamped textual annotations can be added using the following extended Point feature schema:
+
+```json
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [137.358048, -4.673226]
+    },
+    "properties": {
+        "annotation": true,
+        "name": "Sample Text",
+        "style": {
+            "color": "rgb(0, 0, 0)",
+            "fillColor": "rgb(255, 255, 255)",
+            "fillOpacity": 1,
+            "weight": 2,
+            "fontSize": "54px",
+            "rotation": 0,
+            "minZoom": 15,
+            "maxZoom": 16
+        }
+    }
+}
+```
+
+## Example
 
 ```javascript
 Litho.addLayer(
@@ -30,6 +58,8 @@ Litho.addLayer(
                 color: 'black',
                 weight: 2,
                 radius: 'prop=radius',
+                minZoom: 11,
+                maxZoom: 18,
             },
             point: {},
             line: {},
@@ -47,8 +77,6 @@ Litho.addLayer(
             },
         },
         opacity: 1,
-        minZoom: 11,
-        maxZoom: 18,
         boundingBox: [
             137.3250006349,
             -4.72500217818315,
