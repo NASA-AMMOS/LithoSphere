@@ -43,6 +43,7 @@ Head over to the **[Documentation](https://nasa-ammos.github.io/LithoSphere/)** 
     -   Tile
     -   Tile3d
     -   Model
+    -   Curtain
 -   Adjustable planetary radii
 -   Scripts for tiling Digital Elevation Maps (DEM) and custom projections
 -   Various tile formats:
@@ -58,7 +59,7 @@ Head over to the **[Documentation](https://nasa-ammos.github.io/LithoSphere/)** 
     -   Home
     -   Exaggerate
     -   Crop (upcoming?)
-    -   Controls (upcoming)
+    -   Controls
     -   Coordinates
     -   Link
 -   The ability to use custom parsers for your own tiled data formats

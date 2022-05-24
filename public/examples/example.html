@@ -41,12 +41,20 @@
                     lat: -4.673226,
                     zoom: 16,
                 },
+<<<<<<< HEAD
+                /*
+=======
                 */
+>>>>>>> 90bbf33b0d5f6410ae5d18b3355fd7b41cf045f2
                 initialView: {
                     lng: 137.3650974531451,
                     lat: -4.71480304282526,
                     zoom: 16,
                 },
+<<<<<<< HEAD
+                */
+=======
+>>>>>>> 90bbf33b0d5f6410ae5d18b3355fd7b41cf045f2
                 initialCamera: {
                     position: {
                         x: 274.50893509606396,
@@ -165,8 +173,10 @@
                 ],
                 noDataValue: 0, //opt (number) - no data dem value //unused
             })
-            Litho.setLayerFilterEffect('HiRISE', 'blendCode', 1)
+            //Litho.setLayerFilterEffect('HiRISE', 'blendCode', 1)
             //Litho.options.radiusOfTiles = 10
+
+            //Litho.orderLayers(['Aeolis', 'HiRISE'])
 
             Litho.addLayer('tile3d', {
                 name: '3dTileExample',
@@ -295,7 +305,84 @@
                 }
             )
 
-            /*
+            Litho.addLayer(
+                'clamped',
+                {
+                    name: 'ClampedAnnotation',
+                    on: true,
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [137.358048, -4.673226],
+                                },
+                                properties: {
+                                    annotation: true,
+                                    name: 'Sample Text',
+                                    style: {
+                                        color: 'rgb(0, 0, 0)',
+                                        fillColor: 'rgb(255, 255, 255)',
+                                        fillOpacity: 1,
+                                        weight: 2,
+                                        fontSize: '54px',
+                                        rotation: 0,
+                                        minZoom: 15,
+                                        maxZoom: 16,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    opacity: 1,
+                    style: {
+                        // Prefer feature[f].properties.style values
+                        letPropertiesStyleOverride: true,
+                    },
+                },
+            )
+
+            Litho.addLayer(
+                'vector',
+                {
+                    name: 'vectorAnnotation',
+                    on: true,
+                    geojson: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [137.348048, -4.673226],
+                                },
+                                properties: {
+                                    annotation: true,
+                                    name: 'Sample Sprite Text',
+                                    style: {
+                                        color: 'rgb(40, 20, 20)',
+                                        fillColor: 'rgb(0, 255, 255)',
+                                        fillOpacity: 1,
+                                        weight: 2,
+                                        fontSize: '18px',
+                                        elevOffset: 100,
+                                        minZoom: 12,
+                                        maxZoom: 14,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                    opacity: 1,
+                    style: {
+                        // Prefer feature[f].properties.style values
+                        letPropertiesStyleOverride: true,
+                    },
+                },
+            )
+
             Litho.addLayer('clamped', {
                 name: 'clampedCCam',
                 order: 5,
@@ -312,6 +399,8 @@
                         color: 'black',
                         weight: 2,
                         radius: 4,
+                        minZoom: 14,
+                        maxZoom: 16
                     },
                     point: {},
                     line: {},
@@ -321,8 +410,6 @@
                     },
                 },
                 opacity: 1,
-                minZoom: 11,
-                maxZoom: 18,
                 boundingBox: [
                     137.3250006349,
                     -4.72500217818315,
@@ -332,7 +419,6 @@
                 //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
                 //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
             })
-            */
 
             Litho.addLayer('clamped', {
                 name: 'clampedPoly',
@@ -391,8 +477,6 @@
                     },
                 },
                 opacity: 1,
-                minZoom: 11,
-                maxZoom: 18,
                 boundingBox: [
                     137.3250006349,
                     -4.72500217818315,
@@ -402,6 +486,51 @@
                 //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
                 //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
             })
+
+            Litho.addLayer('clamped', {
+                name: 'clampedTraverse',
+                order: [
+                    'styledFeatures',
+                    'clampedTraverse',
+                    'clampedPoly',
+                    'clampedWaypoints',
+                    'clampedCCam',
+                ],
+                on: true,
+                // GeoJSON or path to geojson
+                geojsonPath:
+                    ' https://miplmmgis.jpl.nasa.gov/Missions/MSL/Layers/Traverse/MSL_traverse3D_sol1508.json',
+                style: {
+                    default: {
+                        color: 'white',
+                        weight: 5,
+                    },
+                },
+                opacity: 1,
+                boundingBox: [
+                    137.3250006349,
+                    -4.72500217818315,
+                    137.42500036372522,
+                    -4.62500251269999,
+                ],
+                //preDrawn?: boolean //override all clamped tiles with pre drawn tiles
+                //data?: { {z}: { {x}: { {y}: { pre_drawn_tile_canvas_data } }}} if preDrawn, use these tiles.
+            })
+
+            /*
+            setTimeout(() => {
+                // Reverse the order of our layers
+                Litho.orderLayers([
+                    'styledFeatures',
+                    'clampedTraverse',
+                    'clampedPoly',
+                    'clampedWaypoints',
+                    'clampedCCam',
+                    //'Aeolis',
+                    //'HiRISE',
+                ])
+            }, 15000)
+            */
 
             Litho.addLayer('vector', {
                 name: 'vectorLine',

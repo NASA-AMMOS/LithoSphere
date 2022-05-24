@@ -17,7 +17,6 @@ interface Private {
 export default class Layers {
     _: Private;
     p: any;
-    baseStyle: any;
     tile3d: any;
     tile: any;
     clamped: any;
@@ -30,14 +29,17 @@ export default class Layers {
     addLayer: (type: string, layerObj: any, callback?: Function, sI?: number) => void;
     removeLayer: (name: string) => boolean;
     toggleLayer: (name: string, on?: boolean) => boolean;
+    orderLayers: (ordering: string[]) => boolean;
+    private getDesiredOrder;
     setLayerOpacity: (name: string, opacity: number) => boolean;
     setLayerFilterEffect: (name: string, filter: string, value: number) => boolean;
     setLayerSpecificOptions: (name: string, options: any) => boolean;
     findHighestMaxZoom: () => number;
     findLowestMinZoom: () => number;
-    private getFeatureStyleProp;
     getLayerByName: (layerName: string) => any;
     hasLayer: (layerName: string) => boolean;
+    private getFeatureStyleProp;
+    private getBaseStyle;
     getFeatureStyle: (layer: any, feature: any, isStrokeless?: boolean) => any;
     _onMouseMove: (intersectedLL: any, e: MouseEvent, obj: any, intersectionRaw: any, intersectionPoint: any) => void;
 }

@@ -44,7 +44,7 @@ export default class Camera {
     onKeyDown: (event: KeyboardEvent) => void;
     onKeyUp: (event: KeyboardEvent) => void;
     updateSize: () => void;
-    setNearFarPlane: (farther: any, near: any, far: any, keepNear: any) => void;
+    setNearFarPlane: (scalar: number, farther: any, near: any, far: any, keepNear: any) => void;
     setFirstPersonHeight: (height: any) => void;
     getFirstPersonFocalLength: () => number;
     setFirstPersonFocalLength: (focalLength: any) => void;

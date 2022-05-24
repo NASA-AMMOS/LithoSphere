@@ -7,6 +7,10 @@ interface Private {
         x: number;
         y: number;
     };
+    oldPrevMouseXY: {
+        x: number;
+        y: number;
+    };
     containerXY: {
         x: number;
         y: number;
@@ -16,6 +20,8 @@ interface Private {
     zoomedSince: number;
     zoomWait: number;
     highlightTimeout: any;
+    rotationDampingInterval: any;
+    panned: boolean;
 }
 export default class Events {
     _: Private;
@@ -25,7 +31,7 @@ export default class Events {
     hoverInfo: HTMLElement;
     constructor(parent: any);
     _init(): void;
-    _rotateGlobe: (e: any, prevXY?: any) => void;
+    _rotateGlobe: (e: any, prevXY?: any, fromDamping?: boolean) => void;
     private _rotateAroundArbAxis;
     private _rotateGlobe_MouseDown;
     private _rotateGlobe_MouseUp;
@@ -46,6 +52,7 @@ export default class Events {
     private clearHoveredFeature;
     private setActiveFeature;
     private clearActiveFeature;
+    _setMissingElevation(mesh: any): void;
     _attenuate(): void;
 }
 export {};

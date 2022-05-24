@@ -22,7 +22,6 @@ export default class Layers {
     _: Private
     // parent
     p: any
-    baseStyle: any
     tile3d: any
     tile: any
     clamped: any
@@ -33,13 +32,6 @@ export default class Layers {
 
     constructor(parent: any) {
         this.p = parent
-        this.baseStyle = {
-            fillColor: 'rgb(0,0,0)',
-            fillOpacity: 0.4,
-            color: 'rgb(255,255,255)',
-            weight: 2,
-            radius: 6,
-        }
         this._ = {
             layerers: {
                 tile3d: new Tile3dLayerer(this),
@@ -89,6 +81,15 @@ export default class Layers {
 
         layerObj._type = type
 
+        if (layerObj.order?.length != null) {
+            layerObj.order = this.getDesiredOrder(
+                layerObj.name,
+                type,
+                layerObj.order
+            )
+        }
+        if (layerObj.order == null) layerObj.order = this.all[type].length
+
         if (this._.layerers[type]) this._.layerers[type].add(layerObj, callback)
         else console.warn(`Cannot add unknown layer type ${type}.`)
     }
@@ -120,6 +121,88 @@ export default class Layers {
             return false
         }
         return true
+    }
+
+    // Takes an array of layer names and does its best to order them
+    // Layer names that come first are on top of all later layers
+    // Ultimately only clamped and tile layers get ordered and clamped layers
+    // are always on top of tile layers
+    // Clamped and tile layers not listed go to the bottom
+    orderLayers = (ordering: string[]): boolean => {
+        const orderingTyped = {}
+
+        ordering.forEach((name) => {
+            const layer = this.getLayerByName(name)
+            if (layer && layer._type) {
+                if (orderingTyped[layer._type] == null)
+                    orderingTyped[layer._type] = []
+                orderingTyped[layer._type].push(name)
+            }
+        })
+
+        let hit = false
+        for (const type in orderingTyped) {
+            if (typeof this._.layerers[type].orderLayers === 'function') {
+                this._.layerers[type].orderLayers(orderingTyped[type])
+                hit = true
+            }
+        }
+
+        // A more expensive option so make sure it's needed
+        if (hit) {
+            this.p._.tiledWorld.removeAllTiles()
+        }
+
+        return true
+    }
+
+    private getDesiredOrder = (
+        name: string,
+        type: string,
+        ordering: string[]
+    ): number => {
+        const orderingTyped = {}
+
+        ordering.forEach((layerName, idx) => {
+            const layer = this.getLayerByName(layerName)
+            if (layer && layer._type) {
+                if (orderingTyped[layer._type] == null)
+                    orderingTyped[layer._type] = []
+                orderingTyped[layer._type].push({
+                    name: layer.name,
+                    order: layer.order,
+                    index: idx,
+                })
+            }
+        })
+
+        if (orderingTyped[type]) {
+            const index = ordering.indexOf(name)
+            let desiredOrder = 0
+            for (let i = 0; i < orderingTyped[type].length; i++) {
+                if (index > orderingTyped[type][i].index) {
+                    if (i == orderingTyped[type].length - 1)
+                        desiredOrder = orderingTyped[type][i].index + 1
+                    else
+                        desiredOrder =
+                            (orderingTyped[type][i].order +
+                                orderingTyped[type][i + 1].order) /
+                            2
+                    return desiredOrder
+                }
+            }
+
+            // Then we have a lower index (higher order) than everything else
+            if (orderingTyped[type].length > 0)
+                return orderingTyped[type][0].order + 1
+        }
+
+        // Default to index position
+        if (ordering.includes(name))
+            return ordering.length - ordering.indexOf(name) - 1
+
+        // Should never get here if functions are used properly
+        return 0
     }
 
     setLayerOpacity = (name: string, opacity: number): boolean => {
@@ -214,20 +297,6 @@ export default class Layers {
         return lowest
     }
 
-    private getFeatureStyleProp = (value: any, feature: any) => {
-        if (value != null && typeof value === 'string' && value.includes('=')) {
-            let propValue = null
-            // Then they're setting the value based a property's value of the feature.
-            // i.e. prop=path.to.my.properties.key
-            const split = value.split('=')
-
-            propValue = Utils.getIn(feature.properties, split[1].split('.'))
-            return propValue
-        } else {
-            return value
-        }
-    }
-
     getLayerByName = (layerName: string): any => {
         for (const type in this.all) {
             for (let i = 0; i < this.all[type].length; i++) {
@@ -242,13 +311,56 @@ export default class Layers {
         return this.getLayerByName(layerName) != null
     }
 
+    private getFeatureStyleProp = (value: any, feature: any) => {
+        if (value != null && typeof value === 'string' && value.includes('=')) {
+            let propValue = null
+            // Then they're setting the value based a property's value of the feature.
+            // i.e. prop=path.to.my.properties.key
+            const split = value.split('=')
+
+            propValue = Utils.getIn(feature.properties, split[1].split('.'))
+            return propValue
+        } else {
+            return value
+        }
+    }
+
+    private getBaseStyle = (
+        feature?: any,
+        type?: string,
+        geomType?: string
+    ) => {
+        const baseStyle: any = {
+            fillColor: 'rgb(0,0,0)',
+            fillOpacity: 0.4,
+            color: 'rgb(255,255,255)',
+            weight: 2,
+            radius: 6,
+        }
+
+        if (feature?.properties?.annotation === true) {
+            baseStyle.fontSize = '16px'
+            baseStyle.rotation = 0
+            baseStyle.fillOpacity = 1
+        }
+        if (type === 'vector' && geomType === 'point') {
+            baseStyle.elevOffset = 20
+        }
+        if (type === 'vector' || type === 'clamped') {
+            baseStyle.minZoom = null
+            baseStyle.maxZoom = null
+        }
+
+        return baseStyle
+    }
+
     // Computes a feature's style given it layer styling configuration
     // Does fancy things like letting you set style from properties and by properties
     getFeatureStyle = (layer: any, feature: any, isStrokeless?: boolean) => {
         // Set as base
-        const style = JSON.parse(JSON.stringify(this.baseStyle))
+        const geomType = feature.geometry.type.toLowerCase()
+        const style = this.getBaseStyle(feature, layer._type, geomType)
         if (layer.style) {
-            const geomType = feature.geometry.type.toLowerCase()
             for (const key in style) {
                 // Set as default
                 if (layer.style.default && layer.style.default[key] != null) {

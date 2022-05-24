@@ -47,10 +47,8 @@ export default class ClampedLayerer {
             layerObj.hasOwnProperty('name') &&
             layerObj.hasOwnProperty('on') &&
             ((layerObj.preDrawn === true && layerObj.hasOwnProperty('data')) ||
-                ((layerObj.hasOwnProperty('geojsonPath') ||
-                    layerObj.hasOwnProperty('geojson')) &&
-                    layerObj.hasOwnProperty('minZoom') &&
-                    layerObj.hasOwnProperty('maxZoom')))
+                layerObj.hasOwnProperty('geojsonPath') ||
+                layerObj.hasOwnProperty('geojson'))
         ) {
             if (
                 layerObj.hasOwnProperty('geojsonPath') &&
@@ -100,6 +98,27 @@ export default class ClampedLayerer {
             return true
         }
         return false
+    }
+
+    orderLayers = (ordering: string[]): boolean => {
+        let missingCount = 0
+
+        // remember that a higher number for order means it's on top
+        this.p.clamped.forEach((layer) => {
+            const newOrder = ordering.indexOf(layer.name)
+            if (newOrder >= 0) {
+                layer.order = this.p.clamped.length - newOrder
+            } else {
+                // Place layers missing from the ordering array after
+                layer.order =
+                    this.p.clamped.length - ordering.length - missingCount
+                missingCount++
+            }
+        })
+
+        this.p.clamped.sort((a, b) => a.order - b.order)
+
+        return true
     }
 
     setOpacity = (name: string, opacity: number): boolean => {
@@ -193,6 +212,16 @@ export default class ClampedLayerer {
             } else {
                 for (const f of c.geojson.features) {
                     const style = this.p.getFeatureStyle(c, f)
+
+                    // Skip feature if outside zoom range
+                    if (
+                        !Utils.isInZoomRange(
+                            style.minZoom != null ? style.minZoom : c.minZoom,
+                            style.maxZoom != null ? style.maxZoom : c.maxZoom,
+                            this.p.p.zoom
+                        )
+                    )
+                        continue
 
                     let doesFeatureOverlapTile = false
                     if (
@@ -457,45 +486,75 @@ export default class ClampedLayerer {
                         // @ts-ignore
                         const canvasY = parseInt((tileXYZ.y - xyz.y) * canvas.height)
 
-                        // Bearing is a triangle indicating direction
-                        if (c.style?.bearing) {
-                            const unit = c.style.bearing.angleUnit || 'deg'
-                            const bearingProp =
-                                c.style.bearing.angleProp || false
-
-                            let yaw = 0
-                            if (bearingProp !== false) {
-                                yaw = parseFloat(
-                                    Utils.getIn(f.properties, bearingProp, 0)
-                                )
-                                if (unit === 'deg') {
-                                    yaw = yaw * (Math.PI / 180)
-                                }
+                        // If Annotation
+                        if (f.properties.annotation === true) {
+                            let text = f.properties.name || ''
+                            const fontXOffset = 10
+                            let fontSize = style.fontSize || '16px'
+                            fontSize =
+                                parseInt(fontSize.replace('px', '')) * 1.2
+                            ctx.font = `${fontSize}pt sans-serif`
+                            const heightOverflow = 2
+                            const textSize = {
+                                width:
+                                    ctx.measureText(text).width +
+                                    fontXOffset * 2,
+                                height: fontSize + heightOverflow,
                             }
-                            yaw += Math.PI
 
-                            const startingPoint = Utils.rotatePoint(
-                                {
-                                    x: canvasX,
-                                    y:
-                                        canvasY +
-                                        style.radius +
-                                        ctx.lineWidth -
-                                        2,
-                                },
-                                [canvasX, canvasY],
-                                yaw - 45 * (Math.PI / 180)
+                            const rotAngle =
+                                (-(style.rotation || 0) * Math.PI) / 180
+                            ctx.translate(canvasX, canvasY)
+                            ctx.rotate(rotAngle)
+                            ctx.translate(-canvasX, -canvasY)
+
+                            // Background rect
+                            ctx.fillStyle = style.color
+                            ctx.fillRect(
+                                canvasX,
+                                canvasY - textSize.height + heightOverflow / 2,
+                                textSize.width,
+                                textSize.height
                             )
-                            const indicator = [
-                                Utils.rotatePoint(
-                                    {
-                                        x: canvasX,
-                                        y: canvasY + style.radius * 2,
-                                    },
-                                    [canvasX, canvasY],
-                                    yaw
-                                ),
-                                Utils.rotatePoint(
+
+                            // Text
+                            ctx.fillStyle = style.fillColor
+                            ctx.fillText(text, canvasX + fontXOffset, canvasY)
+
+                            // Anchor Indicator
+                            const anchorRadius = 6
+                            ctx.lineWidth = anchorRadius
+                            ctx.beginPath()
+                            ctx.arc(canvasX, canvasY, 8, 0, 2 * Math.PI, false)
+                            ctx.fill()
+                            ctx.stroke()
+
+                            ctx.translate(canvasX, canvasY)
+                            ctx.rotate(-rotAngle)
+                            ctx.translate(-canvasX, -canvasY)
+                        } else {
+                            // Bearing is a triangle indicating direction
+                            if (c.style?.bearing) {
+                                const unit = c.style.bearing.angleUnit || 'deg'
+                                const bearingProp =
+                                    c.style.bearing.angleProp || false
+
+                                let yaw = 0
+                                if (bearingProp !== false) {
+                                    yaw = parseFloat(
+                                        Utils.getIn(
+                                            f.properties,
+                                            bearingProp,
+                                            0
+                                        )
+                                    )
+                                    if (unit === 'deg') {
+                                        yaw = yaw * (Math.PI / 180)
+                                    }
+                                }
+                                yaw += Math.PI
+
+                                const startingPoint = Utils.rotatePoint(
                                     {
                                         x: canvasX,
                                         y:
@@ -505,39 +564,61 @@ export default class ClampedLayerer {
                                             2,
                                     },
                                     [canvasX, canvasY],
-                                    yaw + 45 * (Math.PI / 180)
-                                ),
-                                startingPoint,
-                            ]
+                                    yaw - 45 * (Math.PI / 180)
+                                )
+                                const indicator = [
+                                    Utils.rotatePoint(
+                                        {
+                                            x: canvasX,
+                                            y: canvasY + style.radius * 2,
+                                        },
+                                        [canvasX, canvasY],
+                                        yaw
+                                    ),
+                                    Utils.rotatePoint(
+                                        {
+                                            x: canvasX,
+                                            y:
+                                                canvasY +
+                                                style.radius +
+                                                ctx.lineWidth -
+                                                2,
+                                        },
+                                        [canvasX, canvasY],
+                                        yaw + 45 * (Math.PI / 180)
+                                    ),
+                                    startingPoint,
+                                ]
 
-                            ctx.fillStyle = c.style.bearing.color || 'red'
-                            ctx.lineWidth = (1 / scaleFactor) * 1
+                                ctx.fillStyle = c.style.bearing.color || 'red'
+                                ctx.lineWidth = (1 / scaleFactor) * 1
+
+                                ctx.beginPath()
+                                ctx.moveTo(startingPoint.x, startingPoint.y)
+                                indicator.forEach((ind) => {
+                                    ctx.lineTo(ind.x, ind.y)
+                                })
+                                ctx.closePath()
+                                ctx.fill()
+                                ctx.stroke()
+
+                                ctx.fillStyle = style.fillColor
+                                ctx.lineWidth =
+                                    style.weight * ((1 / scaleFactor) * 1)
+                            }
 
                             ctx.beginPath()
-                            ctx.moveTo(startingPoint.x, startingPoint.y)
-                            indicator.forEach((ind) => {
-                                ctx.lineTo(ind.x, ind.y)
-                            })
-                            ctx.closePath()
+                            ctx.arc(
+                                canvasX,
+                                canvasY,
+                                style.radius,
+                                0,
+                                2 * Math.PI,
+                                false
+                            )
                             ctx.fill()
                             ctx.stroke()
-
-                            ctx.fillStyle = style.fillColor
-                            ctx.lineWidth =
-                                style.weight * ((1 / scaleFactor) * 1)
                         }
-
-                        ctx.beginPath()
-                        ctx.arc(
-                            canvasX,
-                            canvasY,
-                            style.radius,
-                            0,
-                            2 * Math.PI,
-                            false
-                        )
-                        ctx.fill()
-                        ctx.stroke()
                         if (
                             canvasX >= 0 &&
                             canvasX < canvas.width &&

@@ -7,6 +7,7 @@ import Utils from '../utils'
 interface Private {
     mouseXY: { x: number; y: number }
     prevMouseXY: { x: number; y: number }
+    oldPrevMouseXY: { x: number; y: number }
     containerXY: { x: number; y: number }
     lastZoomDelta: number
     desiredZoom: number
@@ -17,6 +18,8 @@ interface Private {
     // Frames to wait between zoomend and zoom tile generation
     zoomWait: number
     highlightTimeout: any
+    rotationDampingInterval: any
+    panned: boolean
 }
 
 export default class Events {
@@ -36,12 +39,15 @@ export default class Events {
         this._ = {
             mouseXY: { x: null, y: null },
             prevMouseXY: { x: null, y: null },
+            oldPrevMouseXY: { x: null, y: null },
             containerXY: { x: null, y: null },
             lastZoomDelta: 1,
             desiredZoom: null,
             zoomedSince: 0,
             zoomWait: 30,
             highlightTimeout: null,
+            rotationDampingInterval: null,
+            panned: false,
         }
 
         this._init()
@@ -104,11 +110,14 @@ export default class Events {
         //window.addEventListener('resize', updateGlobeCenterPos, false)
     }
 
-    _rotateGlobe = (e: any, prevXY?): void => {
+    _rotateGlobe = (e: any, prevXY?, fromDamping?: boolean): void => {
         if (prevXY) {
             this._.prevMouseXY.x = prevXY.x
             this._.prevMouseXY.y = prevXY.y
+        } else if (!fromDamping) {
+            this._.panned = true
         }
+
         if (!e) return
         if (!e.pageX && e.touches)
             e.pageX = Utils.arrayAverage(e.touches, 'pageX')
@@ -130,7 +139,7 @@ export default class Events {
         const rotSpeed =
             Utils.getRadiansPerPixel(this.p.trueZoom) *
             0.5 *
-            (this.p._.marsRadius / this.p.projection.radii.major)
+            (3396190 / this.p.projection.radii.major)
         let pixelDif = 0
 
         //Find vectors perpendicular to Cameras.camera forward vector
@@ -172,6 +181,10 @@ export default class Events {
             this._rotateAroundArbAxis(cpY, rotSpeed * pixelDif)
         }
 
+        //Update oldPrevMouseXY
+        this._.oldPrevMouseXY.x = this._.prevMouseXY.x
+        this._.oldPrevMouseXY.y = this._.prevMouseXY.y
+
         //Update prevMouseXY
         this._.prevMouseXY.x = e.pageX
         this._.prevMouseXY.y = e.pageY
@@ -210,6 +223,7 @@ export default class Events {
     }
 
     private _rotateGlobe_MouseDown = (e): void => {
+        clearInterval(this._.rotationDampingInterval)
         //if (e.which === 3 || e.button === 2) { //Right click
         if (e.which === 1 || e.button === 0) {
             //Left click
@@ -271,13 +285,43 @@ export default class Events {
             'touchend',
             this._rotateGlobe_MouseUp
         )
+
+        if (this._.panned) {
+            // Basic damping
+            clearInterval(this._.rotationDampingInterval)
+            const dif = {
+                x: this._.oldPrevMouseXY.x - this._.prevMouseXY.x,
+                y: this._.oldPrevMouseXY.y - this._.prevMouseXY.y,
+            }
+            let difs = []
+            while (dif.x > 2 || dif.x < -2 || dif.y > 2 || dif.y < -2) {
+                const xSize = dif.x / 3
+                const ySize = dif.y / 3
+                dif.x -= xSize
+                dif.y -= ySize
+                difs.push({
+                    x: dif.x,
+                    y: dif.y,
+                })
+            }
+            difs.reverse()
+            this._.rotationDampingInterval = setInterval(() => {
+                if (difs.length > 0)
+                    this._rotateGlobe({ pageX: 0, pageY: 0 }, difs.pop(), true)
+                else clearInterval(this._.rotationDampingInterval)
+            }, 50)
+        }
+        this._.panned = false
     }
 
     //This sets the zoom to the desired zoom if zoomedSince is high enough
     _checkDesiredZoom(): void {
         this._.zoomedSince++
         if (this._.desiredZoom != null) {
-            this.p._.cameras.setNearFarPlane(this._.desiredZoom < 14)
+            this.p._.cameras.setNearFarPlane(
+                this.p.projection.radiusScale,
+                this._.desiredZoom < 14
+            )
             if (this._.zoomedSince > this._.zoomWait) {
                 if (this._.desiredZoom >= this.p._.minNativeZoom)
                     this._setZoom(this._.desiredZoom)
@@ -313,12 +357,20 @@ export default class Events {
         //Calculate what the zoom should be
         //Inverse of ( 4000 / Math.pow( 2, Globe_.zoom + 1) ) //4000/ 2^(z+1)
         // (thanks wolfram alpha inverse function calculator)
-        const nf = 8 - (this.p.projection.radiusScale.toString().length - 1)
+
+        const nf =
+            8 - (parseInt(this.p.projection.radiusScale).toString().length - 1)
+        let rf =
+            Math.max(parseInt(this.p.planetCenter.y).toString().length - 7, 0) +
+            (this.p.options.zoomLevelShift || 0)
+        // Hacky way since zoom per radius functions aren't perfect
+        if (Math.abs(this.p.planetCenter.y) > 30000000) rf += 1
+
         const dZoom =
             Math.ceil(
                 (nf * Math.log(2) - Math.log(zoomDist / Math.pow(5, nf - 1))) /
                     Math.log(2)
-            ) + 1
+            ) + rf
 
         this._.desiredZoom = dZoom
 
@@ -598,9 +650,8 @@ export default class Events {
             //Find the elevation
             //Just distance to intersection from center of planet then rescaled then - radius
             intersectedLL.height =
-                savedIntersectionPoint.length() *
-                    this.p.projection.radiusScale -
-                this.p.projection.radii.major
+                (savedIntersectionPoint.length() - this.p.planet.position.y) /
+                this.p.projection.radiusScale
 
             this._updateMouseCoords(
                 intersectedLL.lng,
@@ -871,6 +922,41 @@ export default class Events {
         this.activeFeature = null
     }
 
+    _setMissingElevation(mesh) {
+        // @ts-ignore
+        if (mesh.noElevation != null) {
+            const height =
+                this.p.getElevationAtLngLat(
+                    mesh.noElevation.lng,
+                    mesh.noElevation.lat
+                ) || false
+
+            if (height) {
+                const v = this.p.projection.lonLatToVector3(
+                    mesh.noElevation.lng,
+                    mesh.noElevation.lat,
+                    (height || 0) +
+                        (mesh.noElevation.elevOffset || 0) *
+                            this.p.options.exaggeration
+                )
+
+                mesh.position.set(v.x, v.y, v.z)
+                // @ts-ignore
+                delete mesh.noElevation
+            }
+        }
+
+        if (
+            Utils.isInZoomRange(
+                mesh.style?.minZoom,
+                mesh.style?.maxZoom,
+                this.p.zoom
+            )
+        )
+            mesh.visible = true
+        else mesh.visible = false
+    }
+
     // Changes certain vector sizes based on distance to camera
     _attenuate() {
         const zoomDist = this.p._.cameras.camera.position.distanceTo(
@@ -886,12 +972,18 @@ export default class Events {
                         if (mesh instanceof Sprite) {
                             mesh.scale.set(
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.width || mesh.style.radius),
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.height || mesh.style.radius),
                                 // @ts-ignore
                                 attenuationFactor * mesh.style.radius
                             )
+
+                            this._setMissingElevation(mesh)
                         }
                     })
                 }
@@ -905,24 +997,36 @@ export default class Events {
                         if (mesh instanceof Sprite) {
                             mesh.scale.set(
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.width || mesh.style.radius),
                                 // @ts-ignore
-                                attenuationFactor * mesh.style.radius,
+                                attenuationFactor *
+                                    // @ts-ignore
+                                    (mesh.style.height || mesh.style.radius),
                                 // @ts-ignore
                                 attenuationFactor * mesh.style.radius
                             )
+
+                            this._setMissingElevation(mesh)
                         }
                     })
                 } else {
                     if (child instanceof Sprite) {
                         child.scale.set(
                             // @ts-ignore
-                            attenuationFactor * mesh.style.radius,
+                            attenuationFactor *
+                                // @ts-ignore
+                                (mesh.style.width || mesh.style.radius),
                             // @ts-ignore
-                            attenuationFactor * mesh.style.radius,
+                            attenuationFactor *
+                                // @ts-ignore
+                                (mesh.style.height || mesh.style.radius),
                             // @ts-ignore
                             attenuationFactor * mesh.style.radius
                         )
+
+                        this._setMissingElevation(child)
                     }
                 }
             })
