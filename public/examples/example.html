@@ -839,7 +839,11 @@
             Litho.addControl('myWalk', Litho.controls.walk)
             Litho.addControl('myCompass', Litho.controls.compass)
             Litho.addControl('myCoords', Litho.controls.coordinates, {
-                existingDivId: 'myCustomCoordDiv',
+                //existingDivId: 'myCustomCoordDiv',
+                //hideElement: true,
+                onChange: (lng, lat, elev) => {
+                    //console.log(lng, lat, elev)
+                },
             })
             const myLink = Litho.addControl('myLink', Litho.controls.link, {
                 initiallyLinked: true,

@@ -5,6 +5,10 @@ interface Private {}
 interface Params {
     // If set, coordinates will be sent to this div instead of setting its own
     existingDivId?: string
+    // If true, hides own element
+    hideElement?: boolean
+    // Coordinate listener, onChange(lng, lat, elev)
+    onChange?: Function
 }
 
 export default class Coordinates {
@@ -25,7 +29,10 @@ export default class Coordinates {
 
     getControl = (): string => {
         const style = `${
-            this.params.existingDivId != null ? 'display: none; ' : ''
+            this.params.existingDivId != null ||
+            this.params.hideElement === true
+                ? 'display: none; '
+                : ''
         }background: black; padding: 5px; font-size: 14px;`
         // prettier-ignore
         return [
@@ -63,5 +70,12 @@ export default class Coordinates {
             if (existingDiv && existingDiv.innerHTML != newVal)
                 existingDiv.innerHTML = newVal
         }
+
+        if (typeof this.params.onChange === 'function')
+            this.params.onChange(
+                this.p.mouse.lng,
+                this.p.mouse.lat,
+                this.p.mouse.elev
+            )
     }
 }
