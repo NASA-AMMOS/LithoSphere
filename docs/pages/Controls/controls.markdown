@@ -30,11 +30,17 @@ Litho.addControl('myCompass', Litho.controls.compass)
 
 ### Coordinates
 
-Displays the current longitude, latitude and elevation coordinates under the cursor. If the `existingDivId` option is sent, it'll use that HTML element to write the coordinates to instead of generating its own.
+Displays the current longitude, latitude and elevation coordinates under the cursor.
+
+-   If the `existingDivId` option is sent, it'll use that HTML element to write the coordinates to instead of generating its own.
+-   If the `hideELement` option is `true`, its default HTML element for showing coordinates will be hidden.
+-   An `onChange` listener may be set to capture the mousemove coordinates and react to them. All parameters will be `null` if the user's cursor is off in space.
 
 ```javascript
 Litho.addControl('myCoords', Litho.controls.coordinates, {
     //existingDivId: 'myCustomCoordDiv',
+    //hideELement: true,
+    //onChange: (lng, lat, elev) => {}
 })
 ```
 

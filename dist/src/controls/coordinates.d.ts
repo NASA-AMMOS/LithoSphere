@@ -3,6 +3,8 @@ interface Private {
 }
 interface Params {
     existingDivId?: string;
+    hideElement?: boolean;
+    onChange?: Function;
 }
 export default class Coordinates {
     _: Private;
