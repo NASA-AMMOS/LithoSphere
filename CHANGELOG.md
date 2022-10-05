@@ -2,6 +2,26 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.5.3
+
+_Oct 5, 2022_
+
+#### Added
+
+-   Model Layers can now accept an array of model paths
+
+---
+
+## v1.5.2
+
+_Sept 15, 2022_
+
+#### Added
+
+-   The Coordinate Control now has an onChange handler
+
+---
+
 ## v1.5.1
 
 _May 24, 2022_
