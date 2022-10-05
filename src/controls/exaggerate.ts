@@ -58,7 +58,7 @@ export default class Exaggerate {
                     options[j].style.color = 'unset'
                 }
                 // @ts-ignore
-                options[i].style.background = '#FBC02D'
+                options[i].style.background = '#ffdd5c'
                 // @ts-ignore
                 options[i].style.color = 'black'
                 options[i].classList.add('_lithosphere_active')
@@ -69,7 +69,7 @@ export default class Exaggerate {
             const value = parseFloat(options[i].getAttribute('value'))
             if (value == this.p.options.exaggeration) {
                 // @ts-ignore
-                options[i].style.background = '#FBC02D'
+                options[i].style.background = '#ffdd5c'
                 // @ts-ignore
                 options[i].style.color = 'black'
                 options[i].classList.add('_lithosphere_active')
@@ -80,7 +80,7 @@ export default class Exaggerate {
     private getInactiveContent = (): string => {
         // prettier-ignore
         return [
-            '<div title="Exaggerate" style="cursor: pointer; width: 26px; height: 26px; background: black; font-size: 24px; line-height: 28px; text-align: center;">',
+            '<div title="Exaggerate" style="cursor: pointer; width: 26px; height: 26px; background: #1d1f20; font-size: 24px; line-height: 28px; text-align: center;">',
                 '<svg style="width:18px; height:18px" viewBox="0 0 24 24">',
                     '<path fill="currentColor" d="M12,22A2,2 0 0,1 10,20A2,2 0 0,1 12,18A2,2 0 0,1 14,20A2,2 0 0,1 12,22M13,16H11V6L6.5,10.5L5.08,9.08L12,2.16L18.92,9.08L17.5,10.5L13,6V16Z" />',
                 '</svg>',

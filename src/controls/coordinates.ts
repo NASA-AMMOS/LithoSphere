@@ -33,7 +33,7 @@ export default class Coordinates {
             this.params.hideElement === true
                 ? 'display: none; '
                 : ''
-        }background: black; padding: 5px; font-size: 14px;`
+        }background: #1d1f20; padding: 5px; font-size: 14px;`
         // prettier-ignore
         return [
             `<div class='${this.name}' id='_lithosphere_control_coordinate_root' title='Longitude, Latitude, Elevation' style='${style}'>`,

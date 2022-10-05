@@ -856,7 +856,7 @@ export default class Events {
                     `${layer.useKeyAsHoverName}: ${text}`
                 )
                 this.hoverInfo.style.position = 'absolute'
-                this.hoverInfo.style.background = 'black'
+                this.hoverInfo.style.background = '#1d1f20'
                 this.hoverInfo.style.color = 'white'
                 this.hoverInfo.style.fontSize = '16px'
                 this.hoverInfo.style.fontFamily = 'sans-serif'

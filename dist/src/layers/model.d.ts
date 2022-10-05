@@ -6,9 +6,9 @@ export default class ModelLayerer {
     toggle: (name: string, on?: boolean) => boolean;
     setOpacity: (name: string, opacity: number) => boolean;
     remove: (name: string) => boolean;
-    private generateModel;
+    private generateModels;
     private objToModel;
     private daeToModel;
     private gltfToModel;
-    private localizeModel;
+    private localizeModels;
 }

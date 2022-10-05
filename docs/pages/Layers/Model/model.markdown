@@ -20,9 +20,13 @@ Litho.addLayer(
         name: 'roverGLTF',
         order: 1,
         on: true,
-        path: 'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb',
-        // mtlPath: '', //if path is to an obj
+        path: 'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb', // Can also be an array
+        // mtlPath: '', //if path is to an obj, can also be an array
         opacity: 0.5,
+        // isArrayed: true, // default false...
+        // if true, position, scale and rotation can be arrays for a series of models layer
+        // (at least position must be an array now, performance may suffer).
+        // Will index match on path, mtlPath, position, scale and rotation.
         position: {
             longitude: 137.3572927368641, // default 0
             latitude: -4.674971631163808, // default 0
