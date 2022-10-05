@@ -22,7 +22,7 @@ export default class Layers {
         // prettier-ignore
         return [
             `<div class='${this.name}' id='${this.id}' style='position: relative;'>`,
-                '<div title="Layers" style="cursor: pointer; width: 26px; height: 26px; background: black; font-size: 24px; line-height: 28px; text-align: center;">',
+                '<div title="Layers" style="cursor: pointer; width: 26px; height: 26px; background: #1d1f20; font-size: 24px; line-height: 28px; text-align: center;">',
                     this.getInactiveContent(),
                 '</div>',
                 `<span id='${this.id}_active' style='pointer-events: none; opacity: 0; transition: opacity 0.2s ease-out;'>`,

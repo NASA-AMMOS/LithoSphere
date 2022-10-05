@@ -33,7 +33,7 @@ export default class Observe {
     private getInactiveContent = (): string => {
         // prettier-ignore
         return [
-            `<div title='Observe' style='width: 26px; height: 26px; background: black; font-size: 24px; line-height: 27px; text-align: center; cursor: pointer;'>`,
+            `<div title='Observe' style='width: 26px; height: 26px; background: #1d1f20; font-size: 24px; line-height: 27px; text-align: center; cursor: pointer;'>`,
                 '<svg style="width:18px; height:18px" viewBox="0 0 24 24">',
                     '<path fill="currentColor" d="M13.73,15L9.83,21.76C10.53,21.91 11.25,22 12,22C14.4,22 16.6,21.15 18.32,19.75L14.66,13.4M2.46,15C3.38,17.92 5.61,20.26 8.45,21.34L12.12,15M8.54,12L4.64,5.25C3,7 2,9.39 2,12C2,12.68 2.07,13.35 2.2,14H9.69M21.8,10H14.31L14.6,10.5L19.36,18.75C21,16.97 22,14.6 22,12C22,11.31 21.93,10.64 21.8,10M21.54,9C20.62,6.07 18.39,3.74 15.55,2.66L11.88,9M9.4,10.5L14.17,2.24C13.47,2.09 12.75,2 12,2C9.6,2 7.4,2.84 5.68,4.25L9.34,10.6L9.4,10.5Z" />',
                 '</svg>',
@@ -48,7 +48,7 @@ export default class Observe {
             '<div style="display: flex; position: absolute; top: 0px; left: 0px; height: 26px; line-height: 26px;">',
                 this.getInactiveContent(),
                 '<div style="display: flex; background: #111; font-size: 12px; margin-left: 5px;">',
-                    "<div id='_lithosphere_WalkSettingsPanel' style='padding: 2px 6px 6px 6px; position: absolute; top: 0px; background: #000; width: 185px;'>",
+                    "<div id='_lithosphere_WalkSettingsPanel' style='padding: 2px 6px 6px 6px; position: absolute; top: 0px; background: #1d1f20; width: 185px;'>",
                         "<ul style='list-style-type: none; padding: 0; margin: 0; font-size: 12px;'>",
                             "<li id='_lithosphere_WalkSettingsFov' style='display: flex; justify-content: space-between; margin-bottom: 3px;'>",
                                 "<div style='float: left; padding-right: 5px;'>Field of View</div>",
@@ -94,7 +94,7 @@ export default class Observe {
                         "</ul>",
                         "<div id='_lithosphere_WalkWalkStandButtons' style='padding-top: 6px; display: flex; justify-content: space-between;'>",
                             "<div id='_lithosphere_WalkWalkHere' style='display: none; padding: 0px 6px; cursor: pointer;'>Walk Here</div>",
-                            "<div id='_lithosphere_WalkStand' style='padding: 0px 6px; cursor: pointer; width: 100%; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: bold; background: #FBC02D; color: black;'>Observe</div>",
+                            "<div id='_lithosphere_WalkStand' style='padding: 0px 6px; cursor: pointer; width: 100%; text-align: center; font-size: 12px; text-transform: uppercase; font-weight: bold; background: #0792c5; color: black;'>Observe</div>",
                         "</div>",
                     "</div>",
                 '</div>',
@@ -160,7 +160,7 @@ export default class Observe {
                 this.helpDiv.id = '_lithosphere_control_walk_help'
                 // @ts-ignore
                 this.helpDiv.style =
-                    'position: absolute; bottom: 47px; right: 15px; background: black; font-size: 13px;'
+                    'position: absolute; bottom: 47px; right: 15px; background: #1d1f20; font-size: 13px;'
                 this.helpDiv.innerHTML = helpMarkup
 
                 this.p.controls.controlContainer.appendChild(this.helpDiv)

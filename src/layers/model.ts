@@ -39,9 +39,9 @@ export default class ModelLayerer {
                 }
             }
             if (!alreadyExists) {
-                this.generateModel(layerObj, (model) => {
-                    if (model) {
-                        model = this.localizeModel(layerObj, model)
+                this.generateModels(layerObj, (models) => {
+                    if (models) {
+                        const model = this.localizeModels(layerObj, models)
                         this.p.p.planet.add(model)
                         layerObj.model = model
                         this.p.model.push(layerObj)
@@ -102,48 +102,70 @@ export default class ModelLayerer {
         return false
     }
 
-    private generateModel = (layerObj: any, callback: Function) => {
-        const modelType = Utils.getExtension(layerObj.path).toLowerCase()
+    private generateModels = (layerObj: any, callback: Function) => {
+        const generate = (path, index, cb) => {
+            const modelType = Utils.getExtension(path).toLowerCase()
 
-        if (this.modelCache[layerObj.path]) {
-            callback(this.modelCache[layerObj.path].clone())
-            return
-        }
-
-        const callback2 = (model) => {
-            if (model && layerObj.cache !== false) {
-                this.modelCache[layerObj.path] = model.clone()
+            if (this.modelCache[path]) {
+                cb(this.modelCache[path].clone())
+                return
             }
-            callback(model)
+
+            const callback2 = (model) => {
+                if (model && layerObj.cache !== false) {
+                    this.modelCache[path] = model.clone()
+                }
+                cb(model)
+            }
+
+            switch (modelType) {
+                case 'obj':
+                    this.objToModel(
+                        path,
+                        index != null
+                            ? layerObj.mtlPath?.[index]
+                            : layerObj.mtlPath,
+                        callback2
+                    )
+                    break
+                case 'dae':
+                    this.daeToModel(path, callback2)
+                    break
+                case 'glb':
+                case 'gltf':
+                    this.gltfToModel(path, callback2)
+                    break
+                default:
+                    console.warn(
+                        `WARNING - Unsupported model file type: ${modelType} in layer ${layerObj.name}. Must be one of: obj, dae, glb`
+                    )
+                    callback(false)
+            }
         }
 
-        switch (modelType) {
-            case 'obj':
-                this.objToModel(layerObj, callback2)
-                break
-            case 'dae':
-                this.daeToModel(layerObj, callback2)
-                break
-            case 'glb':
-            case 'gltf':
-                this.gltfToModel(layerObj, callback2)
-                break
-            default:
-                console.warn(
-                    `WARNING - Unsupported model file type: ${modelType} in layer ${layerObj.name}. Must be one of: obj, dae, glb`
-                )
-                callback(false)
-        }
+        if (Array.isArray(layerObj.path)) {
+            let models = []
+            layerObj.path.forEach((path, idx) => {
+                generate(path, idx, (model) => {
+                    models[idx] = model
+                    if (Object.values(models).length === layerObj.path.length)
+                        callback(models)
+                })
+            })
+        } else
+            generate(layerObj.path, null, (model) => {
+                callback([model])
+            })
     }
 
-    private objToModel = async (layerObj, callback: Function) => {
-        if (layerObj.mtlPath) {
-            mtlLoader.load(layerObj.mtlPath, function (materials) {
+    private objToModel = async (path, mtlPath, callback: Function) => {
+        if (mtlPath) {
+            mtlLoader.load(mtlPath, function (materials) {
                 const objMtlLoader = new OBJLoader()
                 objMtlLoader.setMaterials(materials)
                 materials.preload()
                 objMtlLoader.load(
-                    layerObj.path,
+                    path,
                     function (mesh) {
                         //Done
                         callback(mesh)
@@ -151,14 +173,14 @@ export default class ModelLayerer {
                     function (xhr) {},
                     function (error) {
                         //Error
-                        console.warn('Failed to load .obj at: ' + layerObj.path)
+                        console.warn('Failed to load .obj at: ' + path)
                         callback(false)
                     }
                 )
             })
         } else {
             objLoader.load(
-                layerObj.path,
+                path,
                 function (mesh) {
                     //Done
                     callback(mesh)
@@ -166,16 +188,16 @@ export default class ModelLayerer {
                 function (xhr) {},
                 function (error) {
                     //Error
-                    console.warn('Failed to load .obj at: ' + layerObj.path)
+                    console.warn('Failed to load .obj at: ' + path)
                     callback(false)
                 }
             )
         }
     }
 
-    private daeToModel = (layerObj, callback: Function) => {
+    private daeToModel = (path, callback: Function) => {
         colladaLoader.load(
-            layerObj.path,
+            path,
             function (mesh) {
                 //Done
                 callback(mesh.scene)
@@ -183,15 +205,15 @@ export default class ModelLayerer {
             function (xhr) {},
             function (error) {
                 //Error
-                console.warn('Failed to load .dae at: ' + layerObj.path)
+                console.warn('Failed to load .dae at: ' + path)
                 callback(false)
             }
         )
     }
 
-    private gltfToModel = async (layerObj, callback: Function) => {
+    private gltfToModel = async (path, callback: Function) => {
         gltfLoader.load(
-            layerObj.path,
+            path,
             function (mesh) {
                 //Done
                 callback(mesh.scene)
@@ -207,19 +229,23 @@ export default class ModelLayerer {
             },
             function (error) {
                 //Error
-                console.warn('Failed to load gltf at: ' + layerObj.path)
+                console.warn('Failed to load gltf at: ' + path)
                 callback(false)
             }
         )
     }
 
     // Sets model position, scale, rotation, &c.
-    private localizeModel = (layerObj, model) => {
+    private localizeModels = (layerObj, models) => {
         const parentMesh = new Object3D()
 
         if (layerObj.isArrayed) {
             for (let i = 0; i < layerObj.position.length; i++) {
-                const modelC = model.clone()
+                const mC = models[Math.min(i, models.length - 1)]
+                if (!mC) continue
+
+                const modelC = mC.clone()
+
                 const lng =
                     layerObj.position[i].longitude ||
                     layerObj.position[i].lng ||
@@ -295,15 +321,15 @@ export default class ModelLayerer {
                 (layerObj.position.elevation || layerObj.position.elev || 0) *
                 this.p.p.options.exaggeration
             const pos = this.p.p.projection.lonLatToVector3(lng, lat, elev)
-            model.position.set(pos.x, pos.y, pos.z)
+            models[0].position.set(pos.x, pos.y, pos.z)
 
             const quaternion = new Quaternion()
             quaternion.setFromUnitVectors(
                 new Vector3(0, 1, 0),
                 new Vector3(pos.x, pos.y, pos.z).normalize()
             )
-            model.applyQuaternion(quaternion)
-            model.rotateY(-lng * (Math.PI / 180))
+            models[0].applyQuaternion(quaternion)
+            models[0].rotateY(-lng * (Math.PI / 180))
 
             if (layerObj.rotation) {
                 let order = layerObj.rotation.order || 'YXZ'
@@ -313,17 +339,17 @@ export default class ModelLayerer {
                     )
                     order = 'YXZ'
                 }
-                model.rotation.order = order
+                models[0].rotation.order = order
                 order.split('').forEach((axis) => {
                     switch (axis) {
                         case 'X':
-                            model.rotateX(layerObj.rotation.x || 0)
+                            models[0].rotateX(layerObj.rotation.x || 0)
                             break
                         case 'Y':
-                            model.rotateY(-layerObj.rotation.y || 0)
+                            models[0].rotateY(-layerObj.rotation.y || 0)
                             break
                         case 'Z':
-                            model.rotateZ(layerObj.rotation.z || 0)
+                            models[0].rotateZ(layerObj.rotation.z || 0)
                             break
                         default:
                             console.warn(
@@ -335,10 +361,10 @@ export default class ModelLayerer {
             }
             if (layerObj.scale != null) {
                 const s = layerObj.scale
-                model.scale.set(s || 1, s || 1, s || 1)
+                models[0].scale.set(s || 1, s || 1, s || 1)
             }
 
-            parentMesh.add(model)
+            parentMesh.add(models[0])
         }
 
         if (layerObj.on == false) {

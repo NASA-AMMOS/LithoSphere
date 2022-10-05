@@ -12,7 +12,7 @@
     flex-flow: column;
 }
 #_lithosphere_control_navigation_root > div > div:first-child {
-    background: black;
+    background: #1d1f20;
     color: white;
     height: 26px;
     line-height: 26px;
@@ -30,7 +30,7 @@
     max-height: 0px;
     overflow: hidden;
     line-height: 42px;
-    background: black;
+    background: #1d1f20;
     color: white;
     display: flex;
     border-top: 1px solid #444;

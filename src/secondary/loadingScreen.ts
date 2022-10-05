@@ -18,7 +18,7 @@ export default class Controls {
         this.loadingContainer.style.width = '100%'
         this.loadingContainer.style.height = '100%'
         //this.loadingContainer.style.pointerEvents = 'none'
-        this.loadingContainer.style.background = 'black'
+        this.loadingContainer.style.background = '#1d1f20'
         this.loadingContainer.style.color = 'white'
         this.loadingContainer.style.fontFamily = 'sans-serif'
         this.loadingContainer.style.zIndex = '9001'

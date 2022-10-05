@@ -727,7 +727,7 @@
                 }
             )
             */
-            /*
+
             Litho.addLayer(
                 'model',
                 {
@@ -736,6 +736,16 @@
                     on: true,
                     path:
                         'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb',
+                    /*
+                    [
+                        'http://localhost:8888/Missions/MSL/Data/models/Perseverance.glb',
+                        'http://localhost:8888/Missions/MSL/Data/models/moon/moon.obj',
+                    ],
+                    */
+                    mtlPaths: [
+                        null,
+                        'http://localhost:8888/Missions/MSL/Data/models/moon/moon.mtl',
+                    ],
                     opacity: 0.5,
                     isArrayed: true, // default false // if true, position, scale and rotation can be arrays for a series of models layer (at least position must be an array now, performance may suffer)
                     position: Array.from({ length: 4 }, (v, i) => {
@@ -765,7 +775,7 @@
                     //    },
                     //],
 
-                    scale: 10, // default 1
+                    scale: 10, //[10, 0.09, 0.07, 0.05], // default 1
                     rotation: {
                         // y-up is away from planet center. x is pitch, y is yaw, z is roll
                         x: Math.PI / 12, // in radians | default 0
@@ -782,12 +792,11 @@
 
                     //Litho.toggleLayer('roverGLTF', false)
                     //setTimeout(() => {
-                        //Litho.toggleLayer('roverGLTF', true)
+                    //Litho.toggleLayer('roverGLTF', true)
                     //}, 10000)
-
                 }
             )
-            */
+
             /*
             Litho.addLayer('model', {
                 name: 'moonOBJ',

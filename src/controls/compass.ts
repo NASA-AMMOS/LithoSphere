@@ -22,14 +22,14 @@ export default class Compass {
             `<div class='${this.name}' id='_lithosphere_control_compass_root' style='width: 40px; height: 40px; position: relative;'>`,
                 "<div style='position: absolute; left: 16px; bottom: 40px;font-family: sans-serif; font-size: 10px'>N</div>",
                 "<svg width='40' height='40'>",
-                    "<circle cx='20' cy='20' r='20' stroke-width='0' fill='rgba(0,0,0,1)' />",
+                    "<circle cx='20' cy='20' r='20' stroke-width='0' fill='#1d1f20' />",
                     "<path id='_lithosphere_control_compass_arc' fill='#fff' stroke='#fff' stroke-width='0'></path>",
                     "<line x1='20' y1='0' x2='20' y2='20' style='stroke:rgb(255,255,255);stroke-width:1;mix-blend-mode:difference;' />",
                     "<line x1='40' y1='20' x2='35' y2='20' style='stroke:rgb(255,255,255);stroke-width:1;mix-blend-mode:difference;' />",
                     "<line x1='20' y1='40' x2='20' y2='35' style='stroke:rgb(255,255,255);stroke-width:1;mix-blend-mode:difference;' />",
                     "<line x1='0' y1='20' x2='5' y2='20' style='stroke:rgb(255,255,255);stroke-width:1;mix-blend-mode:difference;' />",
                 "</svg>",
-                "<div id='_lithosphere_control_compass_azimuth' style='position: absolute; left: 0px; bottom: 0px; width: 40px; height: 40px; line-height: 40px; opacity: 0; font-size: 11px; transition: opacity 0.1s ease-out; font-weight: bold; text-align: center; background: black; border-radius: 50%;'></div>",
+                "<div id='_lithosphere_control_compass_azimuth' style='position: absolute; left: 0px; bottom: 0px; width: 40px; height: 40px; line-height: 40px; opacity: 0; font-size: 11px; transition: opacity 0.1s ease-out; font-weight: bold; text-align: center; background: #1d1f20; border-radius: 50%;'></div>",
             "</div>" ].join('');
     }
 
