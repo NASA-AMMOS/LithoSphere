@@ -935,9 +935,8 @@ export default class Events {
                 const v = this.p.projection.lonLatToVector3(
                     mesh.noElevation.lng,
                     mesh.noElevation.lat,
-                    (height || 0) +
-                        (mesh.noElevation.elevOffset || 0) *
-                            this.p.options.exaggeration
+                    ((height || 0) + (mesh.noElevation.elevOffset || 0)) *
+                        this.p.options.exaggeration
                 )
 
                 mesh.position.set(v.x, v.y, v.z)

@@ -221,7 +221,8 @@ export default class VectorLayerer {
             const v = this.p.p.projection.lonLatToVector3(
                 g[0][i0],
                 g[0][i1],
-                (height || 0) * this.p.p.options.exaggeration
+                ((height || 0) + (style.elevOffset || 0)) *
+                    this.p.p.options.exaggeration
             )
 
             if (height === false)
