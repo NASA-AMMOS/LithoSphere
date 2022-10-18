@@ -2,6 +2,16 @@
 
 [Official Releases](https://github.com/NASA-AMMOS/LithoSphere/releases)
 
+## v1.5.4
+
+_Oct 18, 2022_
+
+#### Fixed
+
+-   Support the `elevOffset` styling even if an elevation is already set in `geometry.coordinates`
+
+---
+
 ## v1.5.3
 
 _Oct 5, 2022_
