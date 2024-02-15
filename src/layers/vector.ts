@@ -91,7 +91,6 @@ export default class VectorLayerer {
             if (name === layer.name) {
                 layer.on = on != null ? on : !layer.on
                 layer.meshes.visible = layer.on
-                console.log(layer)
 
                 this.p.p._.events._attenuate()
                 return true

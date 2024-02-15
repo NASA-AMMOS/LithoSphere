@@ -42,6 +42,7 @@
                 },
                 majorRadius: 33961900,
                 loadingScreen: true, // default true
+                blockInitialAnimate: true, // default false
                 customParsers: {
                     All500: (tilePath, layerObj) => {
                         return new Promise((resolve, reject) => {
@@ -384,6 +385,36 @@
                     */
                 }
             )
+            Litho.addLayer('vector', {
+                name: '_curtainPointTop',
+                id: '_curtainPointTop',
+                on: true,
+                opacity: 1,
+                order: 2,
+                minZoom: 0,
+                maxZoom: 30,
+                style: {
+                    default: {
+                        fillColor: 'yellow',
+                        color: '#000',
+                        weight: 2,
+                        radius: 6,
+                        elevOffset: 0,
+                    },
+                },
+                geojson: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [[137.36959, -4.6666, -4437]],
+                            },
+                        },
+                    ],
+                },
+            })
 
             Litho.addLayer(
                 'model',

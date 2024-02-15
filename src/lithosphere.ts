@@ -312,7 +312,8 @@ export default class LithoSphere {
             this._.renderOnlyWhenOpen = false
         }
 
-        this._.loadingScreen = new LoadingScreen(this)
+        if (this.options.blockInitialAnimate !== true)
+            this._.loadingScreen = new LoadingScreen(this)
 
         // Finally add events (should be last new Constructed class)
         this._.events = new Events(this)
@@ -321,8 +322,9 @@ export default class LithoSphere {
         this.setCenter(this.options.initialView)
         this._setInitialCameraPositionTarget()
 
-        // Action!
-        this._animate()
+        if (this.options.blockInitialAnimate !== true)
+            // Action!
+            this._animate()
 
         return true
     }

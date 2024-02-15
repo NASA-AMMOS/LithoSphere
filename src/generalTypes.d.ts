@@ -90,6 +90,7 @@ export interface Options {
     initialCamera?: InitialCamera
     // Whether or not to show the loading screen
     loadingScreen?: boolean
+    blockInitialAnimate?: boolean
     majorRadius?: number
     minorRadius?: number
     radiusCutoff?: number
