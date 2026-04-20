@@ -65,6 +65,9 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        fallback: {
+            path: require.resolve('path-browserify'),
+        },
     },
 }
 

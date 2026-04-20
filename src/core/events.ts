@@ -574,6 +574,21 @@ export default class Events {
                         this.p.layers.vector[i].meshes.children[j]
                     )
         }
+        // Look at all gradient lines
+        for (let i = 0; i < this.p.layers.gradient.length; i++) {
+            if (
+                this.p.layers.gradient[i].meshes &&
+                this.p.layers.gradient[i].meshes.children
+            )
+                for (
+                    let j = 0;
+                    j < this.p.layers.gradient[i].meshes.children.length;
+                    j++
+                )
+                    intersectArr.push(
+                        this.p.layers.gradient[i].meshes.children[j]
+                    )
+        }
         // Look at all curtains
         for (let i = 0; i < this.p.layers.curtain.length; i++) {
             if (

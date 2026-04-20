@@ -23,5 +23,3 @@ server.listen(port, function () {
         `LithoSphere Demo server is listening on port: ${server.address().port}`
     )
 })
-
-app.listen(server)

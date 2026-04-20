@@ -6,6 +6,7 @@ import ClampedLayerer from './clamped'
 import VectorLayerer from './vector'
 import CurtainLayerer from './curtain'
 import ModelLayerer from './model'
+import GradientLayerer from './gradient'
 
 interface Private {
     layerers: {
@@ -15,6 +16,7 @@ interface Private {
         vector: VectorLayerer
         curtain: CurtainLayerer
         model: ModelLayerer
+        gradient: GradientLayerer
     }
 }
 
@@ -28,6 +30,7 @@ export default class Layers {
     vector: any
     curtain: any
     model: any
+    gradient: any
     all: any
 
     constructor(parent: any) {
@@ -40,6 +43,7 @@ export default class Layers {
                 vector: new VectorLayerer(this),
                 curtain: new CurtainLayerer(this),
                 model: new ModelLayerer(this),
+                gradient: new GradientLayerer(this),
             },
         }
         this._reset()
@@ -52,6 +56,7 @@ export default class Layers {
         this.vector = []
         this.curtain = []
         this.model = []
+        this.gradient = []
 
         // For convenience
         // The order here is also used by the layers control
@@ -62,6 +67,7 @@ export default class Layers {
             vector: this.vector,
             curtain: this.curtain,
             model: this.model,
+            gradient: this.gradient,
         }
     }
 

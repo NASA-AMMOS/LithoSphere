@@ -4,6 +4,7 @@ import ClampedLayerer from './clamped';
 import VectorLayerer from './vector';
 import CurtainLayerer from './curtain';
 import ModelLayerer from './model';
+import GradientLayerer from './gradient';
 interface Private {
     layerers: {
         tile3d: Tile3dLayerer;
@@ -12,6 +13,7 @@ interface Private {
         vector: VectorLayerer;
         curtain: CurtainLayerer;
         model: ModelLayerer;
+        gradient: GradientLayerer;
     };
 }
 export default class Layers {
@@ -23,6 +25,7 @@ export default class Layers {
     vector: any;
     curtain: any;
     model: any;
+    gradient: any;
     all: any;
     constructor(parent: any);
     _reset(): void;
